@@ -10,6 +10,9 @@
 | D | H   L   P | 
 +   +---+---+---+
 
+A) Choix Data Structure
+
+
 1) matrice
 2) vecteur 
 
@@ -33,5 +36,17 @@ O 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1
 P 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 1
 
 2) cf cours p35
+
+B) Choix Algorithme (Dijsktra)
+- difficulté à résoudre:
+	- passer par tous les monstres mais avt par les bonbons
+	- calculer les chemins les plus court en prenant en compte le passage par bonbon-méchant ou passage par cases sans méchant
+
+idées de solution:
+- considérer un sous ensemble avec des chemins entre les bonbons et chaque méchant, dans lequel l'algorithme efectue à nouveau un plus court chemin en prenant compte de l'entrée sortie en return value.
+
+
+
+
 
 
