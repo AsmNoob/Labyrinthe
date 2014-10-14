@@ -1,8 +1,4 @@
 Projet Algo n°2
 
-1ère partie
-
-j'écris une ligne
- oo
-
-fait chier github
+Proposition:
+- faire le rapport avec lateX ?
