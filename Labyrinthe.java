@@ -1,3 +1,6 @@
+/* TIO NOGUERAS Gérard - 000333083 - INFO2 */
+/* DEFONTAINE Alexis -  - INFO2 */
+
 public class Labyrinthe{
 	//Attributs
 	private char matriceFichier[][];//regarder si on mettrait pas un truc plus léger que des int
