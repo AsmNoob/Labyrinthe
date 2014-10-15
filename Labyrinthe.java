@@ -23,9 +23,26 @@ public class Labyrinthe{
 			InputStreamReader ipsr = new InputStreamReader(ips);
 			BufferedReader br = new BufferedReader(ipsr);
 			String ligne;
+			ligne = br.readLine();
+			System.out.println(ligne);
+			int taille = Character.getNumericValue(ligne.charAt(12)); // ligne[i]
+			matriceFichier = new char[taille+1][taille+1];
+			int indiceLigne = 0;
+			int indice = 0;
 			while((ligne = br.readLine())!= null){
-				System.out.println(ligne);
-				System.out.println(ligne.length());
+				for(int i = 0; i< ligne.length();i++){
+					if(i%4 == 0){
+						System.out.print("yolOk");
+						matriceFichier[indiceLigne][indice] = ligne.charAt(i);
+						indice++;
+						System.out.print(indice);
+					}else if (i%4 == 2) {
+						matriceFichier[indiceLigne][indice] = ligne.charAt(i);
+						indice++;
+					}
+				}
+				System.out.println(matriceFichier[indiceLigne]);
+				indiceLigne+=1;
 			}
 		}catch(FileNotFoundException e){
 			System.err.println("Caught FileNotFoundException: " + e.getMessage());
