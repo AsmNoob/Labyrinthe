@@ -1,11 +1,6 @@
-Labyrinthe
-==========
+#Labyrinthe
 
-nv titre
---------
-
-
-###Projet Algorithmique BA2 INFO
+##Projet Algorithmique BA2 INFO
 
 
 Recherche du plus court chemin dans un labyrinthe avec des obstacles.
