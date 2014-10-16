@@ -14,6 +14,16 @@ public class Labyrinthe{
 		ParsageFichier(Nomfichier);
 	}
 
+
+	// à mettre en define
+	/*  Murs = -1
+		Espace = 0
+		Pacman = 1
+		Monstre = 2
+		Bonbon = 3
+		Sortie = 4
+	*/
+
 	//Méthodes
 
 	//-------Parsage du fichier--------//
