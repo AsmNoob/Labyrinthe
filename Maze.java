@@ -5,19 +5,15 @@ import java.io.*;
 public class Maze{
 	//Attributs
 	private char matriceFichier[][];//regarder si on mettrait pas un truc plus léger que des int
-	private char matriceLiens[][];
+	private int matrice[][];
 	private int lignes; // hauteur
 	private int colonnes; // longueur
-	private int[] PosPacman;
+	private int[] PosPacman = new int[2];
 
 	//Constructeurs
 	public Maze(String Nomfichier){
 		ParsageFichier(Nomfichier);
 	}
-
-	/*public int[][] getMaze(){
-		System.out.println("yolo");
-	}*/
 	
 	// à mettre en define
 	/*  Murs = -1
@@ -45,6 +41,10 @@ public class Maze{
 			while((ligne = br.readLine())!= null){
 				int indice = 0;
 				for(int i = 0; i< ligne.length();i++){
+					if(ligne.charAt(i) == 'P'){
+						PosPacman[0] = indiceLigne;
+						PosPacman[1] = indice;
+					}
 					if(i%4 == 0){
 						matriceFichier[indiceLigne][indice] = ligne.charAt(i);
 						indice++;
@@ -63,9 +63,14 @@ public class Maze{
 		}
 	}
 
-	//------Création de la matrice "des liens" ------//
-	public void getPosPacman(){
+	//------ Getters/Setters ------//
+	public int[] getPosPacman(){
+		return PosPacman;
+	}
 
+
+	public int[][] getMaze(){
+		return matrice;
 	}
 
 	//--------- Check autour de la case des types d'objets trouvés --------//
