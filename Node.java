@@ -2,6 +2,7 @@ import java.lang.Object;
 
 public class Node {
 	// attribut
+	private int node_value; //pacman,bonus, monstre ou sortie
 	private int pos_i,pos_j; // position de la node dans la matrice
 	private List<List<Node,Arc>> ens_link_;
 
@@ -12,7 +13,7 @@ public class Node {
 	}
 
 	// methode permettant de regrouper toutes les connexions existantes avec ce noeud.
-	public static add_link(Node node, Arc arc){
+	public static void add_link(Node node, Arc arc){
 		List link = Array.asList(node,arc);
 		ens_link_.add(link);
 	}
