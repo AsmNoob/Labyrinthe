@@ -1,37 +1,36 @@
 
-import java.util.List; // a vérifier
-	//Constructeur de la class Sommet, il faut sa position dans la matrice, et quatre donnée correspondant a UP,DOWN,LEFT,RIGHT initialisé a Null dont les valeurs changeront lors de la création de celle ci, permettant de savoir plus tard dans quel direction aller directement. Chaque direction sera un pointeur vers le sommet qui est au bout de son chemin. Puisque que nos sommet sont principalement des intersections cela nous permettera de choisir directement le bon chemin .
-public class BackTrack {
-	
-	private int dim; //dimention de la matrice
-	private int nb_space;
-	private List<List<int>> node_coord = new ArrayList<ArrayList<int>>();
-	public List<Sommet> ens_sommet = new ArrayList<Sommet>();//classe sommet nescesaire
+import java.lang.Object; // a vérifier
 
+//Constructeur de la class Node, il faut sa position dans la matrice, et quatre donnée correspondant a UP,DOWN,LEFT,RIGHT initialisé a Null dont les valeurs changeront lors de la création de celle ci, permettant de savoir plus tard dans quel direction aller directement. Chaque direction sera un pointeur vers le sommet qui est au bout de son chemin. Puisque que nos sommet sont principalement des intersections cela nous permettera de choisir directement le bon chemin .
+public class Graph {
+	//Attribut
+	private int dim; //dimention de la matrice
+	private Dictionary<List,Node> ens_node;
+
+	// test si la postion suivante est dans les bornes et autre qu'un mur.
 	public static boolean test_nextPosition(int[][] mat, int i, int j, int x, int y, int k, int l){
 		if ((i+x) >= 0 && (i+x) < dim && (j+y)>= 0 && (j+y) < dim && ((i+x,l+y) != (k,l) || k,l = Null,Null)) {
 			int elem = int[i+x][j+y] mat;
-			// j'imagine nos murs et extrémité du tableau égale a -1
-			// ou autre chose...
+			// mur = -1
 			if (elem != -1 | elem) {
 				return true;
 			}
 		}
 		return false;
 	}
-
-	public static void check_newNode( int[][] mat, int i, int j, Sommet prec){
+	// crée une nouvelle node si elle n'éxiste pas encore !
+	public static void check_newNode(int i, int j){
 		List coord = Arrays.asList(i,j);
-		if ( !node_coord.contains(coord)) {
-
-				Sommet node = new Sommet (i,j, prec);
-				ens_sommet.add(node);
-				node_coord.add(coord);
-			}
+		try {
+			ens_node.get(coord);
+		}catch(NullPointerException){
+			Node node = new Node(i,j);
+			ens_node.put(coord,node);
+		}
 	}
-
-	public static void check_elemSpecial(int[][] mat, int i, int j, Sommet prec){
-		if (mat[i][j > 0) {check_newNode(mat, i, j, prec);}
+	// vérifie que l'element n'est pas un monstre/pacman/bonus/sortie
+	public static void check_elemSpecial(int elem, int i, int j, Sommet prec){
+		if (mat[i][j] > 0) {check_newNode(i, j);}
 	}
 
 
