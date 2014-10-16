@@ -1,20 +1,24 @@
-/* TIO NOGUERAS Gérard - 000333083 - INFO2 */
+	/* TIO NOGUERAS Gérard - 000333083 - INFO2 */
 /* DEFONTAINE Alexis -  - INFO2 */
 import java.io.*;
 
-public class Labyrinthe{
+public class Maze{
 	//Attributs
 	private char matriceFichier[][];//regarder si on mettrait pas un truc plus léger que des int
 	private char matriceLiens[][];
 	private int lignes; // hauteur
 	private int colonnes; // longueur
+	private int[] PosPacman;
 
 	//Constructeurs
-	public Labyrinthe(String Nomfichier){
+	public Maze(String Nomfichier){
 		ParsageFichier(Nomfichier);
 	}
 
-
+	/*public int[][] getMaze(){
+		System.out.println("yolo");
+	}*/
+	
 	// à mettre en define
 	/*  Murs = -1
 		Espace = 0
@@ -60,12 +64,8 @@ public class Labyrinthe{
 	}
 
 	//------Création de la matrice "des liens" ------//
-	public void CreationMatrice(int[][] matrice){
-		for(int i=0; i< lignes;i++){
-			for(int j = 0; j < colonnes;j++){
-				//trouverLien(matrice[i*2][j*2]);// r  egarder autours de chaque case
-			}
-		}
+	public void getPosPacman(){
+
 	}
 
 	//--------- Check autour de la case des types d'objets trouvés --------//
