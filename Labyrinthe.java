@@ -26,23 +26,21 @@ public class Labyrinthe{
 			ligne = br.readLine();
 			System.out.println(ligne);
 			int taille = Character.getNumericValue(ligne.charAt(12)); // ligne[i]
-			matriceFichier = new char[taille+1][taille+1];
+			matriceFichier = new char[taille+1][taille+1]; // [0 -> 8] 
 			int indiceLigne = 0;
-			int indice = 0;
 			while((ligne = br.readLine())!= null){
+				int indice = 0;
 				for(int i = 0; i< ligne.length();i++){
 					if(i%4 == 0){
-						System.out.print("yolOk");
 						matriceFichier[indiceLigne][indice] = ligne.charAt(i);
 						indice++;
-						System.out.print(indice);
 					}else if (i%4 == 2) {
 						matriceFichier[indiceLigne][indice] = ligne.charAt(i);
 						indice++;
 					}
 				}
 				System.out.println(matriceFichier[indiceLigne]);
-				indiceLigne+=1;
+				indiceLigne++;
 			}
 		}catch(FileNotFoundException e){
 			System.err.println("Caught FileNotFoundException: " + e.getMessage());
@@ -55,7 +53,7 @@ public class Labyrinthe{
 	public void CreationMatrice(int[][] matrice){
 		for(int i=0; i< lignes;i++){
 			for(int j = 0; j < colonnes;j++){
-				//trouverLien(matrice[i*2][j*2]);// regarder autours de chaque case
+				//trouverLien(matrice[i*2][j*2]);// r  egarder autours de chaque case
 			}
 		}
 	}
