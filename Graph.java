@@ -35,41 +35,38 @@ public class Graph {
 
 
 
-	public static void parcours_mat(int[][] mat, int i, int j, int k, int l, Sommet prec){
+	public static void create_graph(int[][] mat, int i, int j, int k, int l, Sommet prec){
 		//i,j position actuel, k,l position precedente
 
 		boolean multi_direction = False;
+
 		if test_direction(mat,i,j,k,l,-1,0){//UP
-			direction[0] = True;
 			check_elemSpecial(mat, i, j, prec);
-			parcours_mat(mat,i-1,j,i,j);
+			create_graph(mat,i-1,j,i,j);
 			multi_direction = True;
 		}
 		
 		if test_direction(mat,i,j,1,0){//DOWN
-			direction[1] = True;
 			if (multi_direction) { check_newNode(mat, i, j, prec);}
 			else {check_elemSpecial(mat, i, j, prec);}
 
-			parcours_mat(mat,i+1,j,i,j);
+			create_graph(mat,i+1,j,i,j);
 			multi_direction = True;
 		}
 		
 		if test_direction(mat,i,j,0,-1){//LEFT
-			direction[2] = True;
 			if (multi_direction) { check_newNode(mat, i, j, prec);}
 			else {check_elemSpecial(mat, i, j, prec);}
 
-			parcours_mat(mat,i,j-1,i,j);
+			create_graph(mat,i,j-1,i,j);
 			multi_direction = True;
 		}
 		
 		if test_direction(mat,i,j,0,1){//RIGHT
-			direction[3] = True;
 			if (multi_direction) { check_newNode(mat, i, j, prec);}
 			else {check_elemSpecial(mat, i, j, prec);}
 
-			parcours_mat(mat,i,j+1,i,j);
+			create_graph(mat,i,j+1,i,j);
 
 		}
 			
@@ -79,7 +76,7 @@ public class Graph {
 		dim = mat.length;
 		Sommet node = new Sommet (i,j, Null);
 
-		parcours_mat(mat,i_start,j_start, Null, Null,jnode);
+		create_graph(mat,i_start,j_start, Null, Null,jnode);
 
 		// -> évitons cela en sauvegardant la position du pacman lors de la transformation
 		//en matrice au chargement du fichier.
