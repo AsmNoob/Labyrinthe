@@ -6,7 +6,7 @@ import java.util.*; // a vérifier
 public class Graph {
 	//Attribut
 	private int dim; //dimention de la matrice
-	private Dictionary<List,Node> ens_node;
+	private Dictionary<List<Integer>,Node> ens_node;
 	private boolean new_arc = false;
 	// constructeur
 	public Graph(int[][] mat, int init_i, int init_j){
@@ -26,13 +26,13 @@ public class Graph {
 
 	// crée une nouvelle node si elle n'éxiste pas encore !
 	public void check_newNode(int i, int j, Arc current_arc){
-		List coord = Arrays.asList(i,j);
+		List<Integer> coord = Arrays.asList(i,j);
 		try {
 			ens_node.get(coord);
 		}catch(NullPointerException e){
 			Node node = new Node(i,j);
 			if (!ens_node.isEmpty()){
-				List pre_coord = current_arc.get(0);
+				List<Integer> pre_coord = current_arc.get(0);
 				Node pre_node = ens_node.get(pre_coord);
 				pre_node.add_link(node,current_arc);
 			}
