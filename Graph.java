@@ -8,6 +8,8 @@ public class Graph {
 	private int dim; //dimention de la matrice
 	private Dictionary<List<Integer>,Node> ens_node;
 	private boolean new_arc = false;
+	private List<List<Integer>> direction = Arrays.asList(Arrays.asList(-1,0),Arrays.asList(1,0),Arrays.asList(0,-1),Arrays.asList(0,1));
+	
 	// constructeur
 	public Graph(int[][] mat, int init_i, int init_j){
 		dim = mat.length;
