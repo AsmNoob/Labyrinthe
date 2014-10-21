@@ -91,6 +91,28 @@ public class Graph {
 
 }
 
+/*  public void create_graph(int[][] mat, int i, int j, int k, int l, Arc current_arc){
+		//i,j position actuel, k,l position precedente
+
+		boolean multi_direction = false;
+
+		if (new_arc) { 
+			current_arc = new Arc(i,j);
+			new_arc = false;
+		}
+		else {current_arc.add_way(i,j);}
+
+		check_elemSpecial(mat[i][j], i, j,current_arc);
+		for (int i = 0; i < direction.length ; i++ ) {
+			List coord = direction.get(i);
+			if (test_nextPosition(mat,i,j,k,l,coord.get(0),coord.get(1))){//DOWN
+				if (multi_direction) { check_newNode(i, j, current_arc);}
+				create_graph(mat,i+coord.get(0),j+coord.get(1),i,j,current_arc);
+				multi_direction = true;
+			}
+		}
+	}
+*/
 
 
 
