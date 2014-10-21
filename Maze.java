@@ -10,6 +10,15 @@ public class Maze{
 	private int colonnes; // longueur
 	private int[] PosPacman = new int[2];
 
+	//define
+	public int WALL = -1;
+	public int SPACE = 0;
+	public int PACMAN = 1;
+	public int MONSTER = 2;
+	public int SWEET = 3;
+	public int EXIT = 4;
+
+
 	//Constructeurs
 	public Maze(String Nomfichier){
 		ParsageFichier(Nomfichier);
@@ -25,6 +34,23 @@ public class Maze{
 	*/
 
 	//Méthodes
+	//Fonction qui remplace les caractères par des entiers selon
+	//les valeurs choisies
+	public int BaseToCode(char valeur){
+		int res = 0;
+		if(valeur == '-' || valeur == '|'){
+			res = WALL;
+		}else if (valeur == 'P') {
+			res = PACMAN;
+		}else if (valeur == ' ') {
+			res = SPACE;
+		}else if (valeur == '°') {
+			res = SWEET;
+		}else if (Character.getNumericValue(valeur) >= 1){
+			res = MONSTER;
+		}
+		return res;
+	}
 
 	//-------Parsage du fichier--------//
 	public void ParsageFichier(String Nomfichier){
