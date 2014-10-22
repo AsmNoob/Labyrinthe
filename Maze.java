@@ -26,6 +26,7 @@ public class Maze{
 	public int MONSTER = 2;
 	public int SWEET = 3;
 	public int EXIT = 4;
+	public int WAY = 5;
 
 
 	//Constructeurs
@@ -122,26 +123,40 @@ public class Maze{
 		System.out.println(matrix.length);
 		for(int i = 0; i < matrix.length;i++){
 			for(int j = 0; j < matrix[0].length;j++){
-				System.out.print(OutputAnalyse(matrix[i][j]),i,j);
+				System.out.print(OutputAnalyse(matrix[i][j],i,j));
 			}
 			System.out.println();
 		}
 	}
 
-	public char OutputAnalyse(int value,int line,int column){
-		char res = '';
-		if(value == PACMAN)
-			res = 'P';
-		else if (value == MONSTER ) {
-			
-		}else if (value ==  ) {
-			
-		}else if (value ==  ) {
-			
-		}else if (value ==  ) {
-			
+	public String OutputAnalyse(int value,int line,int column){
+		String res = "";
+		if(value == PACMAN){
+			res = " P ";
+		}else if (value == MONSTER ) {
+			res = " M ";
+		}else if (value == SWEET ) {
+			res = " ° ";
+		}else if (value == SPACE ) {
+			if(column%2 == 0){
+				res = " ";
+			}else{
+				res = "   ";
+			}
+		}else if (value == EXIT ) {
+			res = " S ";
+		}else if (value == WALL ) {
+			if (line%2 == 0 && column%2 == 0) {
+				res = "+";
+			}else if (line%2 == 0) {
+				res = "---";
+			}else if (line%2 == 1 && column%2 == 0) {
+				res = "|";
+			}
+		}else if (value == WAY) {
+			res = " # "
 		}
-
+		return res;
 	}
 
 	//--------- Check autour de la case des types d'objets trouvés --------//
