@@ -1,16 +1,25 @@
 	/* TIO NOGUERAS Gérard - 000333083 - INFO2 */
 /* DEFONTAINE Alexis -  - INFO2 */
 import java.io.*;
+import java.util.*;
 
 public class Maze{
 	//Attributs
-	private char matriceFichier[][];//regarder si on mettrait pas un truc plus léger que des int
-	private int matrice[][];
-	private int lignes; // hauteur
-	private int colonnes; // longueur
+	private int matrix[][];
+	private int lines; // hauteur
+	private int columns; // longueur
 	private int[] PosPacman = new int[2];
+	private List<List<Integer>> listMonsters;
+	private List<List<Integer>> listSweets;
 
-	//define
+	// à mettre en define
+	/*  Murs = -1
+		Espace = 0
+		Pacman = 1
+		Monstre = 2
+		Bonbon = 3
+		Sortie = 4
+	*/
 	public int WALL = -1;
 	public int SPACE = 0;
 	public int PACMAN = 1;
@@ -20,67 +29,41 @@ public class Maze{
 
 
 	//Constructeurs
-	public Maze(String Nomfichier){
-		ParsageFichier(Nomfichier);
+	public Maze(String FileName){
+		Parsing(FileName);
+		printMatrix(matrix);
 	}
-	
-	// à mettre en define
-	/*  Murs = -1
-		Espace = 0
-		Pacman = 1
-		Monstre = 2
-		Bonbon = 3
-		Sortie = 4
-	*/
 
 	//Méthodes
-	//Fonction qui remplace les caractères par des entiers selon
-	//les valeurs choisies
-	public int BaseToCode(char valeur){
-		int res = 0;
-		if(valeur == '-' || valeur == '|'){
-			res = WALL;
-		}else if (valeur == 'P') {
-			res = PACMAN;
-		}else if (valeur == ' ') {
-			res = SPACE;
-		}else if (valeur == '°') {
-			res = SWEET;
-		}else if (Character.getNumericValue(valeur) >= 1){
-			res = MONSTER;
-		}
-		return res;
-	}
+
 
 	//-------Parsage du fichier--------//
-	public void ParsageFichier(String Nomfichier){
+	public void Parsing(String FileName){
 		try {
-			InputStream ips = new FileInputStream(Nomfichier);
+			InputStream ips = new FileInputStream(FileName);
 			InputStreamReader ipsr = new InputStreamReader(ips);
 			BufferedReader br = new BufferedReader(ipsr);
-			String ligne;
-			ligne = br.readLine();
-			System.out.println(ligne);
-			int taille = Character.getNumericValue(ligne.charAt(12)); // ligne[i]
-			matriceFichier = new char[taille+1][taille+1]; // [0 -> 8] 
-			int indiceLigne = 0;
-			while((ligne = br.readLine())!= null){
-				int indice = 0;
-				for(int i = 0; i< ligne.length();i++){
-					if(ligne.charAt(i) == 'P'){
-						PosPacman[0] = indiceLigne;
-						PosPacman[1] = indice;
-					}
-					if(i%4 == 0){
-						matriceFichier[indiceLigne][indice] = ligne.charAt(i);
-						indice++;
-					}else if (i%4 == 2) {
-						matriceFichier[indiceLigne][indice] = ligne.charAt(i);
-						indice++;
+			String line;
+			line = br.readLine();
+			System.out.println(line);
+			int size = Character.getNumericValue(line.charAt(12)); // line[i]
+			matrix = new int[size+1][size+1]; // [0 -> 8] 
+			int indexLine = 0;
+			while((line = br.readLine())!= null){
+				int indexColumn = 0;
+				for(int i = 0; i< line.length();i++){ // parcours line lue
+					if(i%4 == 0){ // intersection et murs
+						System.out.print(Analyse_Case(line.charAt(i),indexLine,indexColumn,size));
+						matrix[indexLine][indexColumn] = Analyse_Case(line.charAt(i),indexLine,indexColumn,size);
+						indexColumn++;
+					}else if (i%4 == 2) { // espaces, monstres, bonbons et pakkuman
+						System.out.print(Analyse_Case(line.charAt(i),indexLine,indexColumn,size));
+						matrix[indexLine][indexColumn] = Analyse_Case(line.charAt(i),indexLine,indexColumn,size);
+						indexColumn++;
 					}
 				}
-				System.out.println(matriceFichier[indiceLigne]);
-				indiceLigne++;
+				System.out.println();
+				indexLine++;
 			}
 		}catch(FileNotFoundException e){
 			System.err.println("Caught FileNotFoundException: " + e.getMessage());
@@ -89,14 +72,76 @@ public class Maze{
 		}
 	}
 
+	//Fonction qui remplace les caractères par des entiers selon
+	//les values choisies
+	public int Analyse_Case(char value, int line, int column, int size){
+		int res = 0;
+		if(value == '-' || value == '|' || value == '+'){
+			res = WALL;
+		}else if (value == 'P'){
+			PosPacman[0] = line;
+			PosPacman[1] = column;
+			res = PACMAN;
+		}else if (value == ' ') {
+			if(line == 0 || line == size || column == 0 || column == size){ //rappel la matrix est en [size+1][size+1]
+				res = EXIT;
+			}else{
+				res = SPACE;
+			}
+		}else if (value == '°') {
+			List<Integer> coord = Arrays.asList(line,column);
+			listSweets = Arrays.asList(coord);
+			res = SWEET;
+		}else if (Character.getNumericValue(value) >= 1){
+			List<Integer> coord = Arrays.asList(line,column);
+			System.out.println(coord);
+			listMonsters = Arrays.asList(coord);
+			res = MONSTER;
+		}
+		return res;
+	}
+
 	//------ Getters/Setters ------//
-	public int[] getPosPacman(){
+	public int[] getCoordPacman(){
 		return PosPacman;
 	}
 
+	public List<List<Integer>> getCoordMonsters(){ // liste[n][2] 
+		return listMonsters;
+	}
+
+	public List<List<Integer>> getCoordSweets(){
+		return listSweets;
+	}
 
 	public int[][] getMaze(){
-		return matrice;
+		return matrix;
+	}
+
+	public void printMatrix(int[][] matrix){
+		System.out.println(matrix.length);
+		for(int i = 0; i < matrix.length;i++){
+			for(int j = 0; j < matrix[0].length;j++){
+				System.out.print(OutputAnalyse(matrix[i][j]),i,j);
+			}
+			System.out.println();
+		}
+	}
+
+	public char OutputAnalyse(int value,int line,int column){
+		char res = '';
+		if(value == PACMAN)
+			res = 'P';
+		else if (value == MONSTER ) {
+			
+		}else if (value ==  ) {
+			
+		}else if (value ==  ) {
+			
+		}else if (value ==  ) {
+			
+		}
+
 	}
 
 	//--------- Check autour de la case des types d'objets trouvés --------//
