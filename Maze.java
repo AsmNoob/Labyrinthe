@@ -32,7 +32,7 @@ public class Maze{
 	//Constructeurs
 	public Maze(String FileName){
 		Parsing(FileName);
-		printMatrix(matrix);
+		PrintMatrix(matrix);
 	}
 
 	//Méthodes
@@ -118,7 +118,7 @@ public class Maze{
 		return matrix;
 	}
 
-	public void printMatrix(int[][] matrix){
+	public void PrintMatrix(int[][] matrix){
 		System.out.println(matrix.length);
 		for(int i = 0; i < matrix.length;i++){
 			for(int j = 0; j < matrix[0].length;j++){
