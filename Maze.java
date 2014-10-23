@@ -95,7 +95,6 @@ public class Maze{
 			res = SWEET;
 		}else if (Character.getNumericValue(value) >= 1){
 			List<Integer> coord = Arrays.asList(line,column);
-			System.out.println(coord);
 			listMonsters = Arrays.asList(coord);
 			res = MONSTER;
 		}
@@ -154,7 +153,7 @@ public class Maze{
 				res = "|";
 			}
 		}else if (value == WAY) {
-			res = " # "
+			res = " # ";
 		}
 		return res;
 	}
