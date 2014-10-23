@@ -89,7 +89,7 @@ public class Maze{
 			}else{
 				res = SPACE;
 			}
-		}else if (value == '°') {
+		}else if (value == 'B') {
 			List<Integer> coord = Arrays.asList(line,column);
 			listSweets = Arrays.asList(coord);
 			res = SWEET;
@@ -135,7 +135,7 @@ public class Maze{
 		}else if (value == MONSTER ) {
 			res = " M ";
 		}else if (value == SWEET ) {
-			res = " ° ";
+			res = " B ";
 		}else if (value == SPACE ) {
 			if(column%2 == 0){
 				res = " ";
