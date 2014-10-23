@@ -9,12 +9,12 @@ public class Arc {
 	}
 	// Methode ajoutant un chemin de coordonée (x,y) dans l'attribut global_way
 	public void add_way(int pos_x,int pos_y){
-		List coord = Arrays.asList(pos_x,pos_y);
+		List<Integer> coord = Arrays.asList(pos_x,pos_y);
 		global_way.add(coord);
 
 	}
 	//getter
-	public List get(int pos){
+	public List<Integer> get(int pos){
 		return global_way.get(pos);
 	}
 	public int get_weight(){
