@@ -1,4 +1,85 @@
-Projet Algo n°2
-
-Proposition:
-- faire le rapport avec lateX ?
+% !TEX encoding = UTF-8 Unicode
+\documentclass[12pt, oneside]{article}
+\usepackage{geometry}
+\geometry{letterpaper}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage{fullpage}
+\title{{\normalsize{INFO-F-203 -- Algorithmique 2}}\\Manipulation de graphes\\ Transfert d’argent}
+\author{Romain \textsc{Fontaine} \and Nikita \textsc{Marchant}}
+%\date{20/12/13}
+\begin{document}
+\maketitle
+\section{Introduction}
+Ce projet d'algorithmique de deuxième année porte sur les graphes et plus particulièrement les graphes dirigés.
+Le problème est posé aux étudiants comme ceci : il faut écrire un programme qui reçoit un graphe dans lequel chaque noeud représente un cercle étudiant et les arrêtes de celui-ci représentent les dettes que les cercles ont contracté entre eux. Le but du projet est de détecter les cycles dans ce graphe et de les résoudre.
+Pour finir, certains cercles ont de l'argent sur leur compte en banque : l'étape après avoir résolu les cycles est donc de déterminer dans quel ordre les cercles pourront se rembourser les uns les autres.
+\section{Détection de cycles et suppression}
+Une première approche à laquelle nous avons pensé est d'utiliser un algorithme de détection de cycles (par exemple celui vu au cours théorique\footnote{Algorithmique-2 (info-f-203) par Bernard \textsc{Fortz} et Olivier \textsc{Markowitch}, pp 44-46}) et par la suite de les supprimer. Cependant, nous n'avons pas retenu cette méthode pour des raisons de performance expliqués au point \ref{others}.
+\subsection{Détection}
+\label{detect}
+L'approche retenue a été de parcourir le graphe en profondeur depuis un noeud quelconque en marquant les noeuds sur notre passage tout en empilant sur une stack\footnote{Cette stack (ou pile) n'en est pas une au vrai sens du terme. En effet, en plus des opérations \texttt{push} et \texttt{pop}, elle supporte aussi les \texttt{get} à un index arbitraire} les arrêtes par lesquelles nous passons. Juste avant d'empiler une arrête, nous vérifions que le noeud de départ de l'arrête n'a pas été déjà empilé en tant que noeud de départ d'une arête de cette même pile.
+Si c'est le cas, nous retenons l'index de cette arrête dans la pile (nommons le $i$) et c'est que nous avons détecté un cycle et nous le supprimons donc avec l'algorithme décrit au point \ref{del} puis revenons à celui-ci.
+Quand nous arrivons à une feuille, nous repartons en arrière jusqu'à l'embranchement précédent jusqu'à finir le parcours.
+A la fin de ce premier parcours, nous vérifions que tous les noeuds ont été parcourus (c'est à dire marqués) et si un noeud ne l'est pas, nous recommençons le même algorithme à partir de celui-ci.\\
+Lors de le recherche de cycle, nous passons par les noeuds déjà marqués car il est possible qu'il faille passer par un noeud déjà marqué pour supprimer un cycle supplémentaire (voir figure \ref{whyTag} et \ref{whyTagSimpl})
+\begin{figure}[h]
+\caption{\label{whyTag} Passage multiple par un noeud : situation initiale}
+\center
+\includegraphics[height=150pt]{whyTag.pdf}
+\end{figure}
+La figure \ref{whyTag} est transformée en la figure \ref{whyTagSimpl} après un premier passage
+(ou l'on supprime l'arrête $A \rightarrow D$ du cycle $[A \rightarrow D \rightarrow E \rightarrow F]$)
+\begin{figure}[h]
+\caption{\label{whyTagSimpl} Passage multiple par un noeud : situation après suppression d'un cycle}
+\center
+\includegraphics[height=150pt]{whyTagSimpl.pdf}
+\end{figure}
+Dans la figure \ref{whyTagSimpl}, lorsqu'on arrive au noeud $C$, on regarde si on peut passer au noeud $D$ qui est déjà marqué. Si nous avions décidé de l'ignorer et que nous revenons en arrière nous n'aurions pas détecté le cycle $[A \rightarrow B \rightarrow C \rightarrow D \rightarrow E \rightarrow F]$.
+\subsection{Suppression}
+\label{del}
+Quand un cycle est détecté (avec le méthode décrite en \ref{detect}) nous devons le supprimer. Pour cela, nous devons le parcourir -- c'est à dire en parcourant la pile des arrêtes du bas vers le haut en commençant à l'index $i$ -- en cherchant l'arrête de poids le plus faible. Une fois ce poids déterminé, nous re-parcourons le cycle en soustrayant ce poids à chaque arrête (et en supprimant celles dont le poids atteint 0).
+\subsection{Autres possibilités}
+\label{others}
+Dans la section \ref{detect} nous évoquions les autres possibilités auxquelles nous avons pensé mais que nous n'avons pas retenues.
+Une de celles ci -- la plus évidente surement -- était d'utiliser un simple algorithme de détection de cycles et donc de parcourir l'entièreté du graphe pour ensuite supprimer les cycles uns à uns.
+Cependant, nous n'avons pas retenu cette méthode pour une raison simple : si une arrête appartient à plusieurs cycles (comme l'arrête $B \rightarrow C$ dans la figure \ref{multiCycle}) et que le poids de celle-ci est le plus faible d'un des cycles, celle-ci sera supprimée et la recherche des autres cycles la contenant aura donc été inutile. Dans le pire des cas, l'arrête peut appartenir à tous les cycles d'un graphe et être la plus faible du premier des cycles examiné et donc la totalité des autres cycles auront été calculés en inutilement. (Les cycles $[B \rightarrow C \rightarrow D]$, $[B \rightarrow C \rightarrow E]$, $[B \rightarrow C \rightarrow E \rightarrow F \rightarrow A]$ n'existent plus après la suppression de $B \rightarrow C$)
+\begin{figure}[h]
+\caption{\label{multiCycle} Suppression d'une arrête ($B \rightarrow C$) appartenant à plusieurs cycles}
+\center
+\includegraphics[height=150pt]{multiCycle.pdf}
+\end{figure}
+\subsubsection{Complexité}
+Considérons $N$ comme le nombre de noeuds du graphe; A comme le nombre de d'arêtes du graphe $g_{i}$, le sous-graphe accessible depuis le noeud $i$; $a_{i}$ le nombre d'arrêtes de $g_{i}$ et $k_{i}$ le nombre de cycles dans $g_{i}$
+Un parcours depuis un noeud $i$ contient $1 + a_{i} + 2\cdot k_{i} \cdot a_{i}$ opérations. En effet, il faut premièrement accéder à ce noeud (une opération), ensuite parcourir chaque arrête ($a_{i}$ opérations) et pour finir, pour chaque cycle dans $g_{i}$, il faut parcourir le cycle 2 fois, une pour trouver l'arrête de plus faible poids et une pour diminuer le poids des arrêtes (donc $2 \cdot a_{i} $, effectué pour chaque cycle donc $2\cdot k_{i} \cdot a_{i}$)
+Ce parcours est a effectuer tant qu'il reste des noeuds non marqués. Appelons $z_{i}$ le nombre de noeuds non marqués, calculé comme suit : $N-\#(\cup_{j=0}^{i-1} g_{j})$.
+Le nombre total d'opérations sera donc $\sum_{i=0}^{z_{i}+i}(1 + a_{i} \cdot(2\cdot k_{i} +1))$.\\
+$k$ n'étant jamais supérieur à $\frac{A}{2}$ et $i$ ne pouvant pas dépasser $N$, la complexité maximale est donc en $\mathcal{O}(N\cdot (A + 2\cdot A)) = \mathcal{O}(N\cdot A)$
+\section{Résolution de dettes}
+Pour résoudre les dettes, nous avons commencé par sélectionner une tête (c'est à dire un cercle qui n'a pas de créances ou dit autrement un noeud n'ayant pas de père) de laquelle nous transférons son argent à ses créanciers jusqu'à épuisement de son compte ou remboursement de ses dettes.
+Ensuite, nous appliquons la même méthode sur chacun des fils du noeud qui vient de rembourser ses dettes.
+Quand cette opération est finie, nous recommençons pour la tête suivante.
+Le fait d'effectuer cette opération sur chaque tête est bien entendu obligatoire car tous les noeuds ne sont pas accessibles depuis n'importe quelle tête (et le graphe pourrait en plus ne pas être connecté). Cependant, on pourrait penser que repasser sur un noeud quelconque si il a déjà été parcouru est inutile et qu'il faudrait donc les marquer pour éviter cela. Or nous devons parcourir à chaque fois tout le sous-graphe accessible depuis la tête courante puisqu'on peut débloquer une situation du type $C \rightarrow D$ ou $C$ n'a pas assez d'argent après le versement de $A$ vers $C$ mais en aura assez après celui de $B$ (voir figure \ref{resolve}).
+\begin{figure}[h]
+\caption{\label{resolve} Remboursement en plusieurs étapes}
+\center
+\includegraphics[height=150pt]{resolve.pdf}
+\end{figure}
+\subsubsection{Complexité}
+\paragraph{}
+Considérons $c$ comme le nombre de têtes du graphe; $g_{i}$, le sous-graphe accessible depuis le noeud de tête $i$ et $a_{i}$ le nombre d'arrêtes de $g_{i}$.
+La complexité de cet algorithme de remboursement est de $\sum_{i=0}^{c}a_{i}$ vu que pour chaque $i$, nous ne parcourrons qu'une seule fois toutes les arrêtes de $g_{i}$
+\paragraph{}
+Si l'on considère $A$ comme le nombre d'arrêtes du graphe, la complexité maximale est de $ \mathcal{O}(c\cdot(A-c)+c)$ car il se peut que depuis chaque tête, l'entièreté du graphe soit re-parcouru (ce qui donnerait $c\cdot A$) à l'exception de la première arrête depuis la tête qui ne sera parcourue qu'une fois (que l'on doit donc soustraire à $A$ et ne rajouter qu'une seule fois (le $+c$))
+\section{Implémentation et structures de données}
+Comme demandé dans les consignes, notre algorithme a été implémenté en \texttt{Java}. Notre code est architecturé en 3 classes principales \texttt{Graph}, \texttt{Node} et \texttt{Debt} et deux autres \texttt{Main} ainsi que \texttt{DebtStack}.
+\begin{description}
+\item[\texttt{Graph}] contient un vecteur de références vers les noeuds (\texttt{Node}). Il s'occupe de se remplir lui même en parsant un fichier texte passé en paramètre. C'est aussi lui qui est responsable de la résolution des cycles et des dettes ainsi que de s'afficher en \texttt{dot} (en déléguant une partie aux noeuds).
+\item[\texttt{Node}] est un objet qui représente un cercle et qui contient son nom, son cash disponible ainsi qu'un vecteur de références vers les différentes dettes
+(\texttt{Debt}) qu'il a contracté.
+\item[\texttt{Debt}] représente une dette entre deux cercles (c'est à dire une arête entre deux \texttt{Node}). Celle-ci contient une référence vers ces deux noeuds ainsi que le poids de l'arrête (le montant de la dette)
+\end{description}
+Les deux autres classes \texttt{Main} et \texttt{DebtStack} s'occupent respectivement de l'initialisation du programme et de fournir une interface propre à un vecteur de dettes en le faisant passer pour une stack tout en pouvant aller y chercher du contenu à une index arbitraire.
+\end{document}
