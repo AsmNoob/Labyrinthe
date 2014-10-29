@@ -6,10 +6,9 @@ import java.util.*; // a vérifier
 public class Graph {
 	//Attribut
 	private int dim; //dimention de la matrice
-	private Dictionary<List<Integer>,Node> ens_node;
+	private Dictionary<ArrayList<Integer>,Node> ens_node;
 	private boolean new_arc = false;
-	private List<List<Integer>> direction = Arrays.asList(Arrays.asList(-1,0),Arrays.asList(1,0),Arrays.asList(0,-1),Arrays.asList(0,1));
-	
+
 	// constructeur
 	public Graph(int[][] mat, int init_i, int init_j){
 		dim = mat.length;
@@ -28,13 +27,14 @@ public class Graph {
 
 	// crée une nouvelle node si elle n'éxiste pas encore !
 	public void check_newNode(int i, int j, Arc current_arc){
-		List<Integer> coord = Arrays.asList(i,j);
+		ArrayList<Integer> coord = new ArrayList<Integer>();
+		coord.add(i);coord.add(j);
 		try {
 			ens_node.get(coord);
 		}catch(NullPointerException e){
 			Node node = new Node(i,j);
 			if (!ens_node.isEmpty()){
-				List<Integer> pre_coord = current_arc.get(0);
+				ArrayList<Integer> pre_coord = current_arc.get(0);
 				Node pre_node = ens_node.get(pre_coord);
 				pre_node.add_link(node,current_arc);
 			}
@@ -90,8 +90,13 @@ public class Graph {
 	}
 
 }
+	
+/*  
+	private ArrayList<ArrayList<Integer>> direction = new ArrayList<ArrayList>(new ArrayList<Integer>()) {};
+		 Arrays.asList(Arrays.asList(-1,0),Arrays.asList(1,0),Arrays.asList(0,-1),Arrays.asList(0,1)); ??? gros bordel d'initialisé un
+		 arrays d'array d'entier xD en pause pour l'instant
 
-/*  public void create_graph(int[][] mat, int i, int j, int k, int l, Arc current_arc){
+	public void create_graph(int[][] mat, int i, int j, int k, int l, Arc current_arc){
 		//i,j position actuel, k,l position precedente
 
 		boolean multi_direction = false;
@@ -104,7 +109,7 @@ public class Graph {
 
 		check_elemSpecial(mat[i][j], i, j,current_arc);
 		for (int i = 0; i < direction.length ; i++ ) {
-			List coord = direction.get(i);
+			ArrayList coord = direction.get(i);
 			if (test_nextPosition(mat,i,j,k,l,coord.get(0),coord.get(1))){//DOWN
 				if (multi_direction) { check_newNode(i, j, current_arc);}
 				create_graph(mat,i+coord.get(0),j+coord.get(1),i,j,current_arc);
