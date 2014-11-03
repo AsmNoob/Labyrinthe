@@ -6,13 +6,14 @@ import java.util.*; // a vérifier
 public class Graph {
 	//Attribut
 	private int dim; //dimention de la matrice
-	private Dictionary<ArrayList<Integer>,Node> ens_node;
+	private Dictionary<Float,Node> ens_node;// dictionnaire comprenant en key la position cryptée et en valeur la node a cette position.
 	private boolean new_arc = false;
 
 	// constructeur
 	public Graph(int[][] mat, int init_i, int init_j){
 		dim = mat.length;
 		create_graph(mat,init_i,init_j, -1, -1, null);
+		print_graph(mat);
 	}
 
 	// test si la postion suivante est dans les bornes et autre qu'un mur.
@@ -27,18 +28,17 @@ public class Graph {
 
 	// crée une nouvelle node si elle n'éxiste pas encore !
 	public void check_newNode(int i, int j, Arc current_arc){
-		ArrayList<Integer> coord = new ArrayList<Integer>();
-		coord.add(i);coord.add(j);
+		float pos_crypt = pos_cryptage(i,j);
 		try {
-			ens_node.get(coord);
+			ens_node.get(pos_crypt);
 		}catch(NullPointerException e){
-			Node node = new Node(i,j);
+			Node node = new Node(pos_crypt);
 			if (!ens_node.isEmpty()){
-				ArrayList<Integer> pre_coord = current_arc.get(0);
-				Node pre_node = ens_node.get(pre_coord);
+				float pre_pos = current_arc.get(0);
+				Node pre_node = ens_node.get(pre_pos);
 				pre_node.add_link(node,current_arc);
 			}
-			ens_node.put(coord,node);
+			ens_node.put(pos_crypt,node);
 			new_arc = true;
 		}
 	}
@@ -46,17 +46,32 @@ public class Graph {
 	public void check_elemSpecial(int elem, int i, int j, Arc current_arc){
 		if (elem > 0) {check_newNode(i, j, current_arc);}
 	}
+	public void print_graph(int[][] mat){
+		
+	}
+	// cryptage de la position i,j
+	public float pos_cryptage(int i, int j){
+		float pos = i + (j/100);
+		return pos;
+	}
+
+	// decryptage de la position 
+	public float pos_decryptage( float pos){
+		int i = (int) pos;
+		int j = (int)((pos-(float)i)*100.00);
+		return i; 
+	}
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.
 	public void create_graph(int[][] mat, int i, int j, int k, int l, Arc current_arc){
 		//i,j position actuel, k,l position precedente
 
 		boolean multi_direction = false;
-
+		float pos_crypt = pos_cryptage(i,j);
 		if (new_arc) { 
-			current_arc = new Arc(i,j);
+			current_arc = new Arc(pos_crypt);
 			new_arc = false;
 		}
-		else {current_arc.add_way(i,j);}
+		else {current_arc.add_way(pos_crypt);}
 
 		check_elemSpecial(mat[i][j], i, j,current_arc);
 	
@@ -65,7 +80,6 @@ public class Graph {
 			create_graph(mat,i-1,j,i,j,current_arc);
 			multi_direction = true;
 		}
-
 		
 		if (test_nextPosition(mat,i,j,k,l,1,0)){//DOWN
 			if (multi_direction) { check_newNode(i, j, current_arc);}

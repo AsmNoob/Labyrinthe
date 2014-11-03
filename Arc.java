@@ -2,20 +2,18 @@ import java.util.*;
 
 public class Arc {
 	//attribut
-	private ArrayList<ArrayList<Integer>> global_way = new ArrayList<ArrayList<Integer>>();
+	private ArrayList<Float> global_way = new ArrayList<Float>();
 	//constructeur
-	public Arc(int pos_x, int pos_y){
-		add_way( pos_x, pos_y);
+	public Arc(float pos_cryptInit){
+		add_way(pos_cryptInit);
 	}
 	// Methode ajoutant un chemin de coordonée (x,y) dans l'attribut global_way
-	public void add_way(int pos_x,int pos_y){
-		ArrayList<Integer> coord = new ArrayList<Integer>();
-		coord.add(pos_x); coord.add(pos_y);
-		global_way.add(coord);
+	public void add_way(float pos_crypt){
+		global_way.add(pos_crypt);
 
 	}
 	//getter
-	public ArrayList<Integer> get(int pos){
+	public float get(int pos){
 		return global_way.get(pos);
 	}
 	public int get_weight(){
