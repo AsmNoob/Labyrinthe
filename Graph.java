@@ -13,11 +13,11 @@ public class Graph {
 	public Graph(int[][] mat, int init_i, int init_j){
 		dim = mat.length;
 		create_graph(mat,init_i,init_j, -1, -1, null);
-		print_graph(mat);
+		print_graph();
 	}
 
 	// test si la postion suivante est dans les bornes et autre qu'un mur.
-	public  boolean test_nextPosition(int[][] mat, int i, int j, int x, int y, int k, int l){
+	public boolean test_nextPosition(int[][] mat, int i, int j, int x, int y, int k, int l){
 		if ((i+x) >= 0 && (i+x) < dim && (j+y)>= 0 && (j+y) < dim && ((i+x != k && j+y != l) || (k == -1  && l == -1))) {
 			int elem = mat[i+x][j+y];
 			// mur = -1
@@ -46,8 +46,10 @@ public class Graph {
 	public void check_elemSpecial(int elem, int i, int j, Arc current_arc){
 		if (elem > 0) {check_newNode(i, j, current_arc);}
 	}
-	public void print_graph(int[][] mat){
-		
+	//affichage des données récuperer après analyse du labyrinthe. 
+	public void print_graph(){
+		System.out.println(ens_node.elements());
+		int size_dict = ens_node.size();
 	}
 	// cryptage de la position i,j
 	public int pos_cryptage(int i, int j){

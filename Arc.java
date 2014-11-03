@@ -16,8 +16,17 @@ public class Arc {
 	public int get(int pos){
 		return global_way.get(pos);
 	}
+	// get poids de l'arc
 	public int get_weight(){
 		return global_way.size();
 	}
-	
+	//print
+	public void print_arc(){
+		int size_globalWay = global_way.size();
+		for (int i = 0; i < size_globalWay ; i++ ) {
+			System.out.print(global_way.get(i));
+		}
+		System.out.println();
+
+	}
 }

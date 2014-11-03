@@ -3,6 +3,7 @@ public class Main{
 		//Main
 		System.out.println(args[0]);
 		Maze maze = new Maze(args[0]);
-		//Graph graph = new Graph(); Il faut que tu me crées un petit getter sympa :)
+		int i =0; int j=0;
+		Graph graph = new Graph(maze.getMaze(),i,j); 
 	}
 }
