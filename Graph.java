@@ -6,7 +6,7 @@ import java.util.*; // a vérifier
 public class Graph {
 	//Attribut
 	private int dim; //dimention de la matrice
-	private Dictionary<Float,Node> ens_node;// dictionnaire comprenant en key la position cryptée et en valeur la node a cette position.
+	private Dictionary<Integer,Node> ens_node;// dictionnaire comprenant en key la position cryptée et en valeur la node a cette position.
 	private boolean new_arc = false;
 
 	// constructeur
@@ -28,13 +28,13 @@ public class Graph {
 
 	// crée une nouvelle node si elle n'éxiste pas encore !
 	public void check_newNode(int i, int j, Arc current_arc){
-		float pos_crypt = pos_cryptage(i,j);
+		int pos_crypt = pos_cryptage(i,j);
 		try {
 			ens_node.get(pos_crypt);
 		}catch(NullPointerException e){
 			Node node = new Node(pos_crypt);
 			if (!ens_node.isEmpty()){
-				float pre_pos = current_arc.get(0);
+				int pre_pos = current_arc.get(0);
 				Node pre_node = ens_node.get(pre_pos);
 				pre_node.add_link(node,current_arc);
 			}
@@ -50,15 +50,16 @@ public class Graph {
 		
 	}
 	// cryptage de la position i,j
-	public float pos_cryptage(int i, int j){
-		float pos = i + (j/100);
+	public int pos_cryptage(int i, int j){
+		int pos = 10000+(i*100)+j;
 		return pos;
 	}
 
 	// decryptage de la position 
-	public float pos_decryptage( float pos){
-		int i = (int) pos;
-		int j = (int)((pos-(float)i)*100.00);
+	public int pos_decryptage( int pos){
+		int j = pos %100;
+		int i = (pos-10000-j)/100;
+
 		return i; 
 	}
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.
@@ -66,7 +67,7 @@ public class Graph {
 		//i,j position actuel, k,l position precedente
 
 		boolean multi_direction = false;
-		float pos_crypt = pos_cryptage(i,j);
+		int pos_crypt = pos_cryptage(i,j);
 		if (new_arc) { 
 			current_arc = new Arc(pos_crypt);
 			new_arc = false;

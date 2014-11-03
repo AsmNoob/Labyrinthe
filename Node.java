@@ -3,12 +3,12 @@ import java.util.ArrayList;
 public class Node {
 	// attribut
 	private int node_value; //pacman,bonus, monstre ou sortie
-	private float pos_crypt; // position de la node dans la matrice
+	private int pos_crypt; // position de la node dans la matrice
 	private ArrayList<Node> node_link_ = new ArrayList<Node>();//contient les node
 	private ArrayList<Arc> arc_link_ = new ArrayList<Arc>();// contient les arc lié avec le précedent via leur indice
 
 	//constructeur
-	public Node(float posCrypt){
+	public Node(int posCrypt){
 		pos_crypt = posCrypt;
 	}
 
