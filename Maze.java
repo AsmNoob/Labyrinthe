@@ -56,7 +56,6 @@ public class Maze{
 				int indexColumn = 0;
 				for(int i = 0; i< line.length();i++){ // parcours line lue
 					if(i%4 == 0){ // intersection et murs
-						System.out.print(" Controle ");
 						System.out.print(Analyse_Case(line.charAt(i),indexLine,indexColumn,size));
 						matrix[indexLine][indexColumn] = Analyse_Case(line.charAt(i),indexLine,indexColumn,size);
 						indexColumn++;
