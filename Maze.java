@@ -8,9 +8,9 @@ public class Maze{
 	private int matrix[][];
 	private int lines; // hauteur
 	private int columns; // longueur
-	private int[] PosPacman = new int[2];
-	private List<List<Integer>> listMonsters;
-	private List<List<Integer>> listSweets;
+	private int[] PacmansPos = new int[2];
+	private ArrayList<ArrayList<Integer>> MonstersList;
+	private ArrayList<ArrayList<Integer>> SweetsList;
 
 	// à mettre en define
 	/*  Murs = -1
@@ -80,8 +80,8 @@ public class Maze{
 		if(value == '-' || value == '|' || value == '+'){
 			res = WALL;
 		}else if (value == 'P'){
-			PosPacman[0] = line;
-			PosPacman[1] = column;
+			PacmansPos[0] = line;
+			PacmansPos[1] = column;
 			res = PACMAN;
 		}else if (value == ' ') {
 			if(line == 0 || line == size || column == 0 || column == size){ //rappel la matrix est en [size+1][size+1]
@@ -90,12 +90,15 @@ public class Maze{
 				res = SPACE;
 			}
 		}else if (value == 'B') {
-			List<Integer> coord = Arrays.asList(line,column);
-			listSweets = Arrays.asList(coord);
+			//TROUVER UNE SOLUTION
+			ArrayList<Integer> coord = new ArrayList<Integer>(2);
+			coord.add(line);coord.add(column);
+			SweetsList.add(coord);
 			res = SWEET;
 		}else if (Character.getNumericValue(value) >= 1){
-			List<Integer> coord = Arrays.asList(line,column);
-			listMonsters = Arrays.asList(coord);
+			ArrayList<Integer> coord = new ArrayList<Integer>(2);
+			coord.add(line);coord.add(column);
+			MonstersList.add(coord);
 			res = MONSTER;
 		}
 		return res;
@@ -103,15 +106,15 @@ public class Maze{
 
 	//------ Getters/Setters ------//
 	public int[] getCoordPacman(){
-		return PosPacman;
+		return PacmansPos;
 	}
 
-	public List<List<Integer>> getCoordMonsters(){ // liste[n][2] 
-		return listMonsters;
+	public ArrayList<ArrayList<Integer>> getCoordMonsters(){ // ArrayListe[n][2] 
+		return MonstersList;
 	}
 
-	public List<List<Integer>> getCoordSweets(){
-		return listSweets;
+	public ArrayList<ArrayList<Integer>> getCoordSweets(){
+		return SweetsList;
 	}
 
 	public int[][] getMaze(){
