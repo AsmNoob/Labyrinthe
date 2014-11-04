@@ -100,7 +100,6 @@ public class Maze{
 		}else if (Character.getNumericValue(value) >= 1){
 			ArrayList<Integer> coord = new ArrayList<Integer>(2);
 			coord.add(line);coord.add(column);
-			System.out.print(coord);
 			MonstersList.add(coord);
 			res = MONSTER;
 		}
