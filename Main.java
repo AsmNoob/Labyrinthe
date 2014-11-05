@@ -8,6 +8,6 @@ public class Main{
 		System.out.println("Controle_EndMaze");
 
 		int i =0; int j=0;
-		Graph graph = new Graph(maze.getMaze(),i,j); 
+		Graph graph = new Graph(maze.getMaze(),maze.getCoordPacman()); 
 	}
 }

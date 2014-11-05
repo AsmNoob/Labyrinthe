@@ -9,8 +9,9 @@ public class Arc {
 	}
 	// Methode ajoutant un chemin de coordonée (x,y) dans l'attribut global_way
 	public void add_way(int pos_crypt){
-		global_way.add(pos_crypt);
-
+		if (!global_way.contains(pos_crypt)) {
+			global_way.add(pos_crypt);
+		}
 	}
 	//getter
 	public int get(int pos){

@@ -6,49 +6,64 @@ import java.util.*; // a vérifier
 public class Graph {
 	//Attribut
 	private int dim; //dimention de la matrice
-	private Dictionary<Integer,Node> ens_node;// dictionnaire comprenant en key la position cryptée et en valeur la node a cette position.
-	private boolean new_arc = false;
+	private HashMap<Integer,Node> ens_node = new HashMap<Integer,Node>();// dictionnaire comprenant en key la position cryptée et en valeur la node a cette position.
+	private boolean new_arc = true;
 
 	// constructeur
-	public Graph(int[][] mat, int init_i, int init_j){
+	public Graph(int[][] mat, int[] pacmanCoord){
 		dim = mat.length;
-		create_graph(mat,init_i,init_j, -1, -1, null);
+		System.out.println(dim);
+		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], null);
 		print_graph();
 	}
 
 	// test si la postion suivante est dans les bornes et autre qu'un mur.
-	public boolean test_nextPosition(int[][] mat, int i, int j, int x, int y, int k, int l){
-		if ((i+x) >= 0 && (i+x) < dim && (j+y)>= 0 && (j+y) < dim && ((i+x != k && j+y != l) || (k == -1  && l == -1))) {
-			int elem = mat[i+x][j+y];
+	public boolean test_nextPosition(int[][] mat, int i, int j, int preLine, int preColumn, int line_add, int column_add){
+		System.out.print("Controle_test: ");
+		/*System.out.print((boolean)((i+line_add) >= 0));System.out.print((boolean)((i+line_add) < dim));
+		System.out.print((boolean)((j+column_add)>= 0));System.out.print((boolean)((j+column_add) < dim));
+		System.out.print((boolean)((i+line_add) != preLine));System.out.println((boolean)((j+column_add) != preColumn));
+		System.out.print(" Data: ");
+		*/
+		System.out.print(i);System.out.print(j);System.out.print(line_add);System.out.print(column_add);System.out.print(preLine);System.out.println(preColumn);
+		
+		if (( ((i+line_add) >= 0) && ((i+line_add) < dim) && ((j+column_add)>= 0) && ((j+column_add) < dim) &&
+		   ((i+line_add) != preLine || (j+column_add) != preColumn))
+		    || (preLine == i  && preColumn == j)) {
+			int elem = mat[i+line_add][j+column_add];
 			// mur = -1
 			if (elem != -1) {return true;}
 		}
 		return false;
 	}
 
-	// crée une nouvelle node si elle n'éxiste pas encore !
-	public void check_newNode(int i, int j, Arc current_arc){
-		int pos_crypt = pos_cryptage(i,j);
-		try {
-			ens_node.get(pos_crypt);
-		}catch(NullPointerException e){
+	//crée une nouvelle node si elle nexiste pas encore
+	public void checkFor_newNode(int pos_crypt,Arc current_arc){
+		System.out.println("Controle_check");
+		if (!ens_node.containsKey(pos_crypt)){
 			Node node = new Node(pos_crypt);
 			if (!ens_node.isEmpty()){
 				int pre_pos = current_arc.get(0);
 				Node pre_node = ens_node.get(pre_pos);
+				pre_node.print_nodePos();
 				pre_node.add_link(node,current_arc);
 			}
 			ens_node.put(pos_crypt,node);
 			new_arc = true;
 		}
 	}
-	// vérifie que l'element n'est pas un monstre/pacman/bonus/sortie
-	public void check_elemSpecial(int elem, int i, int j, Arc current_arc){
-		if (elem > 0) {check_newNode(i, j, current_arc);}
+
+
+	// vérifie que preColumn'element n'est pas un monstre/pacman/bonus/sortie
+	public void check_elemSpecial(int elem, int pos_crypt, Arc current_arc){
+		System.out.print("Controle_elem : "); System.out.println(elem);
+
+
+		if (elem > 0) {checkFor_newNode(pos_crypt, current_arc);}
 	}
 	//affichage des données récuperer après analyse du labyrinthe. 
 	public void print_graph(){
-		System.out.println(ens_node.elements());
+		System.out.println(ens_node.keySet());
 		int size_dict = ens_node.size();
 	}
 	// cryptage de la position i,j
@@ -65,43 +80,45 @@ public class Graph {
 		return i; 
 	}
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.
-	public void create_graph(int[][] mat, int i, int j, int k, int l, Arc current_arc){
-		//i,j position actuel, k,l position precedente
+	public void create_graph(int[][] mat, int i, int j, int preLine, int preColumn, Arc current_arc){
+		//i,j position actuel, preLine,preColumn position precedente
+		System.out.print("Controle_Create : ");
+		System.out.print(i);System.out.println(j);
 
-		boolean multi_direction = false;
+
 		int pos_crypt = pos_cryptage(i,j);
-		if (new_arc) { 
-			current_arc = new Arc(pos_crypt);
-			new_arc = false;
-		}
-		else {current_arc.add_way(pos_crypt);}
+		if (!ens_node.containsKey(pos_crypt)){
+			boolean multi_direction = false;
+			if (new_arc) { 
+				// creattio d'un nouvel arc qui commence a la position precedente
+				int prePos_crypt = pos_cryptage(preLine,preColumn);
+				current_arc = new Arc(prePos_crypt);
+				new_arc = false;
+			}
+			// ajout de la position actuelle a l'arc
+			current_arc.add_way(pos_crypt);
 
-		check_elemSpecial(mat[i][j], i, j,current_arc);
-	
-		if (test_nextPosition(mat,i,j,k,l,-1,0)){//UP
+			check_elemSpecial(mat[i][j],pos_crypt,current_arc);
 
-			create_graph(mat,i-1,j,i,j,current_arc);
-			multi_direction = true;
-		}
-		
-		if (test_nextPosition(mat,i,j,k,l,1,0)){//DOWN
-			if (multi_direction) { check_newNode(i, j, current_arc);}
+			if (test_nextPosition(mat,i,j,preLine,preColumn,-1,0)){//UP
 
-			create_graph(mat,i+1,j,i,j,current_arc);
-			multi_direction = true;
-		}
-		
-		if (test_nextPosition(mat,i,j,k,l,0,-1)){//LEFT
-			if (multi_direction) { check_newNode(i, j, current_arc);}
-
-			create_graph(mat,i,j-1,i,j,current_arc);
-			multi_direction = true;
-		}
-		
-		if (test_nextPosition(mat,i,j,k,l,0,1)){//RIGHT
-			if (multi_direction) { check_newNode(i, j, current_arc);}
-
-			create_graph(mat,i,j+1,i,j,current_arc);
+				create_graph(mat,i-1,j,i,j,current_arc);
+				multi_direction = true;
+			}
+			if (test_nextPosition(mat,i,j,preLine,preColumn,1,0)){//DOWN
+				if (multi_direction) { checkFor_newNode(pos_crypt,current_arc);}
+		 		create_graph(mat,i+1,j,i,j,current_arc);
+				multi_direction = true;
+			}
+			if (test_nextPosition(mat,i,j,preLine,preColumn,0,-1)){//LEFT
+				if (multi_direction) { checkFor_newNode(pos_crypt,current_arc);}
+				create_graph(mat,i,j-1,i,j,current_arc);
+				multi_direction = true;
+			}
+			if (test_nextPosition(mat,i,j,preLine,preColumn,0,1)){//RIGHT
+				if (multi_direction) { checkFor_newNode(pos_crypt,current_arc);}
+				create_graph(mat,i,j+1,i,j,current_arc);
+			}
 		}
 			
 	}
@@ -111,10 +128,10 @@ public class Graph {
 /*  
 	private ArrayList<ArrayList<Integer>> direction = new ArrayList<ArrayList>(new ArrayList<Integer>()) {};
 		 Arrays.asList(Arrays.asList(-1,0),Arrays.asList(1,0),Arrays.asList(0,-1),Arrays.asList(0,1)); ??? gros bordel d'initialisé un
-		 arrays d'array d'entier xD en pause pour l'instant
+		 arrays d'array d'entier xD en pause pour preColumn'instant
 
-	public void create_graph(int[][] mat, int i, int j, int k, int l, Arc current_arc){
-		//i,j position actuel, k,l position precedente
+	public void create_graph(int[][] mat, int i, int j, int preLine, int preColumn, Arc current_arc){
+		//i,j position actuel, preLine,preColumn position precedente
 
 		boolean multi_direction = false;
 
@@ -127,7 +144,7 @@ public class Graph {
 		check_elemSpecial(mat[i][j], i, j,current_arc);
 		for (int i = 0; i < direction.length ; i++ ) {
 			ArrayList coord = direction.get(i);
-			if (test_nextPosition(mat,i,j,k,l,coord.get(0),coord.get(1))){//DOWN
+			if (test_nextPosition(mat,i,j,preLine,preColumn,coord.get(0),coord.get(1))){//DOWN
 				if (multi_direction) { check_newNode(i, j, current_arc);}
 				create_graph(mat,i+coord.get(0),j+coord.get(1),i,j,current_arc);
 				multi_direction = true;
