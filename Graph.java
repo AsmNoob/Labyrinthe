@@ -6,13 +6,17 @@ import java.util.*; // a vérifier
 public class Graph {
 	//Attribut
 	private int dim; //dimention de la matrice
-	private HashMap<Integer,Node> ens_node = new HashMap<Integer,Node>();// dictionnaire comprenant en key la position cryptée et en valeur la node a cette position.
+	private ArrayList<Integer> list_posNode = new ArrayList<Integer>();
+	private ArrayList<Node> list_node = new ArrayList<Node>();
 	private boolean new_arc = true;
+	private Node preNode = null;
+	private int[] pacman_coord = new int[2];
 
 	// constructeur
 	public Graph(int[][] mat, int[] pacmanCoord){
 		dim = mat.length;
 		System.out.println(dim);
+		pacman_coord[0] = pacmanCoord[0]; pacman_coord[1] = pacmanCoord[1];
 		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], null);
 		print_graph();
 	}
@@ -38,17 +42,23 @@ public class Graph {
 	}
 
 	//crée une nouvelle node si elle nexiste pas encore
-	public void checkFor_newNode(int pos_crypt,Arc current_arc){
-		System.out.println("Controle_check");
-		if (!ens_node.containsKey(pos_crypt)){
+	public void checkFor_newNode(int pos_crypt, Arc current_arc){
+		System.out.println("Controle_check -> ");
+		if (!list_posNode.contains(pos_crypt)){
 			Node node = new Node(pos_crypt);
-			if (!ens_node.isEmpty()){
-				int pre_pos = current_arc.get(0);
-				Node pre_node = ens_node.get(pre_pos);
+			if (!list_posNode.isEmpty()){
+
+				Node pre_node = current_arc.get_startNode();
+				System.out.print(pre_node);
 				pre_node.print_nodePos();
+
+				current_arc.set_endNode(node); 
 				pre_node.add_link(node,current_arc);
+				preNode = node;
 			}
-			ens_node.put(pos_crypt,node);
+			else { current_arc.set_startNode(node);}// si premiere node la prenode initialisé a null n'est pas correctement set dans createGraph a la création de l'arc courrant.
+			list_posNode.add(pos_crypt);
+			list_node.add(node);
 			new_arc = true;
 		}
 	}
@@ -63,8 +73,14 @@ public class Graph {
 	}
 	//affichage des données récuperer après analyse du labyrinthe. 
 	public void print_graph(){
-		System.out.println(ens_node.keySet());
-		int size_dict = ens_node.size();
+		System.out.println(list_posNode);
+		int size_dict = list_posNode.size();
+		int first_node = pos_cryptage(pacman_coord[0],pacman_coord[1]);
+		/*for (int i = 0; i < size_dict; i++ ) {
+			System.out.println(values[i]);
+
+			
+		}*/
 	}
 	// cryptage de la position i,j
 	public int pos_cryptage(int i, int j){
@@ -75,7 +91,7 @@ public class Graph {
 	// decryptage de la position 
 	public int pos_decryptage( int pos){
 		int j = pos %100;
-		int i = (pos-10000-j)/100;
+		int i = (pos-10000-(pos%100))/100;
 
 		return i; 
 	}
@@ -87,12 +103,14 @@ public class Graph {
 
 
 		int pos_crypt = pos_cryptage(i,j);
-		if (!ens_node.containsKey(pos_crypt)){
+		if (!list_posNode.contains(pos_crypt)){
 			boolean multi_direction = false;
 			if (new_arc) { 
-				// creattio d'un nouvel arc qui commence a la position precedente
+				// creattion d'un nouvel arc qui commence a la position precedente car chaque arc debut et finit sur une node
 				int prePos_crypt = pos_cryptage(preLine,preColumn);
+
 				current_arc = new Arc(prePos_crypt);
+				current_arc.set_startNode(preNode);
 				new_arc = false;
 			}
 			// ajout de la position actuelle a l'arc
