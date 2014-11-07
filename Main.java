@@ -7,7 +7,6 @@ public class Main{
 		Maze maze = new Maze(args[0]);
 		System.out.println("Controle_EndMaze");
 
-		int i =0; int j=0;
 		Graph graph = new Graph(maze.getMaze(),maze.getCoordPacman()); 
 	}
 }

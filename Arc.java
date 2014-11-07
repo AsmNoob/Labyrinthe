@@ -2,6 +2,8 @@ import java.util.*;
 
 public class Arc {
 	//attribut
+	private Node firstNode; // premiere node de l'arc
+	private Node lastNode; // fin de l'arc avec la node de fin
 	private ArrayList<Integer> global_way = new ArrayList<Integer>();
 	//constructeur
 	public Arc(int pos_cryptInit){
@@ -13,14 +15,32 @@ public class Arc {
 			global_way.add(pos_crypt);
 		}
 	}
-	//getter
+	//___________setter
+	public void set_startNode(Node startNode){
+		firstNode = startNode;
+	}
+	public void set_endNode(Node endNode){
+		lastNode = endNode;
+	}
+	
+	//__________getter
+	//renvois un coordonée de l'arc à un index donnée
 	public int get(int pos){
 		return global_way.get(pos);
 	}
-	// get poids de l'arc
+	// renvois le poids de l'arc
 	public int get_weight(){
 		return global_way.size();
 	}
+	// renvois la node de debut
+	public Node get_startNode(){
+		return firstNode;
+	}
+	// renvois la node de fin
+	public Node get_endNode(){
+		return lastNode;
+	}
+
 	//print
 	public void print_arc(){
 		int size_globalWay = global_way.size();
