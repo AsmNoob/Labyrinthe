@@ -1,7 +1,7 @@
 JFLAGS = -Xlint
 JC = javac
 
-CLASSES = Node.java Maze.java Graph.java Main.java Arc.java
+CLASSES = *.java
 OBJECT = $(CLASSES:.java=.class)
 
 all: $(OBJECT)
