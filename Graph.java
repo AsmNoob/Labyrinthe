@@ -10,13 +10,11 @@ public class Graph {
 	private ArrayList<Node> list_node = new ArrayList<Node>();
 	private boolean new_arc = true;
 	private Node preNode = null;
-	private int[] pacman_coord = new int[2];
 
 	// constructeur
 	public Graph(int[][] mat, int[] pacmanCoord){
 		dim = mat.length;
 		System.out.println(dim);
-		pacman_coord[0] = pacmanCoord[0]; pacman_coord[1] = pacmanCoord[1];
 		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], null);
 		print_graph();
 	}
@@ -44,23 +42,30 @@ public class Graph {
 	//crée une nouvelle node si elle nexiste pas encore
 	public void checkFor_newNode(int pos_crypt, Arc current_arc){
 		System.out.println("Controle_check -> ");
+		Node newNode;
 		if (!list_posNode.contains(pos_crypt)){
-			Node node = new Node(pos_crypt);
-			if (!list_posNode.isEmpty()){
-
-				Node pre_node = current_arc.get_startNode();
-				System.out.print(pre_node);
-				pre_node.print_nodePos();
-
-				current_arc.set_endNode(node); 
-				pre_node.add_link(node,current_arc);
-				preNode = node;
-			}
-			else { current_arc.set_startNode(node);}// si premiere node la prenode initialisé a null n'est pas correctement set dans createGraph a la création de l'arc courrant.
+			newNode = new Node(pos_crypt);
 			list_posNode.add(pos_crypt);
-			list_node.add(node);
-			new_arc = true;
+			list_node.add(newNode);
 		}
+		else{
+			int index = list_posNode.indexOf(pos_crypt);
+			newNode = list_node.get(index);
+		}
+		add_arcOnNode(newNode, current_arc);
+	}
+	// ajoute l'arc entre deux node
+	public void add_arcOnNode(Node node, Arc current_arc){
+		if (!list_posNode.isEmpty()){
+			Node pre_node = current_arc.get_startNode();
+			System.out.print(pre_node);
+			pre_node.print_nodePos();
+			current_arc.set_endNode(node); 
+			pre_node.add_link(node,current_arc);
+			preNode = node;
+		}
+		else { current_arc.set_startNode(node);}// si premiere node la prenode initialisé a null n'est pas correctement set dans createGraph a la création de l'arc courrant.
+		new_arc = true;
 	}
 
 
@@ -68,19 +73,17 @@ public class Graph {
 	public void check_elemSpecial(int elem, int pos_crypt, Arc current_arc){
 		System.out.print("Controle_elem : "); System.out.println(elem);
 
-
 		if (elem > 0) {checkFor_newNode(pos_crypt, current_arc);}
 	}
 	//affichage des données récuperer après analyse du labyrinthe. 
 	public void print_graph(){
 		System.out.println(list_posNode);
 		int size_dict = list_posNode.size();
-		int first_node = pos_cryptage(pacman_coord[0],pacman_coord[1]);
-		/*for (int i = 0; i < size_dict; i++ ) {
-			System.out.println(values[i]);
+		for (int i = 0; i < size_dict; i++ ) {
+			list_node.get(i).print();
 
 			
-		}*/
+		}
 	}
 	// cryptage de la position i,j
 	public int pos_cryptage(int i, int j){

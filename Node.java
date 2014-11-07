@@ -33,8 +33,10 @@ public class Node {
 	//print liaison entre noeud
 	public void print(){
 		int size_globalWay = node_link.size();
-		System.out.print("Node : "); this.print_nodePos(); 
-		System.out.println("link :");
+		System.out.print("Node : "); this.print_nodePos();
+		System.out.println();
+
+		System.out.print("link : ");
 		for (int i = 0; i < size_globalWay ; i++ ) {
 			System.out.print("        ");
 			node_link.get(i).print_nodePos();
