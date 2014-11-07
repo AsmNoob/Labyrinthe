@@ -13,8 +13,10 @@ public class Node {
 
 	// methode permettant de regrouper toutes les connexions existantes avec ce noeud.
 	public void add_link(Node node, Arc arc){
-		node_link.add(node);
-		arc_link.add(arc);
+		if (!node_link.contains(node)){
+			node_link.add(node);
+			arc_link.add(arc);
+		}
 	}
 
 	//getter

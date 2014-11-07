@@ -65,6 +65,8 @@ public class Graph {
 	public void end_Arc(Arc current_arc, Node current_node, int pos_crypt){
 		current_arc.add_way(pos_crypt);
 		current_arc.set_endNode(current_node);
+		System.out.println(pos_crypt); current_arc.print_arc();
+
 	}
 	// test si la postion suivante est dans les bornes et autre qu'un mur.
 	public boolean test_nextPosition(int[][] mat, int i, int j, int preLine, int preColumn, int line_add, int column_add){
@@ -116,41 +118,28 @@ public class Graph {
 		System.out.print(i);System.out.println(j);
 
 
-		int pos_crypt = pos_cryptage(i,j);
-		
-		if (!list_posNode.contains(pos_crypt)){
-			
+		int pos_crypt = pos_cryptage(preLine,preColumn);
+		int actu_posCrypt= pos_cryptage(i,j);
+		if (!list_posNode.contains(actu_posCrypt)){
+			System.out.println(isNode);
+			Node current_node = select_currentNode(mat[preLine][preColumn],isNode,pos_crypt);
+			System.out.println(current_node);
+			current_arc = modif_currentArc(current_arc,current_node,pos_crypt);
 			isNode = false;
 
 			if (test_nextPosition(mat,i,j,preLine,preColumn,-1,0)){//UP
-				System.out.println(isNode);
-			Node current_node = select_currentNode(mat[i][j],isNode,pos_crypt);
-			System.out.println(current_node);
-			current_arc = modif_currentArc(current_arc,current_node,pos_crypt);
 				create_graph(mat,i-1,j,i,j,isNode,current_arc);
 				isNode = true;
 			}
 			if (test_nextPosition(mat,i,j,preLine,preColumn,1,0)){//DOWN
-				System.out.println(isNode);
-			Node current_node = select_currentNode(mat[i][j],isNode,pos_crypt);
-			System.out.println(current_node);
-			current_arc = modif_currentArc(current_arc,current_node,pos_crypt);
 				create_graph(mat,i+1,j,i,j,isNode,current_arc);
 				isNode = true;
 			}
 			if (test_nextPosition(mat,i,j,preLine,preColumn,0,-1)){//LEFT
-				System.out.println(isNode);
-			Node current_node = select_currentNode(mat[i][j],isNode,pos_crypt);
-			System.out.println(current_node);
-			current_arc = modif_currentArc(current_arc,current_node,pos_crypt);
 				create_graph(mat,i,j-1,i,j,isNode,current_arc);
 				isNode = true;
 			}
 			if (test_nextPosition(mat,i,j,preLine,preColumn,0,1)){//RIGHT
-				System.out.println(isNode);
-			Node current_node = select_currentNode(mat[i][j],isNode,pos_crypt);
-			System.out.println(current_node);
-			current_arc = modif_currentArc(current_arc,current_node,pos_crypt);
 				create_graph(mat,i,j+1,i,j,isNode,current_arc);
 			}
 		}
