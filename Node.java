@@ -6,7 +6,6 @@ public class Node {
 	private int pos_crypt; // position de la node dans la matrice
 	private ArrayList<Node> node_link = new ArrayList<Node>();//contient les nodes dont celle ci a une connexion
 	private ArrayList<Arc> arc_link = new ArrayList<Arc>();// contient les arc lié avec le précedent via leur indice
-
 	//constructeur
 	public Node(int posCrypt){
 		pos_crypt = posCrypt;
@@ -36,7 +35,7 @@ public class Node {
 		System.out.print("Node : "); this.print_nodePos();
 		System.out.println();
 
-		System.out.print("link : ");
+		System.out.println("link : ");
 		for (int i = 0; i < size_globalWay ; i++ ) {
 			System.out.print("        ");
 			node_link.get(i).print_nodePos();

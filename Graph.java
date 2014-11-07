@@ -15,10 +15,57 @@ public class Graph {
 	public Graph(int[][] mat, int[] pacmanCoord){
 		dim = mat.length;
 		System.out.println(dim);
-		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], null);
+		int pos_crypt = pos_cryptage(pacmanCoord[0],pacmanCoord[1]);
+		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], true, null);
 		print_graph();
 	}
 
+	public Node create_node(int pos_crypt){
+		Node current_node = new Node(pos_crypt);
+		list_node.add(current_node);list_posNode.add(pos_crypt);
+		return current_node;
+	}
+
+	public Node select_currentNode(int elem, boolean isNode, int pos_crypt){
+		Node current_node = null;
+		if (elem > 0 || isNode) {
+			if (!list_posNode.contains(pos_crypt)) {
+				current_node = create_node(pos_crypt);
+			}
+			else{
+				int index = list_posNode.indexOf(pos_crypt);
+				current_node = list_node.get(index);
+			}
+		}
+		return current_node;
+	}
+
+	public Arc modif_currentArc(Arc current_arc, Node current_node, int pos_crypt){
+		if (current_node != null && current_arc != null){
+			end_Arc(current_arc,current_node,pos_crypt);
+			update_nodeLink(current_arc,current_node);
+			current_arc = start_Arc(pos_crypt,current_node);
+		}
+		else if ( current_arc == null) {
+			current_arc = start_Arc(pos_crypt,current_node);		
+		}
+		else{current_arc.add_way(pos_crypt);}
+		return current_arc;
+	}
+	public void update_nodeLink(Arc current_arc,Node current_node){
+		Node pre_node = current_arc.get_startNode();
+		pre_node.add_link(current_node,current_arc);
+	}
+	public Arc start_Arc(int pos_crypt, Node start_node){
+		Arc current_arc = new Arc(pos_crypt);
+		current_arc.set_startNode(start_node);
+		return current_arc;
+	}
+
+	public void end_Arc(Arc current_arc, Node current_node, int pos_crypt){
+		current_arc.add_way(pos_crypt);
+		current_arc.set_endNode(current_node);
+	}
 	// test si la postion suivante est dans les bornes et autre qu'un mur.
 	public boolean test_nextPosition(int[][] mat, int i, int j, int preLine, int preColumn, int line_add, int column_add){
 		System.out.print("Controle_test: ");
@@ -27,7 +74,7 @@ public class Graph {
 		System.out.print((boolean)((i+line_add) != preLine));System.out.println((boolean)((j+column_add) != preColumn));
 		System.out.print(" Data: ");
 		*/
-		System.out.print(i);System.out.print(j);System.out.print(line_add);System.out.print(column_add);System.out.print(preLine);System.out.println(preColumn);
+		System.out.print(i);System.out.print(j);System.out.print(i+line_add);System.out.print(j+column_add);System.out.print(preLine);System.out.println(preColumn);
 		
 		if (( ((i+line_add) >= 0) && ((i+line_add) < dim) && ((j+column_add)>= 0) && ((j+column_add) < dim) &&
 		   ((i+line_add) != preLine || (j+column_add) != preColumn))
@@ -39,50 +86,14 @@ public class Graph {
 		return false;
 	}
 
-	//crée une nouvelle node si elle nexiste pas encore
-	public void checkFor_newNode(int pos_crypt, Arc current_arc){
-		System.out.println("Controle_check -> ");
-		Node newNode;
-		if (!list_posNode.contains(pos_crypt)){
-			newNode = new Node(pos_crypt);
-			list_posNode.add(pos_crypt);
-			list_node.add(newNode);
-		}
-		else{
-			int index = list_posNode.indexOf(pos_crypt);
-			newNode = list_node.get(index);
-		}
-		add_arcOnNode(newNode, current_arc);
-	}
-	// ajoute l'arc entre deux node
-	public void add_arcOnNode(Node node, Arc current_arc){
-		if (!list_posNode.isEmpty()){
-			Node pre_node = current_arc.get_startNode();
-			System.out.print(pre_node);
-			pre_node.print_nodePos();
-			current_arc.set_endNode(node); 
-			pre_node.add_link(node,current_arc);
-			preNode = node;
-		}
-		else { current_arc.set_startNode(node);}// si premiere node la prenode initialisé a null n'est pas correctement set dans createGraph a la création de l'arc courrant.
-		new_arc = true;
-	}
+	
 
-
-	// vérifie que preColumn'element n'est pas un monstre/pacman/bonus/sortie
-	public void check_elemSpecial(int elem, int pos_crypt, Arc current_arc){
-		System.out.print("Controle_elem : "); System.out.println(elem);
-
-		if (elem > 0) {checkFor_newNode(pos_crypt, current_arc);}
-	}
 	//affichage des données récuperer après analyse du labyrinthe. 
 	public void print_graph(){
 		System.out.println(list_posNode);
 		int size_dict = list_posNode.size();
 		for (int i = 0; i < size_dict; i++ ) {
 			list_node.get(i).print();
-
-			
 		}
 	}
 	// cryptage de la position i,j
@@ -98,81 +109,56 @@ public class Graph {
 
 		return i; 
 	}
-	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.
-	public void create_graph(int[][] mat, int i, int j, int preLine, int preColumn, Arc current_arc){
+	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
+	public void create_graph(int[][] mat, int i, int j, int preLine, int preColumn, boolean isNode,Arc current_arc){
 		//i,j position actuel, preLine,preColumn position precedente
 		System.out.print("Controle_Create : ");
 		System.out.print(i);System.out.println(j);
 
 
 		int pos_crypt = pos_cryptage(i,j);
+		
 		if (!list_posNode.contains(pos_crypt)){
-			boolean multi_direction = false;
-			if (new_arc) { 
-				// creattion d'un nouvel arc qui commence a la position precedente car chaque arc debut et finit sur une node
-				int prePos_crypt = pos_cryptage(preLine,preColumn);
-
-				current_arc = new Arc(prePos_crypt);
-				current_arc.set_startNode(preNode);
-				new_arc = false;
-			}
-			// ajout de la position actuelle a l'arc
-			current_arc.add_way(pos_crypt);
-
-			check_elemSpecial(mat[i][j],pos_crypt,current_arc);
+			
+			isNode = false;
 
 			if (test_nextPosition(mat,i,j,preLine,preColumn,-1,0)){//UP
-
-				create_graph(mat,i-1,j,i,j,current_arc);
-				multi_direction = true;
+				System.out.println(isNode);
+			Node current_node = select_currentNode(mat[i][j],isNode,pos_crypt);
+			System.out.println(current_node);
+			current_arc = modif_currentArc(current_arc,current_node,pos_crypt);
+				create_graph(mat,i-1,j,i,j,isNode,current_arc);
+				isNode = true;
 			}
 			if (test_nextPosition(mat,i,j,preLine,preColumn,1,0)){//DOWN
-				if (multi_direction) { checkFor_newNode(pos_crypt,current_arc);}
-		 		create_graph(mat,i+1,j,i,j,current_arc);
-				multi_direction = true;
+				System.out.println(isNode);
+			Node current_node = select_currentNode(mat[i][j],isNode,pos_crypt);
+			System.out.println(current_node);
+			current_arc = modif_currentArc(current_arc,current_node,pos_crypt);
+				create_graph(mat,i+1,j,i,j,isNode,current_arc);
+				isNode = true;
 			}
 			if (test_nextPosition(mat,i,j,preLine,preColumn,0,-1)){//LEFT
-				if (multi_direction) { checkFor_newNode(pos_crypt,current_arc);}
-				create_graph(mat,i,j-1,i,j,current_arc);
-				multi_direction = true;
+				System.out.println(isNode);
+			Node current_node = select_currentNode(mat[i][j],isNode,pos_crypt);
+			System.out.println(current_node);
+			current_arc = modif_currentArc(current_arc,current_node,pos_crypt);
+				create_graph(mat,i,j-1,i,j,isNode,current_arc);
+				isNode = true;
 			}
 			if (test_nextPosition(mat,i,j,preLine,preColumn,0,1)){//RIGHT
-				if (multi_direction) { checkFor_newNode(pos_crypt,current_arc);}
-				create_graph(mat,i,j+1,i,j,current_arc);
+				System.out.println(isNode);
+			Node current_node = select_currentNode(mat[i][j],isNode,pos_crypt);
+			System.out.println(current_node);
+			current_arc = modif_currentArc(current_arc,current_node,pos_crypt);
+				create_graph(mat,i,j+1,i,j,isNode,current_arc);
 			}
 		}
 			
 	}
 
 }
-	
-/*  
-	private ArrayList<ArrayList<Integer>> direction = new ArrayList<ArrayList>(new ArrayList<Integer>()) {};
-		 Arrays.asList(Arrays.asList(-1,0),Arrays.asList(1,0),Arrays.asList(0,-1),Arrays.asList(0,1)); ??? gros bordel d'initialisé un
-		 arrays d'array d'entier xD en pause pour preColumn'instant
 
-	public void create_graph(int[][] mat, int i, int j, int preLine, int preColumn, Arc current_arc){
-		//i,j position actuel, preLine,preColumn position precedente
-
-		boolean multi_direction = false;
-
-		if (new_arc) { 
-			current_arc = new Arc(i,j);
-			new_arc = false;
-		}
-		else {current_arc.add_way(i,j);}
-
-		check_elemSpecial(mat[i][j], i, j,current_arc);
-		for (int i = 0; i < direction.length ; i++ ) {
-			ArrayList coord = direction.get(i);
-			if (test_nextPosition(mat,i,j,preLine,preColumn,coord.get(0),coord.get(1))){//DOWN
-				if (multi_direction) { check_newNode(i, j, current_arc);}
-				create_graph(mat,i+coord.get(0),j+coord.get(1),i,j,current_arc);
-				multi_direction = true;
-			}
-		}
-	}
-*/
 
 
 
