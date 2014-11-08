@@ -41,13 +41,21 @@ public class Arc {
 		return lastNode;
 	}
 
-	//print
+	//__________print
+	// affiche le chemin contenu dans l'arc
 	public void print_arc(){
 		int size_globalWay = global_way.size();
 		for (int i = 0; i < size_globalWay ; i++ ) {
-			System.out.print(global_way.get(i));
+			System.out.print(global_way.get(i));System.out.print(" --> ");
+
 		}
 		System.out.println();
+	}
+	// affiche les nodes de debut et fin
+	public void print_nodes(){
+		firstNode.print_nodePos();
+		System.out.print(" --> ");
+		lastNode.print_nodePos();
 
 	}
 }

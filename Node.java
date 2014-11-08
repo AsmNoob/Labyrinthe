@@ -6,7 +6,6 @@ public class Node {
 	private int pos_crypt; // position de la node dans la matrice
 	private ArrayList<Node> node_link = new ArrayList<Node>();//contient les nodes dont celle ci a une connexion
 	private ArrayList<Arc> arc_link = new ArrayList<Arc>();// contient les arc lié avec le précedent via leur indice
-
 	//constructeur
 	public Node(int posCrypt){
 		pos_crypt = posCrypt;
@@ -14,8 +13,10 @@ public class Node {
 
 	// methode permettant de regrouper toutes les connexions existantes avec ce noeud.
 	public void add_link(Node node, Arc arc){
-		node_link.add(node);
-		arc_link.add(arc);
+		if (!node_link.contains(node)){
+			node_link.add(node);
+			arc_link.add(arc);
+		}
 	}
 
 	//getter
@@ -33,8 +34,10 @@ public class Node {
 	//print liaison entre noeud
 	public void print(){
 		int size_globalWay = node_link.size();
-		System.out.print("Node : "); this.print_nodePos(); 
-		System.out.println("link :");
+		System.out.print("Node : "); this.print_nodePos();
+		System.out.println();
+
+		System.out.println("link : ");
 		for (int i = 0; i < size_globalWay ; i++ ) {
 			System.out.print("        ");
 			node_link.get(i).print_nodePos();
