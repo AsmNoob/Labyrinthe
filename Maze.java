@@ -10,21 +10,21 @@ public class Maze{
 	private int columns; // longueur
 	private int NbMonsters;
 	private int NbSweets;
-	private int[] PacmansPos = new int[2];
+	private int[] PukkamansPos = new int[2];
 	private ArrayList<ArrayList<Integer>> MonstersList = new ArrayList<ArrayList<Integer>>();
 	private ArrayList<ArrayList<Integer>> SweetsList = new ArrayList<ArrayList<Integer>>();
 
 	// à mettre en define
 	/*  Murs = -1
 		Espace = 0
-		Pacman = 1
+		Pukkaman = 1
 		Monstre = 2
 		Bonbon = 3
 		Sortie = 4
 	*/
 	public int WALL = -1;
 	public int SPACE = 0;
-	public int PACMAN = 1;
+	public int PUKKAMAN = 1;
 	public int MONSTER = 2;
 	public int SWEET = 3;
 	public int EXIT = 4;
@@ -34,9 +34,33 @@ public class Maze{
 	//Constructeurs
 	public Maze(String FileName){
 		System.out.println("Controle_MazeStart");
-
 		Parsing(FileName);
+		System.out.println();
+		System.out.println("Controle_MazeParsedObjects");
+		System.out.println();
+		System.out.print("PukkamansPos: ");
+		System.out.print("(");System.out.print(PukkamansPos[0]);System.out.print(","); System.out.print(PukkamansPos[1]);System.out.println(")");
+		System.out.print("NbMonsters: ");
+		System.out.println(NbMonsters);
+		System.out.print("NbSweets: ");
+		System.out.println(NbSweets);
+		System.out.print("lines: ");
+		System.out.println(lines);
+		System.out.print("columns: ");
+		System.out.println(columns);
+		System.out.println();
+		System.out.println("Controle_MazePrint");
+		System.out.println();
 		PrintMatrix(matrix);
+		System.out.println();
+		System.out.println("Controle_InitialSituation");
+		System.out.println();
+		InitialSituation(matrix);
+		System.out.println();
+		System.out.println("Controle_FinalSituation");
+		System.out.println();
+		FinalSituation(matrix);
+		System.out.println();
 	}
 
 	//Méthodes
@@ -50,48 +74,52 @@ public class Maze{
 			BufferedReader br = new BufferedReader(ipsr);
 			String line;
 			line = br.readLine();
-			System.out.println(line);
-			int lines = Character.getNumericValue(line.charAt(12));
-			int columns = Character.getNumericValue(line.charAt(19));
-			// int size = Character.getNumericValue(line.charAt(12)); // line[i]
-			matrix = new int[lines+1][columns+1]; // [0 -> 8] 
+			lines = Character.getNumericValue(line.charAt(12));
+			columns = Character.getNumericValue(line.charAt(19));
+			matrix = new int[2*lines+1][2*columns+1]; // [0 -> 8] 
 			int indexLine = 0;
-			while(indexLine < lines){
+			while(indexLine < lines*2+1){
 				line = br.readLine();
 				int indexColumn = 0;
 				for(int i = 0; i< line.length();i++){ // parcours line lue
 					if(i%4 == 0){ // intersection et murs
-						System.out.print(Analyse_Case(line.charAt(i),indexLine,indexColumn));
+						// TO CLEAN: System.out.print(Analyse_Case(line.charAt(i),indexLine,indexColumn));
 						matrix[indexLine][indexColumn] = Analyse_Case(line.charAt(i),indexLine,indexColumn); // Check
 						indexColumn++;
 					}else if (i%4 == 2) { // espaces, monstres, bonbons et pakkuman
-						System.out.print(Analyse_Case(line.charAt(i),indexLine,indexColumn));
+						// TO CLEAN: System.out.print(Analyse_Case(line.charAt(i),indexLine,indexColumn));
 						matrix[indexLine][indexColumn] = Analyse_Case(line.charAt(i),indexLine,indexColumn);
 						indexColumn++;
 					}
 				}
-				System.out.println();
 				indexLine++;
 			}
-			//Analyser la fin du fichier
-			/*
-			Elements du Labyrinthe: 
-				Monstres: 4
-				Bonbons: 3
-			Emplacements:
-				Pakkuman: (6,5)
-				Monstres: (4,4) (5,4) (6,2) (4,0) 
-				Bonbons: (2,0) (3,7) (3,5) 
-			*/
 			line = br.readLine(); // Elements du Labyrinthe: 
-			line = br.readLine(); int NbMonsters = Character.getNumericValue(line.charAt(19)); //Monstres: 4
-			line = br.readLine(); int NbSweets = Character.getNumericValue(line.charAt(18)); //Bonbons: 3
+			line = br.readLine();
+			NbMonsters = Character.getNumericValue(line.charAt(11)); //Monstres: 4
+			line = br.readLine(); 
+			NbSweets = Character.getNumericValue(line.charAt(10)); //Bonbons: 3
 			line = br.readLine(); // Emplacements:
-			line = br.readLine(); // Pakkuman: (6,5)
-			line = br.readLine(); // Monstres: (4,4) (5,4) (6,2) (4,0)
-			line = br.readLine(); // Bonbons: (2,0) (3,7) (3,5)
-
-
+			line = br.readLine(); 
+			PukkamansPos[0] = Character.getNumericValue(line.charAt(12)); 
+			PukkamansPos[1] = Character.getNumericValue(line.charAt(14)); // Pakkuman: (6,5)
+			matrix[PukkamansPos[0]][PukkamansPos[1]] = PUKKAMAN;
+			line = br.readLine(); 
+			for(int i = 0; i < NbMonsters; i++){
+				ArrayList<Integer> coord = new ArrayList<Integer>(2); 
+				coord.add(Character.getNumericValue(line.charAt(12+i*6)));
+				coord.add(Character.getNumericValue(line.charAt(14+i*6)));
+				MonstersList.add(coord);
+				matrix[coord.get(0)*2+1][coord.get(1)*2+1] = MONSTER;
+			}
+			line = br.readLine(); 
+			for(int i = 0; i < NbSweets; i++){
+				ArrayList<Integer> coord = new ArrayList<Integer>(2); 
+				coord.add(Character.getNumericValue(line.charAt(11+i*6)));
+				coord.add(Character.getNumericValue(line.charAt(13+i*6)));
+				SweetsList.add(coord);
+				matrix[coord.get(0)*2+1][coord.get(1)*2+1] = SWEET;
+			}
 		}catch(FileNotFoundException e){
 			System.err.println("Caught FileNotFoundException: " + e.getMessage());
 		}catch(IOException e){
@@ -99,43 +127,28 @@ public class Maze{
 		}
 	}
 
-	//Fonction qui remplace les caractères par des entiers selon
-	//les values choisies
+	//Fonction qui remplace les caractères par des entiers selon les values choisies
 	public int Analyse_Case(char value, int line, int column){
 		int res = 0;
 		if(value == '-' || value == '|' || value == '+'){
 			res = WALL;
-		}else if (value == 'P'){
-			PacmansPos[0] = line;
-			PacmansPos[1] = column;
-			res = PACMAN;
 		}else if (value == ' ') {
-			if(line == 0 || line == lines || column == 0 || column == columns){ //rappel la matrix est en [size+1][size+1]
+			if(line == 0 || line == lines*2 || column == 0 || column == columns*2){ //rappel la matrix est en [size+1][size+1]
 				res = EXIT;
 			}else{
 				res = SPACE;
 			}
-		}else if (value == 'B') {
-			//TROUVER UNE SOLUTION
-			ArrayList<Integer> coord = new ArrayList<Integer>(2);
-			coord.add(line);coord.add(column);
-			SweetsList.add(coord);
-			res = SWEET;
-		}else if (Character.getNumericValue(value) >= 1){
-			ArrayList<Integer> coord = new ArrayList<Integer>(2);
-			coord.add(line);coord.add(column);
-			MonstersList.add(coord);
-			res = MONSTER;
 		}
 		return res;
 	}
 
 	//------ Getters/Setters ------//
-	public int[] getCoordPacman(){
-		return PacmansPos;
+
+	public int[] getCoordPukkaman(){
+		return PukkamansPos;
 	}
 
-	public ArrayList<ArrayList<Integer>> getCoordMonsters(){ // ArrayListe[n][2] 
+	public ArrayList<ArrayList<Integer>> getCoordMonsters(){ // ArrayList[n][2] 
 		return MonstersList;
 	}
 
@@ -147,18 +160,50 @@ public class Maze{
 		return matrix;
 	}
 
-	public voic InitialSituation(int[][] matrix){
+	//------ MazeSituations ------//
+
+	public void InitialSituation(int[][] matrix){
 		// renvoie la situation initiale du Labyrinthe
-		for(int i = 0; i < matrix.length;i++){
-			for(int j = 0; j < matrix[0].length;j++){
-				PrintWriter.print(OutputAnalyse(matrix[i][j],i,j)); // Verifier
+		try{
+			PrintWriter writer = new PrintWriter ("InitialSituation.txt");
+			writer.println("Situation de départ:");
+			for(int i = 0; i < matrix.length;i++){
+				for(int j = 0; j < matrix[0].length;j++){
+					System.out.print(OutputAnalyse(matrix[i][j],i,j));
+					writer.print(OutputAnalyse(matrix[i][j],i,j)); // Verifier
+				}
+				System.out.println();
+				writer.println();
 			}
-			PrinterWriter.println();
+			writer.close();
+		}catch(FileNotFoundException e){
+			System.err.println("Caught FileNotFoundException: " + e.getMessage());
+		}
 		
 	}
 
+	public void FinalSituation(int[][] matrix){
+		System.out.println();
+		System.out.print("Le labyrinthe a une dimension de ");System.out.print(lines);System.out.print(" fois ");System.out.print(columns);System.out.println(".");
+		System.out.print("Il contient ");System.out.print(NbMonsters);System.out.print(" monstres et ");System.out.print(NbSweets);System.out.println(" bonbons.");
+		System.out.print("M.Pakkuman se trouve en position: (");System.out.print(PukkamansPos[0]);System.out.print(",");System.out.print(PukkamansPos[1]);System.out.println(")");
+		System.out.print("Le(s) monstre(s) se trouve(nt) en position:");
+		for(int i = 0; i < NbMonsters; i++){
+			System.out.print(" (");System.out.print(MonstersList.get(i).get(0));System.out.print(",");System.out.print(MonstersList.get(i).get(1));System.out.print(")");
+		}
+		System.out.println();
+		System.out.print("Le(s) bonbon(s) se trouve(nt) en position:");
+		for(int i = 0; i < NbSweets; i++){
+			System.out.print(" (");System.out.print(SweetsList.get(i).get(0));System.out.print(",");System.out.print(SweetsList.get(i).get(1));System.out.print(")");
+		}
+		System.out.println();
+		System.out.println();
+		System.out.println("Déplacements de M.Pakkuman:");
+
+
+	}
+
 	public void PrintMatrix(int[][] matrix){
-		System.out.println(matrix.length);
 		for(int i = 0; i < matrix.length;i++){
 			for(int j = 0; j < matrix[0].length;j++){
 				System.out.print(OutputAnalyse(matrix[i][j],i,j));
@@ -169,7 +214,7 @@ public class Maze{
 
 	public String OutputAnalyse(int value,int line,int column){
 		String res = "";
-		if(value == PACMAN){
+		if(value == PUKKAMAN){
 			res = " P ";
 		}else if (value == MONSTER ) {
 			res = " M ";
