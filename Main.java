@@ -8,6 +8,6 @@ public class Main{
 		Maze maze = new Maze(args[0]);
 		System.out.println("Controle_MainEnd");
 		System.out.println();
-		//Graph graph = new Graph(maze.getMaze(),maze.getCoordPukkaman());
+		Graph graph = new Graph(maze.getMaze(),maze.getCoordPukkaman());
 	}
 }
