@@ -17,7 +17,6 @@ public class Graph {
 	public Graph(int[][] mat, int[] pacmanCoord){
 		dim = mat.length;
 		iterrator = 0;
-		int pos_crypt = pos_cryptage(pacmanCoord[0],pacmanCoord[1]);
 		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], true, null);
 		print_graph();
 		System.out.println(list_posNode.size());
@@ -41,23 +40,9 @@ public class Graph {
 		return current_node;
 	}
 
-	public Arc modif_currentArc(Arc current_arc, Node current_node, int pos_crypt){
-		if (current_node != null && current_arc != null){
-			end_Arc(current_arc,current_node,pos_crypt);
-			update_nodeLink(current_arc,current_node);
-
-			current_arc = start_Arc(pos_crypt,current_node);
-		}
-		else if (current_arc == null) {
-			current_arc = start_Arc(pos_crypt,current_node);		
-		}
-		else{current_arc.add_way(pos_crypt);}
-		return current_arc;
-	}
-	public void update_nodeLink(Arc current_arc,Node current_node){
-		Node pre_node = current_arc.get_startNode();
-		pre_node.add_link(current_node,current_arc);
-		current_node.add_link(pre_node,current_arc);
+	public void update_nodeLink(Arc current_arc){
+		current_arc.get_startNode().add_link(current_arc.get_endNode(),current_arc);
+		current_arc.get_endNode().add_link(current_arc.get_startNode(),current_arc);
 	}
 	public Arc start_Arc(int pos_crypt, Node start_node){
 		Arc current_arc = new Arc(pos_crypt);
@@ -68,6 +53,8 @@ public class Graph {
 	public void end_Arc(Arc current_arc, Node current_node, int pos_crypt){
 		current_arc.add_way(pos_crypt);
 		current_arc.set_endNode(current_node);
+		current_arc.set_stateArc(false);
+
 		//System.out.println(pos_crypt); current_arc.print_arc();
 
 	}
@@ -127,13 +114,9 @@ public class Graph {
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode,Arc current_arc){
 		//actuLine,j position actuel, preLine,preColumn position precedente
-		/*System.out.print("Controle_Create || actuPos --> ");
-		System.out.print(actuLine);System.out.print(actuColumn);
-		System.out.print(" || prePos --> ");
-		System.out.print(preLine);System.out.print(preColumn);
-		System.out.print(" || isNode --> ");
-		System.out.println(isNode);
-		System.out.println(iterrator);
+		/*System.out.print("Controle_Create || prePos --> ");System.out.print(preLine);System.out.print(preColumn);
+		System.out.print(" || actuPos --> ");System.out.print(actuLine);System.out.print(actuColumn);
+		System.out.print(" || isNode --> ");System.out.println(isNode);
 		*/
 		Node current_node = null;
 		int pos_crypt= pos_cryptage(actuLine,actuColumn);
@@ -144,14 +127,18 @@ public class Graph {
 
 			if (data_direction[DIRECTION_SIZE+1]>1 || mat[actuLine][actuColumn]>0)  { 
 				current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
+				if (current_arc != null) {
+					end_Arc(current_arc,current_node,pos_crypt);
+					update_nodeLink(current_arc); 
+				}
 				isNode = true;
 			}
 			else {isNode = false;}
 
-			current_arc = modif_currentArc(current_arc,current_node,pos_crypt);
-
+			if (!isNode) {current_arc.add_way(pos_crypt);}
 			for (int i = 0; i <= DIRECTION_SIZE; i++) {
 				if (data_direction[i] == 1) {
+					if (isNode) { current_arc = start_Arc(pos_crypt,current_node);}
 					int newLine = actuLine+DIRECTION[i]; int newColumn = actuColumn+DIRECTION[DIRECTION_SIZE-i];
 					create_graph(mat,newLine,newColumn,actuLine,actuColumn,isNode,current_arc);
 				}	
@@ -174,7 +161,7 @@ public class Graph {
 			*/
 			current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
 			end_Arc(current_arc,current_node,pos_crypt);
-			update_nodeLink(current_arc,current_node);		
+			update_nodeLink(current_arc);		
 		}
 		
 	}

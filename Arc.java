@@ -2,28 +2,36 @@ import java.util.*;
 
 public class Arc {
 	//attribut
+	private boolean openArc;
 	private Node firstNode; // premiere node de l'arc
 	private Node lastNode; // fin de l'arc avec la node de fin
 	private ArrayList<Integer> global_way = new ArrayList<Integer>();
 	//constructeur
 	public Arc(int pos_cryptInit){
+		openArc = true;
 		add_way(pos_cryptInit);
 	}
 	// Methode ajoutant un chemin de coordonée (x,y) dans l'attribut global_way
 	public void add_way(int pos_crypt){
-		if (!global_way.contains(pos_crypt)) {
+		if (!global_way.contains(pos_crypt) && openArc) {
 			global_way.add(pos_crypt);
 		}
 	}
 	//___________setter
 	public void set_startNode(Node startNode){
-		firstNode = startNode;
+		if (openArc) {firstNode = startNode;}
 	}
 	public void set_endNode(Node endNode){
-		lastNode = endNode;
+		if (openArc) {lastNode = endNode;}
+	}
+	public void set_stateArc(boolean state){
+		openArc = state;
 	}
 	
 	//__________getter
+	public boolean get_stateArc(){
+		return openArc;
+	}
 	//renvois un coordonée de l'arc à un index donnée
 	public int get(int pos){
 		return global_way.get(pos);

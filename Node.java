@@ -15,7 +15,7 @@ public class Node {
 	//______setter
 	// methode permettant de regrouper toutes les connexions existantes avec ce noeud.
 	public void add_link(Node node, Arc arc){
-		if (!node_link.contains(node)){
+		if (!arc_link.contains(arc) && node != this){
 			node_link.add(node);
 			arc_link.add(arc);
 		}
@@ -45,7 +45,9 @@ public class Node {
 		System.out.println("link : ");
 		for (int i = 0; i < size_globalWay ; i++ ) {
 			System.out.print("        ");
-			node_link.get(i).print_nodePos();
+			arc_link.get(i).print_nodes();;System.out.print(" : Arc || ");
+			
+
 			arc_link.get(i).print_arc();
 			System.out.println(); 
 		}
