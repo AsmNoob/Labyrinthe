@@ -18,8 +18,18 @@ public class Graph {
 		dim = mat.length;
 		iterrator = 0;
 		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], true, null);
+		//print_graph();
+		int nbNode_afterOptim = list_posNode.size();
+		optimisation_graph(list_node.get(0),null);
+
 		print_graph();
+		System.out.print("Optimisation || nb node : ");
+		System.out.print(nbNode_afterOptim);
+		System.out.print(" to ");
 		System.out.println(list_posNode.size());
+
+
+
 	}
 
 	public Node create_node(int elem, int pos_crypt){
@@ -110,7 +120,38 @@ public class Graph {
 		*/
 		return data_direction;
 	}
-
+	public void supp_node(Node node){
+		for (int i = 0; i< list_node.size() ;i++ ) {
+			if (list_node.get(i)== node) {
+				list_node.remove(i);
+				list_posNode.remove(i);
+				break;
+			}	
+		}
+	}
+	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre
+	public boolean optimisation_graph(Node current_node, Node pre_node){
+		if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
+			int i = 0;
+			boolean uselessNode = true;
+			ArrayList<Node> node_link= new ArrayList<Node>(current_node.get_ensLink());
+			while (i < node_link.size()){
+				if (pre_node!= node_link.get(i)) {
+					if ( node_link.get(i).get_nodeValue()!= 1 && node_link.get(i).get_nodeValue()!= 3){
+						uselessNode = optimisation_graph(node_link.get(i), current_node);
+					}
+					else {uselessNode = false;}
+				}
+				i++;
+			}
+			if (uselessNode) {
+				pre_node.supp_link(current_node);
+				supp_node(current_node);
+			}
+			return uselessNode;
+		}
+		else {return false;}
+	}
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode,Arc current_arc){
 		//actuLine,j position actuel, preLine,preColumn position precedente
@@ -146,9 +187,8 @@ public class Graph {
 		}
 		else{
 			/*
-			Si on est dans le cas d'une connexion a une node qui a déjà été créé il se peut que
-			la connexion n'existe pas encore or c'est impératif de l'avoir.
-			on recupere ici l'objet node, on ferme l'arc et met a jour les connexions cas pertinent pour : 
+			Si on est dans le cas d'une connexion a une node qui a déjà été créé on entre pas dans le procesus de création de connexion
+			or il se peut que la connexion n'existe pas encore. On recupere ici l'objet node, on ferme l'arc et met a jour les connexions cas pertinent pour : 
 			
 			+   +---+   +---+---+ On s'occupera de P puis de 1 en partant vers le haut mais au retour
 			|   |     1         | du backtrack on testera a droite du 1 pour rejoindre 2 qui a une

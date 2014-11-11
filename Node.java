@@ -20,6 +20,15 @@ public class Node {
 			arc_link.add(arc);
 		}
 	}
+	public void supp_link(Node node){
+		for (int i = 0; i< node_link.size() ; i++ ) {
+			if (node == node_link.get(i)){
+				node_link.remove(i);
+				arc_link.remove(i);
+				node.supp_link(this);
+			}
+		}
+	}
 	
 	//______getter
 	public int get_nodeValue(){
