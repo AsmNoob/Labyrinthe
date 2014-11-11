@@ -7,10 +7,13 @@ public class Node {
 	private ArrayList<Node> node_link = new ArrayList<Node>();//contient les nodes dont celle ci a une connexion
 	private ArrayList<Arc> arc_link = new ArrayList<Arc>();// contient les arc lié avec le précedent via leur indice
 	//constructeur
-	public Node(int posCrypt){
+	public Node(int posCrypt, int elem){
+		test_allDirection = false;
 		pos_crypt = posCrypt;
+		node_value = elem;
 	}
 
+	//______setter
 	// methode permettant de regrouper toutes les connexions existantes avec ce noeud.
 	public void add_link(Node node, Arc arc){
 		if (!node_link.contains(node)){
@@ -18,8 +21,11 @@ public class Node {
 			arc_link.add(arc);
 		}
 	}
-
-	//getter
+	
+	//______getter
+	public int get_nodeValue(){
+		return node_value;
+	}
 	public ArrayList<Node> get_ensLink(){
 		return node_link;
 	}

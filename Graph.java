@@ -5,33 +5,34 @@ import java.util.*; // a vérifier
 
 public class Graph {
 	//Attribut
-	private int dim; //dimention de la matrice
+	private int dim; //dimention de la matrice a utiliser pour le cryptage
 	private ArrayList<Integer> list_posNode = new ArrayList<Integer>();
 	private ArrayList<Node> list_node = new ArrayList<Node>();
-	private boolean new_arc = true;
-	private Node preNode = null;
 	private int[] DIRECTION = new int[] {-1,1,0,0};
 	private int DIRECTION_SIZE = DIRECTION.length-1;
+	private int iterrator;
+	
 
 	// constructeur
 	public Graph(int[][] mat, int[] pacmanCoord){
 		dim = mat.length;
+		iterrator = 0;
 		int pos_crypt = pos_cryptage(pacmanCoord[0],pacmanCoord[1]);
 		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], true, null);
 		print_graph();
 		System.out.println(list_posNode.size());
 	}
 
-	public Node create_node(int pos_crypt){
-		Node current_node = new Node(pos_crypt);
+	public Node create_node(int elem, int pos_crypt){
+		Node current_node = new Node(pos_crypt, elem);
 		list_node.add(current_node);list_posNode.add(pos_crypt);
 		return current_node;
 	}
 	// selectionne la noeud courrant -déjà existant ou non-.
-	public Node select_currentNode(int pos_crypt){
+	public Node select_currentNode(int elem, int pos_crypt){
 		Node current_node = null;
 		if (!list_posNode.contains(pos_crypt)) {
-			current_node = create_node(pos_crypt);
+			current_node = create_node(elem, pos_crypt);
 		}
 		else{
 			int index = list_posNode.indexOf(pos_crypt);
@@ -100,12 +101,11 @@ public class Graph {
 	}
 
 	// decryptage de la position 
-	public int pos_decryptage( int pos){
-		int j = pos %100;
-		int i = (pos-10000-(pos%100))/100;
-
-		return i; 
+	public int[] pos_decryptage( int pos_crypt){
+		int[] position= new int[] {pos_crypt %100,(pos_crypt-10000-(pos_crypt%100))/100};
+		return position; 
 	}
+
 	// detect si la position actuelle est une node et renvois une liste d'entier contenant les directions possible suivante.
 	public int[] detect_isNode(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn){
 		int j = DIRECTION_SIZE;
@@ -129,23 +129,23 @@ public class Graph {
 		System.out.print(actuLine);System.out.print(actuColumn);
 		System.out.print(" || prePos --> ");
 		System.out.print(preLine);System.out.print(preColumn);
+		System.out.print(" || isNode --> ");
+		System.out.println(isNode);
+		System.out.println(iterrator);
 
-		Node current_node = null;
-		int pos_crypt = pos_cryptage(preLine,preColumn);
-		int actu_posCrypt= pos_cryptage(actuLine,actuColumn);
-
-		if (!list_posNode.contains(actu_posCrypt)){
-			System.out.print(" || isNode --> ");
-			System.out.println(isNode);
+		int pos_crypt= pos_cryptage(actuLine,actuColumn);
+		iterrator++;
+				
+		if (!list_posNode.contains(pos_crypt)){
 			int[] data_direction = detect_isNode(mat,actuLine,actuColumn,preLine,preColumn);
 
 			if (data_direction[DIRECTION_SIZE+1]>1 || mat[actuLine][actuColumn]>0)  { 
-				current_node = select_currentNode(actu_posCrypt);
+				Node current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
 				isNode = true;
 			}
 			else {isNode = false;}
 
-			current_arc = modif_currentArc(current_arc,current_node,actu_posCrypt);
+			current_arc = modif_currentArc(current_arc,current_node,pos_crypt);
 
 			for (int i = 0; i <= DIRECTION_SIZE; i++) {
 				if (data_direction[i] == 1) {
@@ -153,6 +153,25 @@ public class Graph {
 					create_graph(mat,newLine,newColumn,actuLine,actuColumn,isNode,current_arc);
 				}	
 			}
+		}
+		else{
+			/*
+			Si on est dans le cas d'une connexion a une node qui a déjà été créé il se peut que
+			la connexion n'existe pas encore or c'est impératif de l'avoir.
+			on recupere ici l'objet node, on ferme l'arc et met a jour les connexions cas pertinent pour : 
+			
+			+   +---+   +---+---+ On s'occupera de P puis de 1 en partant vers le haut mais au retour
+			|   |     1         | du backtrack on testera a droite du 1 pour rejoindre 2 qui a une
+			+   +---+ P +---+   + connexion avec P. Sans ce bloc on ne créera pas la dernierers 
+			|         2 |       | connexions puisque P existe déjà lors du traitement de 2.
+			+---+---+   +   +---+ 
+			 	   	|       | 
+					+---+---+
+
+			*/
+			current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
+			end_Arc(current_arc,current_node,pos_crypt);
+			update_nodeLink(current_arc,current_node);		
 		}
 		
 	}
