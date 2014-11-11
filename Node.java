@@ -8,7 +8,6 @@ public class Node {
 	private ArrayList<Arc> arc_link = new ArrayList<Arc>();// contient les arc lié avec le précedent via leur indice
 	//constructeur
 	public Node(int posCrypt, int elem){
-		test_allDirection = false;
 		pos_crypt = posCrypt;
 		node_value = elem;
 	}
@@ -47,7 +46,8 @@ public class Node {
 		for (int i = 0; i < size_globalWay ; i++ ) {
 			System.out.print("        ");
 			node_link.get(i).print_nodePos();
-			System.out.println();
+			arc_link.get(i).print_arc();
+			System.out.println(); 
 		}
 		System.out.println();
 

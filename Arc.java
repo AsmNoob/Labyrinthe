@@ -46,8 +46,8 @@ public class Arc {
 	public void print_arc(){
 		int size_globalWay = global_way.size();
 		for (int i = 0; i < size_globalWay ; i++ ) {
-			System.out.print(global_way.get(i));System.out.print(" --> ");
-
+			System.out.print(global_way.get(i)); 
+			if (i < size_globalWay-1){ System.out.print(" --> ");}
 		}
 		System.out.println();
 	}

@@ -110,7 +110,6 @@ public class Graph {
 	public int[] detect_isNode(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn){
 		int j = DIRECTION_SIZE;
 		int[] data_direction = new int[5];// 4 premier entier -0,1- correspond au direction possible ou non le 5eme si il est >1 nous indiques que c'est une node.
-		System.out.print("Detect_isNode || ");
 		for (int i = 0; i<= DIRECTION_SIZE; i++){
 			int test = test_nextPosition(mat, actuLine, actuColumn, preLine, preColumn,DIRECTION[i],DIRECTION[j]);
 
@@ -118,21 +117,25 @@ public class Graph {
 			data_direction[DIRECTION_SIZE+1]+=test;
 			j--;
 		}
+		/*
+		System.out.print("Detect_isNode || ");
 		System.out.println(Arrays.toString(data_direction));
+		*/
 		return data_direction;
 	}
 
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode,Arc current_arc){
 		//actuLine,j position actuel, preLine,preColumn position precedente
-		System.out.print("Controle_Create || actuPos --> ");
+		/*System.out.print("Controle_Create || actuPos --> ");
 		System.out.print(actuLine);System.out.print(actuColumn);
 		System.out.print(" || prePos --> ");
 		System.out.print(preLine);System.out.print(preColumn);
 		System.out.print(" || isNode --> ");
 		System.out.println(isNode);
 		System.out.println(iterrator);
-
+		*/
+		Node current_node = null;
 		int pos_crypt= pos_cryptage(actuLine,actuColumn);
 		iterrator++;
 				
@@ -140,7 +143,7 @@ public class Graph {
 			int[] data_direction = detect_isNode(mat,actuLine,actuColumn,preLine,preColumn);
 
 			if (data_direction[DIRECTION_SIZE+1]>1 || mat[actuLine][actuColumn]>0)  { 
-				Node current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
+				current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
 				isNode = true;
 			}
 			else {isNode = false;}
