@@ -197,7 +197,7 @@ public class Graph {
 		Node current_node = null;
 		int pos_crypt= pos_cryptage(actuLine,actuColumn);
 		iterrator++;
-				
+		int nb_testDirection = 0;
 		if (!list_posNode.contains(pos_crypt)){
 			int[] data_direction = detect_isNode(mat,actuLine,actuColumn,preLine,preColumn);
 
@@ -217,7 +217,9 @@ public class Graph {
 					if (isNode) { current_arc = start_Arc(pos_crypt,current_node);}
 					int newLine = actuLine+DIRECTION[i]; int newColumn = actuColumn+DIRECTION[DIRECTION_SIZE-i];
 					create_graph(mat,newLine,newColumn,actuLine,actuColumn,isNode,current_arc);
-				}	
+					nb_testDirection++;
+				}
+				if (nb_testDirection==data_direction[DIRECTION_SIZE+1] ) {break;}
 			}
 		}
 		else{
