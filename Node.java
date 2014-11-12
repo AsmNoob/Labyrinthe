@@ -15,19 +15,38 @@ public class Node {
 	//______setter
 	// methode permettant de regrouper toutes les connexions existantes avec ce noeud.
 	public void add_link(Node node, Arc arc){
-		if (!arc_link.contains(arc) && node != this){
+		// condition evitant les doublons
+		if (!(node_link.contains(node) && !arc_link.contains(arc))  && node != this){
 			node_link.add(node);
 			arc_link.add(arc);
 		}
 	}
+	/*public void fusion(Node preNode){
+		set_nodeValue(preNode.get_nodeValue());
+		set_posCrypt(preNode.get_posCrypt());
+		for (int i = 0 ;i < preNode.get_ensLink().size() ; i++ ) {
+			if (preNode.get_ensLink().get(i) != this){
+
+
+			}
+
+		}
+		supp_link()
+	}*/
 	public void supp_link(Node node){
 		for (int i = 0; i< node_link.size() ; i++ ) {
-			if (node == node_link.get(i)){
+			if (node == node.get_ensLink().get(i)){
 				node_link.remove(i);
 				arc_link.remove(i);
 				node.supp_link(this);
 			}
 		}
+	}
+	public void set_nodeValue(int value){
+		node_value = value;
+	}
+	public void set_posCrypt(int posCrypt){
+		pos_crypt = posCrypt;
 	}
 	
 	//______getter

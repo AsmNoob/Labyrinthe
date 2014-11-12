@@ -17,7 +17,18 @@ public class Arc {
 			global_way.add(pos_crypt);
 		}
 	}
+	public void supp_way(int pos_crypt){
+		for (int i = 0; i < global_way.size() ;i++ ) {
+			if (global_way.get(i) == pos_crypt){
+				global_way.remove(i);
+				break;
+			}
+		}
+	}
 	//___________setter
+	public void set_globalWay(ArrayList<Integer> globalWay){
+		global_way = new ArrayList<Integer>(globalWay);
+	}
 	public void set_startNode(Node startNode){
 		if (openArc) {firstNode = startNode;}
 	}

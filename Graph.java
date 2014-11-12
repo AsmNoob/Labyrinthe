@@ -19,7 +19,8 @@ public class Graph {
 		dim = mat.length;
 		iterrator = 0;
 		long begin = System.currentTimeMillis();
-		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], true, null); // TO CHANGE: à mon avis tu px éviter ça ^^
+		//create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], true, null); // TO CHANGE: à mon avis tu px éviter ça ^^
+		create_graph2(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], true, null, new ArrayList<Integer>());
 		//print_graph();
     	long step1 = System.currentTimeMillis();
 		int nbNode_afterOptim = list_posNode.size();
@@ -27,7 +28,7 @@ public class Graph {
     	long step2 = System.currentTimeMillis();
 		graph_converter();
     	long step3 = System.currentTimeMillis();
-		//print_graph();
+		print_graph();
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
 		float time3 = ((float) (step3-step2)) / 1000f;
@@ -93,8 +94,6 @@ public class Graph {
 		return 0;
 	}
 
-	
-
 	//affichage des données récuperer après analyse du labyrinthe. 
 	public void print_graph(){
 		System.out.println(list_posNode);
@@ -114,7 +113,10 @@ public class Graph {
 			for(int i = 0; i < list_node.size(); i++){
 
 				for(int j = 0; j < list_node.get(i).get_ensLink().size();j++){ // parcourt les noeuds lies
-					writer.print("	");writer.print(list_node.get(i).get_posCrypt());writer.print(" -- ");writer.print(list_node.get(i).get_ensLink().get(j).get_posCrypt());writer.print(" [label=");writer.print(list_node.get(i).get_ensArc().get(j).get_weight());writer.println("]");
+					//info = node_value/1/nb_line/nb_column
+					int info1 = list_node.get(i).get_nodeValue()*100000 + list_node.get(i).get_posCrypt();
+					int info2 = list_node.get(i).get_ensLink().get(j).get_nodeValue()*100000+ list_node.get(i).get_ensLink().get(j).get_posCrypt();
+					writer.print("	");writer.print(info1);writer.print(" -- ");writer.print(info2);writer.print(" [label=");writer.print(list_node.get(i).get_ensArc().get(j).get_weight());writer.println("]");
 				}
 			}
 			writer.println(); 
@@ -124,8 +126,6 @@ public class Graph {
 			System.err.println("Caught FileNotFoundException: " + e.getMessage());
 		}
 	}
-
-
 	// cryptage de la position i,j
 	public int pos_cryptage(int i, int j){
 		int pos = 10000+(i*100)+j;
@@ -166,7 +166,7 @@ public class Graph {
 	}
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
 	public boolean optimisation_graph(Node current_node, Node pre_node){
-		if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
+		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
 			int i = 0;
 			boolean uselessNode = true;
 			ArrayList<Node> node_link= new ArrayList<Node>(current_node.get_ensLink());
@@ -183,9 +183,12 @@ public class Graph {
 				pre_node.supp_link(current_node);
 				supp_node(current_node);
 			}
+			//else if (pre_node.get_nbLink() ==2 && pre_node.get_nodeValue() == 0 ) {
+			//	current_node.fusion(pre_node);
+			//}
 			return uselessNode;
-		}
-		else {return false;}
+		//}
+		//else {return false;}
 	}
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode,Arc current_arc){
@@ -242,10 +245,62 @@ public class Graph {
 		}
 		
 	}
+	public void end_Arc2(ArrayList<Integer> globalWay, Arc current_arc, Node current_node, int pos_crypt){
+		current_arc.set_globalWay(globalWay);
+		current_arc.set_endNode(current_node);
+		current_arc.set_stateArc(false);
 
+		//System.out.println(pos_crypt); current_arc.print_arc();
+
+	}
+	public void update_nodeLink2(Arc current_arc){
+		current_arc.get_startNode().add_link(current_arc.get_endNode(),current_arc);
+		current_arc.get_endNode().add_link(current_arc.get_startNode(),current_arc);
+	}
+
+	public void create_graph2(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode, Arc current_arc, ArrayList<Integer> globalWay){
+		//actuLine,j position actuel, preLine,preColumn position precedente
+		/*System.out.print("Controle_Create || prePos --> ");System.out.print(preLine);System.out.print(preColumn);
+		System.out.print(" || actuPos --> ");System.out.print(actuLine);System.out.print(actuColumn);
+		System.out.print(" || isNode --> ");System.out.println(isNode);
+		*/
+		Node current_node = null;
+		int pos_crypt= pos_cryptage(actuLine,actuColumn);
+		if (!list_posNode.contains(pos_crypt)){
+
+			if ( mat[actuLine][actuColumn]>0)  { //data_direction[DIRECTION_SIZE+1]>1 ||
+				current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
+				if (!globalWay.isEmpty()) {
+					end_Arc2(globalWay, current_arc,current_node,pos_crypt);
+					update_nodeLink(current_arc); 
+				}
+				isNode = true;
+			}
+			else {isNode = false;}
+
+			if (!isNode) {globalWay.add(pos_crypt);}
+			for (int i = 0; i<= DIRECTION_SIZE; i++){
+				if (test_nextPosition(mat, actuLine, actuColumn, preLine, preColumn,DIRECTION[i],DIRECTION[DIRECTION_SIZE-i]) == 1 ){
+					if (isNode) { 
+						current_arc = start_Arc(pos_crypt,current_node);
+						globalWay =new ArrayList<Integer>();
+						globalWay.add(pos_crypt);
+					}
+					int newLine = actuLine+DIRECTION[i]; int newColumn = actuColumn+DIRECTION[DIRECTION_SIZE-i];
+					create_graph2(mat,newLine,newColumn,actuLine,actuColumn,isNode,current_arc, globalWay);
+				}
+			}
+			int index = globalWay.indexOf(pos_crypt);
+			for (int h = 0; h< globalWay.size();h++ ) {System.out.print(globalWay.get(h));System.out.print("-");}				
+			System.out.println(pos_crypt);
+			if (index!=-1){globalWay.remove(index);}
+			
+		}
+	}
 	// int matrice_cout = [list_node.length][list_node.length]
 	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
 	// Question:
+
 	public void shortestPath_algorithm(int[][] matrice_cout,Node source,Node target){
 		int dist[] = new int[matrice_cout.length];
 		int prev[] = new int[matrice_cout.length];
