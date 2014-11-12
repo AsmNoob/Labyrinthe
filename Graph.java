@@ -83,14 +83,11 @@ public class Graph {
 
 	}
 	// test si la postion suivante est dans les bornes et autre qu'un mur.
-	public int test_nextPosition(int[][] mat, int i, int j, int preLine, int preColumn, int line_add, int column_add){
+	public int test_nextPosition(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, int line_add, int column_add){
 				
-		if (( ((i+line_add) >= 0) && ((i+line_add) < dim) && ((j+column_add)>= 0) && ((j+column_add) < dim) &&
-		   ((i+line_add) != preLine || (j+column_add) != preColumn))){// || (preLine == i  && preColumn == j)) {
-			System.out.print("i: ");System.out.print(i);System.out.print(" j: ");System.out.print(j);
-			System.out.print(" line_add: ");System.out.print(line_add);System.out.print(" column_add: ");System.out.println(column_add);
-			System.out.print("preLine: ");System.out.print(preLine);System.out.print(" preColumn: ");System.out.print(preColumn);
-			int elem = mat[i+line_add][j+column_add];
+		if (( ((actuLine+line_add) >= 0) && ((actuLine+line_add) < dim) && ((actuColumn+column_add)>= 0) && ((actuColumn+column_add) < dim) &&
+		   ((actuLine+line_add) != preLine || (actuColumn+column_add) != preColumn))) || (preLine == actuLine && preColumn == actuColumn)) {
+			int elem = mat[actuLine+line_add][actuColumn+column_add];
 			// mur = -1
 			if (elem != -1) {return 1;}
 		}
