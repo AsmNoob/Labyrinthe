@@ -79,7 +79,6 @@ public class Maze{
 			for(int i = 0; i < splitted_line.length;i++){
 				System.out.println(splitted_line[i]);
 			}
-			
 			lines = Integer.parseInt(splitted_line[1]);
 			columns = Integer.parseInt(splitted_line[3]);
 			matrix = new int[2*lines+1][2*columns+1]; // [0 -> 8] 
@@ -107,12 +106,16 @@ public class Maze{
 			NbSweets = Character.getNumericValue(line.charAt(10)); //Bonbons: 3
 			line = br.readLine(); // Emplacements:
 			line = br.readLine(); 
+			splitted_line = line.split(" ");
+			for(int i = 0; i < splitted_line.length;i++){
+				System.out.println(splitted_line[i]);
+			}
 			PukkamansPos[0] = Character.getNumericValue(line.charAt(12)); 
 			PukkamansPos[1] = Character.getNumericValue(line.charAt(14)); // Pakkuman: (6,5)
 			matrix[PukkamansPos[0]][PukkamansPos[1]] = PUKKAMAN;
 			line = br.readLine(); 
 			for(int i = 0; i < NbMonsters; i++){
-				ArrayList<Integer> coord = new ArrayList<Integer>(2); 
+				ArrayList<Integer> coord = new ArrayList<Integer>(2);
 				coord.add(Character.getNumericValue(line.charAt(12+i*6)));
 				coord.add(Character.getNumericValue(line.charAt(14+i*6)));
 				MonstersList.add(coord);
