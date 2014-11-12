@@ -18,18 +18,31 @@ public class Graph {
 	public Graph(int[][] mat, int[] pacmanCoord){
 		dim = mat.length;
 		iterrator = 0;
+		long begin = System.currentTimeMillis();
 		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], true, null); // TO CHANGE: à mon avis tu px éviter ça ^^
 		//print_graph();
+    	long step1 = System.currentTimeMillis();
 		int nbNode_afterOptim = list_posNode.size();
 		optimisation_graph(list_node.get(0),null);
+    	long step2 = System.currentTimeMillis();
 		graph_converter();
-		print_graph();
+    	long step3 = System.currentTimeMillis();
+		//print_graph();
+		float time1 = ((float) (step1-begin)) / 1000f;
+		float time2 = ((float) (step2-step1)) / 1000f;
+		float time3 = ((float) (step3-step2)) / 1000f;
+
+		System.out.print("Time exe || create_graph : ");
+		System.out.print(time1);
+		System.out.print(" || Optimisation : ");
+		System.out.print(time2);
+		System.out.print(" || graph_converter : ");
+		System.out.println(time3);
+
 		System.out.print("Optimisation || nb node : ");
 		System.out.print(nbNode_afterOptim);
 		System.out.print(" to ");
 		System.out.println(list_posNode.size());
-
-
 
 	}
 
