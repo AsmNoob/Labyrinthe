@@ -85,8 +85,7 @@ public class Graph {
 	// test si la postion suivante est dans les bornes et autre qu'un mur.
 	public int test_nextPosition(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, int line_add, int column_add){
 				
-		if (( ((actuLine+line_add) >= 0) && ((actuLine+line_add) < dim) && ((actuColumn+column_add)>= 0) && ((actuColumn+column_add) < dim) &&
-		   ((actuLine+line_add) != preLine || (actuColumn+column_add) != preColumn))) || (preLine == actuLine && preColumn == actuColumn)) {
+		if (( ((actuLine+line_add) >= 0) && ((actuLine+line_add) < dim) && ((actuColumn+column_add)>= 0) && ((actuColumn+column_add) < dim) && ((actuLine+line_add) != preLine || (actuColumn+column_add) != preColumn)) || (preLine == actuLine && preColumn == actuColumn)) {
 			int elem = mat[actuLine+line_add][actuColumn+column_add];
 			// mur = -1
 			if (elem != -1) {return 1;}
