@@ -2,6 +2,7 @@
 /* DEFONTAINE Alexis -  - INFO2 */
 import java.io.*;
 import java.util.*;
+import java.lang.*; // String
 
 public class Maze{
 	//Attributs
@@ -101,31 +102,61 @@ public class Maze{
 			}
 			line = br.readLine(); // Elements du Labyrinthe: 
 			line = br.readLine();
-			NbMonsters = Character.getNumericValue(line.charAt(11)); //Monstres: 4
-			line = br.readLine(); 
-			NbSweets = Character.getNumericValue(line.charAt(10)); //Bonbons: 3
-			line = br.readLine(); // Emplacements:
-			line = br.readLine(); 
 			splitted_line = line.split(" ");
 			for(int i = 0; i < splitted_line.length;i++){
 				System.out.println(splitted_line[i]);
 			}
-			PukkamansPos[0] = Character.getNumericValue(line.charAt(12)); 
-			PukkamansPos[1] = Character.getNumericValue(line.charAt(14)); // Pakkuman: (6,5)
-			matrix[PukkamansPos[0]][PukkamansPos[1]] = PUKKAMAN;
+			NbMonsters = Integer.parseInt(splitted_line[1]); //Monstres: 4
+			line = br.readLine();
+			splitted_line = line.split(" ");
+			for(int i = 0; i < splitted_line.length;i++){
+				System.out.println(splitted_line[i]);
+			}
+			NbSweets = Integer.parseInt(splitted_line[1]); //Bonbons: 3
+			line = br.readLine(); // Emplacements:
 			line = br.readLine(); 
-			for(int i = 0; i < NbMonsters; i++){
+			splitted_line = line.split(" "); // = ["Pukkaman:","(x,y)"]
+			for(int i = 0; i < splitted_line.length;i++){
+				System.out.println(splitted_line[i]);
+			}
+			System.out.print("TEST SPLIT: "); System.out.println(splitted_line[1]);
+			splitted_line[1] = splitted_line[1].replace("(","");
+			splitted_line[1] = splitted_line[1].replace(")","");
+			String coordonnee[] = splitted_line[1].split(",");
+			for(int i  = 0; i < 2; i++){
+				System.out.print(coordonnee[i]);System.out.print(" "); //
+			}
+
+			//int coord0 = Integer.parseInt(splitted_line[1].split(",")[0]);
+			//int coord1 = 
+			PukkamansPos[0] = Integer.parseInt(coordonnee[0]);
+			PukkamansPos[1] = Integer.parseInt(coordonnee[1]); // Pakkuman: (6,5)
+			System.out.print("PAKKUMAN [0] - [1]: "); System.out.print(PukkamansPos[0]);System.out.print(PukkamansPos[1]);
+			matrix[PukkamansPos[0]*2+1][PukkamansPos[1]*2+1] = PUKKAMAN;
+			line = br.readLine();
+			line = line.replaceAll( "\\(" , "" );
+			line = line.replaceAll( "\\)" , "" );
+			splitted_line = line.split(" "); // Monstres: (4,4) (5,4) (6,2) (4,0) 
+			System.out.println("TEST LISTE MONSTRES: ");
+			for(int j = 1; j < splitted_line.length;j++){ // j = 1 pour commencer à partir des coordonnées
 				ArrayList<Integer> coord = new ArrayList<Integer>(2);
-				coord.add(Character.getNumericValue(line.charAt(12+i*6)));
-				coord.add(Character.getNumericValue(line.charAt(14+i*6)));
+				System.out.println(splitted_line[j]);
+				System.out.print("TEST WEIRD SH33T: "); System.out.println(splitted_line[j].split(",")[0]);
+				coord.add(Integer.parseInt(splitted_line[j].split(",")[0]));
+				coord.add(Integer.parseInt(splitted_line[j].split(",")[1]));
 				MonstersList.add(coord);
 				matrix[coord.get(0)*2+1][coord.get(1)*2+1] = MONSTER;
 			}
-			line = br.readLine(); 
-			for(int i = 0; i < NbSweets; i++){
-				ArrayList<Integer> coord = new ArrayList<Integer>(2); 
-				coord.add(Character.getNumericValue(line.charAt(11+i*6)));
-				coord.add(Character.getNumericValue(line.charAt(13+i*6)));
+			line = br.readLine();  
+			line = line.replaceAll( "\\(" , "" );
+			line = line.replaceAll( "\\)" , "" );
+			splitted_line = line.split(" ");
+			for(int j = 1; j < splitted_line.length;j++){ // j = 1 pour commencer à partir des coordonnées
+				ArrayList<Integer> coord = new ArrayList<Integer>(2);
+				System.out.println(splitted_line[j]);
+				System.out.print("TEST WEIRD SH00T: "); System.out.println(splitted_line[j].split(",")[0]);
+				coord.add(Integer.parseInt(splitted_line[j].split(",")[0]));
+				coord.add(Integer.parseInt(splitted_line[j].split(",")[1]));
 				SweetsList.add(coord);
 				matrix[coord.get(0)*2+1][coord.get(1)*2+1] = SWEET;
 			}
@@ -222,7 +253,8 @@ public class Maze{
 	}
 
 	public String OutputAnalyse(int value,int line,int column){
-		String res = "";
+		String res = "PROBLEM"; // Pour résoudre le cas où res n'est pas initialisé
+
 		if(value == PUKKAMAN){
 			res = " P ";
 		}else if (value == MONSTER ) {
