@@ -1,4 +1,5 @@
 
+import java.io.*;
 import java.util.*; // a vérifier
 
 //Constructeur de la class Node, il faut sa position dans la matrice, et quatre donnée correspondant a UP,DOWN,LEFT,RIGHT initialisé a null dont les valeurs changeront lors de la création de celle ci, permettant de savoir plus tard dans quel direction aller directement. Chaque direction sera un pointeur vers le sommet qui est au bout de son chemin. Puisque que nos sommet sont principalement des intersections cela nous permettera de choisir directement le bon chemin .
@@ -17,11 +18,11 @@ public class Graph {
 	public Graph(int[][] mat, int[] pacmanCoord){
 		dim = mat.length;
 		iterrator = 0;
-		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], true, null);
+		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], true, null); // TO CHANGE: à mon avis tu px éviter ça ^^
 		//print_graph();
 		int nbNode_afterOptim = list_posNode.size();
 		optimisation_graph(list_node.get(0),null);
-
+		graph_converter();
 		print_graph();
 		System.out.print("Optimisation || nb node : ");
 		System.out.print(nbNode_afterOptim);
@@ -91,6 +92,29 @@ public class Graph {
 			list_node.get(i).print();
 		}
 	}
+
+	public void graph_converter(){
+		// TO ADD TO MAKEFILE: dot -Tpdf Graph.dot -o Graph.pdf 
+		// TO DO: petit soucis au niveau des valeurs qui sortent :p
+		try{
+			PrintWriter writer = new PrintWriter ("Graph.dot");
+			writer.println("graph chemin {");
+			writer.println();
+			for(int i = 0; i < list_node.size(); i++){
+
+				for(int j = 0; j < list_node.get(i).get_ensLink().size();j++){ // parcourt les noeuds lies
+					writer.print("	");writer.print(list_node.get(i).get_nodeValue());writer.print(" -- ");writer.print(list_node.get(i).get_ensLink().get(j).get_nodeValue());writer.print(" [label=");writer.print(list_node.get(i).get_ensArc().get(j).get_weight());writer.println("]");
+				}
+			}
+			writer.println(); 
+			writer.println("}");
+			writer.close();
+		}catch(FileNotFoundException e){
+			System.err.println("Caught FileNotFoundException: " + e.getMessage());
+		}
+	}
+
+
 	// cryptage de la position i,j
 	public int pos_cryptage(int i, int j){
 		int pos = 10000+(i*100)+j;
@@ -204,6 +228,15 @@ public class Graph {
 			update_nodeLink(current_arc);		
 		}
 		
+	}
+
+	// int matrice_cout = [list_node.length][list_node.length]
+	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
+	// Question:
+	public void shortestPath_algorithm(int[][] matrice_cout,Node source,Node target){
+		int dist[] = new int[matrice_cout.length];
+		int prev[] = new int[matrice_cout.length];
+		int selected[] = new int[matrice_cout.length];
 	}
 
 

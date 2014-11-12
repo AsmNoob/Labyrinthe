@@ -1,4 +1,4 @@
-JFLAGS = -Xlint
+JFLAGS = -Xlint 
 JC = javac
 
 CLASSES = *.java
