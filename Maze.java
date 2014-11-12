@@ -73,9 +73,15 @@ public class Maze{
 			InputStreamReader ipsr = new InputStreamReader(ips);
 			BufferedReader br = new BufferedReader(ipsr);
 			String line;
+			String[] splitted_line;
 			line = br.readLine();
-			lines = Character.getNumericValue(line.charAt(12));
-			columns = Character.getNumericValue(line.charAt(19));
+			splitted_line = line.split(" ");
+			for(int i = 0; i < splitted_line.length;i++){
+				System.out.println(splitted_line[i]);
+			}
+			
+			lines = Integer.parseInt(splitted_line[1]);
+			columns = Integer.parseInt(splitted_line[3]);
 			matrix = new int[2*lines+1][2*columns+1]; // [0 -> 8] 
 			int indexLine = 0;
 			while(indexLine < lines*2+1){

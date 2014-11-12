@@ -73,8 +73,10 @@ public class Graph {
 	public int test_nextPosition(int[][] mat, int i, int j, int preLine, int preColumn, int line_add, int column_add){
 				
 		if (( ((i+line_add) >= 0) && ((i+line_add) < dim) && ((j+column_add)>= 0) && ((j+column_add) < dim) &&
-		   ((i+line_add) != preLine || (j+column_add) != preColumn))
-		    || (preLine == i  && preColumn == j)) {
+		   ((i+line_add) != preLine || (j+column_add) != preColumn))){// || (preLine == i  && preColumn == j)) {
+			System.out.print("i: ");System.out.print(i);System.out.print(" j: ");System.out.print(j);
+			System.out.print(" line_add: ");System.out.print(line_add);System.out.print(" column_add: ");System.out.println(column_add);
+			System.out.print("preLine: ");System.out.print(preLine);System.out.print(" preColumn: ");System.out.print(preColumn);
 			int elem = mat[i+line_add][j+column_add];
 			// mur = -1
 			if (elem != -1) {return 1;}
