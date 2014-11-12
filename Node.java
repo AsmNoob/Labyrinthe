@@ -40,10 +40,14 @@ public class Node {
 	public ArrayList<Arc> get_ensArc(){
 		return arc_link;
 	}
+	public int get_posCrypt(){
+		return pos_crypt;
+	}
 	//print position crypté de la node
 	public void print_nodePos(){
 		System.out.print(pos_crypt);
 	}
+
 
 	//print liaison entre noeud
 	public void print(){

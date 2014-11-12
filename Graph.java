@@ -103,7 +103,7 @@ public class Graph {
 			for(int i = 0; i < list_node.size(); i++){
 
 				for(int j = 0; j < list_node.get(i).get_ensLink().size();j++){ // parcourt les noeuds lies
-					writer.print("	");writer.print(list_node.get(i).get_nodeValue());writer.print(" -- ");writer.print(list_node.get(i).get_ensLink().get(j).get_nodeValue());writer.print(" [label=");writer.print(list_node.get(i).get_ensArc().get(j).get_weight());writer.println("]");
+					writer.print("	");writer.print(list_node.get(i).get_posCrypt());writer.print(" -- ");writer.print(list_node.get(i).get_ensLink().get(j).get_posCrypt());writer.print(" [label=");writer.print(list_node.get(i).get_ensArc().get(j).get_weight());writer.println("]");
 				}
 			}
 			writer.println(); 
@@ -153,7 +153,7 @@ public class Graph {
 			}	
 		}
 	}
-	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre
+	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
 	public boolean optimisation_graph(Node current_node, Node pre_node){
 		if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
 			int i = 0;
@@ -161,7 +161,7 @@ public class Graph {
 			ArrayList<Node> node_link= new ArrayList<Node>(current_node.get_ensLink());
 			while (i < node_link.size()){
 				if (pre_node!= node_link.get(i)) {
-					if ( node_link.get(i).get_nodeValue()!= 1 && node_link.get(i).get_nodeValue()!= 3){
+					if ( node_link.get(i).get_nodeValue()!= 1 && node_link.get(i).get_nodeValue()!= 3 && node_link.get(i).get_nodeValue()!= 4){
 						uselessNode = optimisation_graph(node_link.get(i), current_node);
 					}
 					else {uselessNode = false;}
