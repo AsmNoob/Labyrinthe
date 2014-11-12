@@ -19,11 +19,13 @@ public class Graph {
 		dim = mat.length;
 		iterrator = 0;
 		long begin = System.currentTimeMillis();
-		create_graph(mat,pacmanCoord[0],pacmanCoord[1], pacmanCoord[0],pacmanCoord[1], true, null); // TO CHANGE: à mon avis tu px éviter ça ^^
+		create_graph(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null); // TO CHANGE: à mon avis tu px éviter ça ^^
+		// Si tu vx avoir la vraie coordonnée de pacman tu dois faire pos*2+1 
 		//print_graph();
     	long step1 = System.currentTimeMillis();
 		int nbNode_afterOptim = list_posNode.size();
-		optimisation_graph(list_node.get(0),null);
+		// TO FIX: problème avec optimisation_graph quand il rencontre à nouveau Pakkuman il me semble ... 
+		//optimisation_graph(list_node.get(0),null);
     	long step2 = System.currentTimeMillis();
 		graph_converter();
     	long step3 = System.currentTimeMillis();
@@ -84,7 +86,7 @@ public class Graph {
 	}
 	// test si la postion suivante est dans les bornes et autre qu'un mur.
 	public int test_nextPosition(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, int line_add, int column_add){
-				
+		//System.out.print(" actuLine: " );System.out.print(actuLine);System.out.print(" actuColumn: " );System.out.print(actuColumn);System.out.print(" preLine: " );System.out.print(preLine);System.out.print(" preColumn: " );System.out.print(preColumn);System.out.print(" line_add: " );System.out.print(line_add);System.out.print(" column_add: " );System.out.println(column_add);
 		if (( ((actuLine+line_add) >= 0) && ((actuLine+line_add) < dim) && ((actuColumn+column_add)>= 0) && ((actuColumn+column_add) < dim) && ((actuLine+line_add) != preLine || (actuColumn+column_add) != preColumn)) || (preLine == actuLine && preColumn == actuColumn)) {
 			int elem = mat[actuLine+line_add][actuColumn+column_add];
 			// mur = -1
@@ -105,16 +107,21 @@ public class Graph {
 	}
 
 	public void graph_converter(){
-		// TO ADD TO MAKEFILE: dot -Tpdf Graph.dot -o Graph.pdf 
-		// TO DO: petit soucis au niveau des valeurs qui sortent :p
+		// TO ADD TO MAKEFILE: dot -Tpdf Graph.dot -o Graph.pdf
 		try{
 			PrintWriter writer = new PrintWriter ("Graph.dot");
 			writer.println("graph chemin {");
 			writer.println();
+			ArrayList<String> list_arcsPrinted = new ArrayList<String>();
 			for(int i = 0; i < list_node.size(); i++){
 
 				for(int j = 0; j < list_node.get(i).get_ensLink().size();j++){ // parcourt les noeuds lies
-					writer.print("	");writer.print(list_node.get(i).get_posCrypt());writer.print(" -- ");writer.print(list_node.get(i).get_ensLink().get(j).get_posCrypt());writer.print(" [label=");writer.print(list_node.get(i).get_ensArc().get(j).get_weight());writer.println("]");
+					if(!(list_arcsPrinted.contains(Integer.toString(list_node.get(i).get_ensLink().get(j).get_posCrypt())+Integer.toString(list_node.get(i).get_posCrypt())))){
+						writer.print("	");writer.print(list_node.get(i).get_posCrypt());writer.print(" -- ");writer.print(list_node.get(i).get_ensLink().get(j).get_posCrypt());writer.print(" [label=");writer.print(list_node.get(i).get_ensArc().get(j).get_weight());writer.println("]");
+						String arcPrinted =  Integer.toString(list_node.get(i).get_posCrypt())+ Integer.toString(list_node.get(i).get_ensLink().get(j).get_posCrypt());
+						System.out.print("arcPrinted: ");System.out.println(arcPrinted);
+						list_arcsPrinted.add(arcPrinted);
+					}
 				}
 			}
 			writer.println(); 
