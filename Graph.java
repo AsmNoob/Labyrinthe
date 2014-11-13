@@ -154,7 +154,7 @@ public class Graph {
 		*/
 		return data_direction;
 	}
-
+/*
 	// int matrice_cout = [list_node.length][list_node.length]
 	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
 	// Question:
@@ -186,10 +186,9 @@ public class Graph {
 				}
 			}
 		return dist[target];
-	}		
-
+	}*/
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
-		public void optimisation_graph(Node current_node){
+	public void optimisation_graph(Node current_node){
 		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
 			if (current_node.get_ensLink().size() < 2 && current_node.get_nodeValue() != 3) {
 				current_node.get_ensLink().get(0).supp_link(current_node);
@@ -232,10 +231,10 @@ public class Graph {
 				if (nb_testDirection==data_direction[DIRECTION_SIZE+1] ) {break;}
 			}
 			if(isNode){optimisation_graph(current_node);}
-			}
 		}
 	}
 }
+
 
 
 
