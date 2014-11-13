@@ -1,14 +1,13 @@
 
 import java.io.*;
-import java.util.*; // a vérifier
+import java.util.*;
 
 //Constructeur de la class Node, il faut sa position dans la matrice, et quatre donnée correspondant a UP,DOWN,LEFT,RIGHT initialisé a null dont les valeurs changeront lors de la création de celle ci, permettant de savoir plus tard dans quel direction aller directement. Chaque direction sera un pointeur vers le sommet qui est au bout de son chemin. Puisque que nos sommet sont principalement des intersections cela nous permettera de choisir directement le bon chemin .
 
 public class Graph {
 	//Attribut
 	private int dim; //dimention de la matrice a utiliser pour le cryptage
-	private ArrayList<Integer> list_posNode = new ArrayList<Integer>();
-	private ArrayList<Node> list_node = new ArrayList<Node>();
+	private HashMap<Integer,Node> ens_node = new HashMap<Integer,Node>();
 	private int[] DIRECTION = new int[] {-1,1,0,0};
 	private int DIRECTION_SIZE = DIRECTION.length-1;
 	private int iterrator;
@@ -21,11 +20,11 @@ public class Graph {
 		iterrator = 0;
 		optimisation = 0;
 		long begin = System.currentTimeMillis();
-		create_graph(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null); // TO CHANGE: à mon avis tu px éviter ça ^^
+		create_graph(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null); 
     	long step1 = System.currentTimeMillis();
 		graph_converter();
     	long step2 = System.currentTimeMillis();
-    	print_graph();
+    	//print_graph();
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
 
@@ -35,26 +34,26 @@ public class Graph {
 		System.out.println(time2);
 
 		System.out.print("Optimisation || nb node : ");
-		System.out.print(list_posNode.size()+optimisation);
+		System.out.print(ens_node.size()+optimisation);
 		System.out.print(" to ");
-		System.out.println(list_posNode.size());
+		System.out.println(ens_node.size());
 
 	}
-
+	// creer une node et la place dans la list de stockage
+	// temps d'exe = 0
 	public Node create_node(int elem, int pos_crypt){
 		Node current_node = new Node(pos_crypt, elem);
-		list_node.add(current_node);list_posNode.add(pos_crypt);
+		ens_node.put(pos_crypt,current_node);
 		return current_node;
 	}
 	// selectionne la noeud courrant -déjà existant ou non-.
 	public Node select_currentNode(int elem, int pos_crypt){
 		Node current_node = null;
-		if (!list_posNode.contains(pos_crypt)) {
+		if (!ens_node.containsKey(pos_crypt)) {
 			current_node = create_node(elem, pos_crypt);
 		}
 		else{
-			int index = list_posNode.indexOf(pos_crypt);
-			current_node = list_node.get(index);
+			current_node = ens_node.get(pos_crypt);
 		}
 		return current_node;
 	}
@@ -73,10 +72,8 @@ public class Graph {
 		current_arc.add_way(pos_crypt);
 		current_arc.set_endNode(current_node);
 		current_arc.set_stateArc(false);
-
-		//System.out.println(pos_crypt); current_arc.print_arc();
-
 	}
+
 	// test si la postion suivante est dans les bornes et autre qu'un mur.
 	//appel recursif de la fonction avec test_twoCase en valeur de controle car les murs se situent entre deux chemin, ils ne constituent pas de chemin en lui même. 
 	public int check_nextPosition(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, int line_add, int column_add, boolean test_twoCase){
@@ -95,8 +92,8 @@ public class Graph {
 
 	//affichage des données récuperer après analyse du labyrinthe. 
 	public void print_graph(){
-		System.out.println(list_posNode);
-		int size_dict = list_posNode.size();
+		ArrayList<Node> list_node = new ArrayList<Node>(ens_node.values());
+		int size_dict = list_node.size();
 		for (int i = 0; i < size_dict; i++ ) {
 			list_node.get(i).print();
 		}
@@ -109,6 +106,7 @@ public class Graph {
 			writer.println("graph chemin {");
 			writer.println();
 			ArrayList<String> list_arcsPrinted = new ArrayList<String>();
+			ArrayList<Node> list_node = new ArrayList<Node>(ens_node.values());
 			for(int i = 0; i < list_node.size(); i++){
 
 				for(int j = 0; j < list_node.get(i).get_ensLink().size();j++){ // parcourt les noeuds lies
@@ -156,22 +154,13 @@ public class Graph {
 		*/
 		return data_direction;
 	}
-	public void supp_node(Node node){
-		for (int i = 0; i< list_node.size() ;i++ ) {
-			if (list_node.get(i)== node) {
-				list_node.remove(i);
-				list_posNode.remove(i);
-				break;
-			}	
-		}
-	}
 
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
 		public void optimisation_graph(Node current_node){
 		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
 			if (current_node.get_ensLink().size() < 2 && current_node.get_nodeValue() != 3) {
 				current_node.get_ensLink().get(0).supp_link(current_node);
-				supp_node(current_node);
+				ens_node.remove(current_node.get_posCrypt());
 				optimisation++;
 			}
 	}
@@ -186,7 +175,7 @@ public class Graph {
 		int pos_crypt= pos_cryptage(actuLine,actuColumn);
 		iterrator++;
 		int nb_testDirection = 0;
-		if (!list_posNode.contains(pos_crypt)){
+		if (!ens_node.containsKey(pos_crypt)){
 			int[] data_direction = detect_isNode(mat,actuLine,actuColumn,preLine,preColumn);
 
 			if (data_direction[DIRECTION_SIZE+1]>1 || mat[actuLine][actuColumn]>0)  { 

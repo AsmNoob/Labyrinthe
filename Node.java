@@ -21,18 +21,6 @@ public class Node {
 			arc_link.add(arc);
 		}
 	}
-	/*public void fusion(Node preNode){
-		set_nodeValue(preNode.get_nodeValue());
-		set_posCrypt(preNode.get_posCrypt());
-		for (int i = 0 ;i < preNode.get_ensLink().size() ; i++ ) {
-			if (preNode.get_ensLink().get(i) != this){
-
-
-			}
-
-		}
-		supp_link()
-	}*/
 	public void supp_link(Node node){
 		for (int i = 0; i< node_link.size() ; i++ ) {
 			if (node == node_link.get(i)){
@@ -67,7 +55,6 @@ public class Node {
 	public void print_nodePos(){
 		System.out.print(pos_crypt);
 	}
-
 
 	//print liaison entre noeud
 	public void print(){
