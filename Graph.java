@@ -11,51 +11,30 @@ public class Graph {
 	private int[] DIRECTION = new int[] {-1,1,0,0};
 	private int DIRECTION_SIZE = DIRECTION.length-1;
 	private int iterrator;
-
-	// define
-	private int IN = 9999;
+	private int optimisation;
 	
 
 	// constructeur
 	public Graph(int[][] mat, int[] pacmanCoord){
 		dim = mat.length;
 		iterrator = 0;
+		optimisation = 0;
 		long begin = System.currentTimeMillis();
-<<<<<<< HEAD
-		create_graph(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null); // TO CHANGE: à mon avis tu px éviter ça ^^
-		//create_graph2(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null, new ArrayList<Integer>());
-=======
 		create_graph(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null); 
->>>>>>> 7f5254444991542c559221cc08d0e1a0e6b66f95
     	long step1 = System.currentTimeMillis();
-		int nbNode_afterOptim = list_posNode.size();
-		// TO FIX: problème avec optimisation_graph quand il rencontre à nouveau Pakkuman il me semble ... 
-		optimisation_graph(list_node.get(0),null);
-    	long step2 = System.currentTimeMillis();
-<<<<<<< HEAD
 		graph_converter();
-    	long step3 = System.currentTimeMillis();
-    	print_graph();
-=======
+    	long step2 = System.currentTimeMillis();
     	//print_graph();
->>>>>>> 7f5254444991542c559221cc08d0e1a0e6b66f95
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
-		float time3 = ((float) (step3-step2)) / 1000f;
 
 		System.out.print("Time exe || create_graph : ");
 		System.out.print(time1);
-		System.out.print(" || Optimisation : ");
-		System.out.print(time2);
 		System.out.print(" || graph_converter : ");
-		System.out.println(time3);
+		System.out.println(time2);
 
 		System.out.print("Optimisation || nb node : ");
-<<<<<<< HEAD
-		System.out.print(nbNode_afterOptim);
-=======
 		System.out.print(ens_node.size()+optimisation);
->>>>>>> 7f5254444991542c559221cc08d0e1a0e6b66f95
 		System.out.print(" to ");
 		System.out.println(ens_node.size());
 
@@ -175,6 +154,16 @@ public class Graph {
 		*/
 		return data_direction;
 	}
+
+	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
+		public void optimisation_graph(Node current_node){
+		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
+			if (current_node.get_ensLink().size() < 2 && current_node.get_nodeValue() != 3) {
+				current_node.get_ensLink().get(0).supp_link(current_node);
+				ens_node.remove(current_node.get_posCrypt());
+				optimisation++;
+			}
+	}
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode,Arc current_arc){
 		//actuLine,j position actuel, preLine,preColumn position precedente
@@ -209,59 +198,11 @@ public class Graph {
 				}
 				if (nb_testDirection==data_direction[DIRECTION_SIZE+1] ) {break;}
 			}
-		}
-
-	
-	// int matrice_cout = [list_node.length][list_node.length]
-	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
-	// Question:
-
-	public int shortestPath_algorithm(int[][] matrice_cout,Node source,Node target){
-		int dist[] = new int[matrice_cout[0].length];
-		int prev[] = new int[matrice_cout[0].length];
-		int selected[] = new int[matrice_cout[0].length];
-		char path[] = new char[matrice_cout[0].length];
-		for(int i = 0; i < matrice_cout[0].length; i++){
-			dist[i] = IN;
-			prev[i] = -1;
-		}
-		int start = source.get_nodeValue();
-		selected[start] = 1;
-		dist[start] = 0;
-		while( selected[target.get_nodeValue()] == 0){
-			int min = IN;
-			int m = 0;
-			for(int i = 0; i < matrice_cout[0].length; i++){
-				int d = dist[start] + matrice_cout[start][i];
-				if(d < dist[i] && selected[i] == 0){
-					dist[i] = d;
-					prev[i] = start;
-				}
-				if(min > dist[i] && selected[i] == 0){
-					min = dist[i];
-					m = i;
-				}
+			if(isNode){optimisation_graph(current_node);}
 			}
-			start = m;
-			selected[start] = 1;
 		}
-		start = target.get_nodeValue();
-		int j = 0;
-		while(start != -1){
-			//path[j++] = start + 65; // WTFS
-			j++;
-			start = prev[start];
-		}
-		path[j] = '\0';
-		String pathe = new StringBuffer(new String(path)).reverse().toString();
-		System.out.println(pathe);
-		return dist[target.get_nodeValue()];
 	}
-
-
 }
-
-
 
 
 
