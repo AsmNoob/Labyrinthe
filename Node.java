@@ -1,11 +1,12 @@
-import java.util.ArrayList;
+import java.util.*;
 
 public class Node {
 	// attribut
 	private int node_value; //pacman,bonus, monstre ou sortie
 	private int pos_crypt; // position de la node dans la matrice
+	private HashMap<Node,Arc> ens_link = new HashMap<Node,Arc>();
 	private ArrayList<Node> node_link = new ArrayList<Node>();//contient les nodes dont celle ci a une connexion
-	private ArrayList<Arc> arc_link = new ArrayList<Arc>();// contient les arc lié avec le précedent via leur indice
+	//private ArrayList<Arc> arc_link = new ArrayList<Arc>();// contient les arc lié avec le précedent via leur indice
 	//constructeur
 	public Node(int posCrypt, int elem){
 		pos_crypt = posCrypt;
@@ -16,19 +17,12 @@ public class Node {
 	// methode permettant de regrouper toutes les connexions existantes avec ce noeud.
 	public void add_link(Node node, Arc arc){
 		// condition evitant les doublons
-		if (!(node_link.contains(node) && !arc_link.contains(arc))  && node != this){
-			node_link.add(node);
-			arc_link.add(arc);
-		}
+		if (node != this && (!ens_link.containsKey(node) || (arc.get_weight() < ens_link.get(node).get_weight()))) {ens_link.put(node,arc);}
 	}
 	public void supp_link(Node node){
-		for (int i = 0; i< node_link.size() ; i++ ) {
-			if (node == node_link.get(i)){
-				node_link.remove(i);
-				arc_link.remove(i);
-				node.supp_link(this);
-				break;
-			}
+		if (ens_link.containsKey(node)) {
+			ens_link.remove(node);
+			node.supp_link(this);
 		}
 	}
 	public void set_nodeValue(int value){
@@ -43,10 +37,10 @@ public class Node {
 		return node_value;
 	}
 	public ArrayList<Node> get_ensLink(){
-		return node_link;
+		return new ArrayList<Node>(ens_link.keySet());
 	}
 	public ArrayList<Arc> get_ensArc(){
-		return arc_link;
+		return new ArrayList<Arc>(ens_link.values());
 	}
 	public int get_posCrypt(){
 		return pos_crypt;
@@ -58,7 +52,8 @@ public class Node {
 
 	//print liaison entre noeud
 	public void print(){
-		int size_globalWay = node_link.size();
+		int size_globalWay = ens_link.size();
+		ArrayList<Arc> arc_link =  new ArrayList<Arc>(ens_link.values());
 		System.out.print("Node : "); this.print_nodePos();
 		System.out.println();
 

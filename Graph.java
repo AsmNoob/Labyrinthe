@@ -231,6 +231,7 @@ public class Graph {
 				if (nb_testDirection==data_direction[DIRECTION_SIZE+1] ) {break;}
 			}
 			if(isNode){optimisation_graph(current_node);}
+		
 		}
 	}
 }
