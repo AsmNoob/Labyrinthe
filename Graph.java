@@ -175,43 +175,7 @@ public class Graph {
 		*/
 		return data_direction;
 	}
-	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
-	public void create_graph(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode,Arc current_arc){
-		//actuLine,j position actuel, preLine,preColumn position precedente
-		/*System.out.print("Controle_Create || prePos --> ");System.out.print(preLine);System.out.print(preColumn);
-		System.out.print(" || actuPos --> ");System.out.print(actuLine);System.out.print(actuColumn);
-		System.out.print(" || isNode --> ");System.out.println(isNode);
-		*/
-		Node current_node = null;
-		int pos_crypt= pos_cryptage(actuLine,actuColumn);
-		iterrator++;
-		int nb_testDirection = 0;
-		if (!ens_node.containsKey(pos_crypt)){
-			int[] data_direction = detect_isNode(mat,actuLine,actuColumn,preLine,preColumn);
 
-			if (data_direction[DIRECTION_SIZE+1]>1 || mat[actuLine][actuColumn]>0)  { 
-				current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
-				if (current_arc != null) {
-					end_Arc(current_arc,current_node,pos_crypt);
-					update_nodeLink(current_arc); 
-				}
-				isNode = true;
-			}
-			else {isNode = false;}
-
-			if (!isNode) {current_arc.add_way(pos_crypt);}
-			for (int i = 0; i <= DIRECTION_SIZE; i++) {
-				if (data_direction[i] == 1) {
-					if (isNode) { current_arc = start_Arc(pos_crypt,current_node);}
-					int newLine = actuLine+(DIRECTION[i]*2); int newColumn = actuColumn+(DIRECTION[DIRECTION_SIZE-i]*2);
-					create_graph(mat,newLine,newColumn,actuLine,actuColumn,isNode,current_arc);
-					nb_testDirection++;
-				}
-				if (nb_testDirection==data_direction[DIRECTION_SIZE+1] ) {break;}
-			}
-		}
-
-	
 	// int matrice_cout = [list_node.length][list_node.length]
 	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
 	// Question:
