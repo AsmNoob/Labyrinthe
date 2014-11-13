@@ -1,14 +1,13 @@
 
 import java.io.*;
-import java.util.*; // a vérifier
+import java.util.*;
 
 //Constructeur de la class Node, il faut sa position dans la matrice, et quatre donnée correspondant a UP,DOWN,LEFT,RIGHT initialisé a null dont les valeurs changeront lors de la création de celle ci, permettant de savoir plus tard dans quel direction aller directement. Chaque direction sera un pointeur vers le sommet qui est au bout de son chemin. Puisque que nos sommet sont principalement des intersections cela nous permettera de choisir directement le bon chemin .
 
 public class Graph {
 	//Attribut
 	private int dim; //dimention de la matrice a utiliser pour le cryptage
-	private ArrayList<Integer> list_posNode = new ArrayList<Integer>();
-	private ArrayList<Node> list_node = new ArrayList<Node>();
+	private HashMap<Integer,Node> ens_node = new HashMap<Integer,Node>();
 	private int[] DIRECTION = new int[] {-1,1,0,0};
 	private int DIRECTION_SIZE = DIRECTION.length-1;
 	private int iterrator;
@@ -22,16 +21,24 @@ public class Graph {
 		dim = mat.length;
 		iterrator = 0;
 		long begin = System.currentTimeMillis();
+<<<<<<< HEAD
 		create_graph(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null); // TO CHANGE: à mon avis tu px éviter ça ^^
 		//create_graph2(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null, new ArrayList<Integer>());
+=======
+		create_graph(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null); 
+>>>>>>> 7f5254444991542c559221cc08d0e1a0e6b66f95
     	long step1 = System.currentTimeMillis();
 		int nbNode_afterOptim = list_posNode.size();
 		// TO FIX: problème avec optimisation_graph quand il rencontre à nouveau Pakkuman il me semble ... 
 		optimisation_graph(list_node.get(0),null);
     	long step2 = System.currentTimeMillis();
+<<<<<<< HEAD
 		graph_converter();
     	long step3 = System.currentTimeMillis();
     	print_graph();
+=======
+    	//print_graph();
+>>>>>>> 7f5254444991542c559221cc08d0e1a0e6b66f95
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
 		float time3 = ((float) (step3-step2)) / 1000f;
@@ -44,26 +51,30 @@ public class Graph {
 		System.out.println(time3);
 
 		System.out.print("Optimisation || nb node : ");
+<<<<<<< HEAD
 		System.out.print(nbNode_afterOptim);
+=======
+		System.out.print(ens_node.size()+optimisation);
+>>>>>>> 7f5254444991542c559221cc08d0e1a0e6b66f95
 		System.out.print(" to ");
-		System.out.println(list_posNode.size());
+		System.out.println(ens_node.size());
 
 	}
-
+	// creer une node et la place dans la list de stockage
+	// temps d'exe = 0
 	public Node create_node(int elem, int pos_crypt){
 		Node current_node = new Node(pos_crypt, elem);
-		list_node.add(current_node);list_posNode.add(pos_crypt);
+		ens_node.put(pos_crypt,current_node);
 		return current_node;
 	}
 	// selectionne la noeud courrant -déjà existant ou non-.
 	public Node select_currentNode(int elem, int pos_crypt){
 		Node current_node = null;
-		if (!list_posNode.contains(pos_crypt)) {
+		if (!ens_node.containsKey(pos_crypt)) {
 			current_node = create_node(elem, pos_crypt);
 		}
 		else{
-			int index = list_posNode.indexOf(pos_crypt);
-			current_node = list_node.get(index);
+			current_node = ens_node.get(pos_crypt);
 		}
 		return current_node;
 	}
@@ -82,10 +93,8 @@ public class Graph {
 		current_arc.add_way(pos_crypt);
 		current_arc.set_endNode(current_node);
 		current_arc.set_stateArc(false);
-
-		//System.out.println(pos_crypt); current_arc.print_arc();
-
 	}
+
 	// test si la postion suivante est dans les bornes et autre qu'un mur.
 	//appel recursif de la fonction avec test_twoCase en valeur de controle car les murs se situent entre deux chemin, ils ne constituent pas de chemin en lui même. 
 	public int check_nextPosition(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, int line_add, int column_add, boolean test_twoCase){
@@ -104,8 +113,8 @@ public class Graph {
 
 	//affichage des données récuperer après analyse du labyrinthe. 
 	public void print_graph(){
-		System.out.println(list_posNode);
-		int size_dict = list_posNode.size();
+		ArrayList<Node> list_node = new ArrayList<Node>(ens_node.values());
+		int size_dict = list_node.size();
 		for (int i = 0; i < size_dict; i++ ) {
 			list_node.get(i).print();
 		}
@@ -118,6 +127,7 @@ public class Graph {
 			writer.println("graph chemin {");
 			writer.println();
 			ArrayList<String> list_arcsPrinted = new ArrayList<String>();
+			ArrayList<Node> list_node = new ArrayList<Node>(ens_node.values());
 			for(int i = 0; i < list_node.size(); i++){
 
 				for(int j = 0; j < list_node.get(i).get_ensLink().size();j++){ // parcourt les noeuds lies
@@ -165,41 +175,6 @@ public class Graph {
 		*/
 		return data_direction;
 	}
-	public void supp_node(Node node){
-		for (int i = 0; i< list_node.size() ;i++ ) {
-			if (list_node.get(i)== node) {
-				list_node.remove(i);
-				list_posNode.remove(i);
-				break;
-			}	
-		}
-	}
-	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
-	public boolean optimisation_graph(Node current_node, Node pre_node){
-		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
-			int i = 0;
-			boolean uselessNode = true;
-			ArrayList<Node> node_link= new ArrayList<Node>(current_node.get_ensLink());
-			while (i < node_link.size()){
-				if (pre_node!= node_link.get(i)) {
-					if ( node_link.get(i).get_nodeValue()== 0 || node_link.get(i).get_nodeValue() ==2){
-						uselessNode = optimisation_graph(node_link.get(i), current_node);
-					}
-					else {uselessNode = false;}
-				}
-				i++;
-			}
-			if (uselessNode) {
-				pre_node.supp_link(current_node);
-				supp_node(current_node);
-			}
-			//else if (pre_node.get_nbLink() ==2 && pre_node.get_nodeValue() == 0 ) {
-			//	current_node.fusion(pre_node);
-			//}
-			return uselessNode;
-		//}
-		//else {return false;}
-	}
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode,Arc current_arc){
 		//actuLine,j position actuel, preLine,preColumn position precedente
@@ -211,7 +186,7 @@ public class Graph {
 		int pos_crypt= pos_cryptage(actuLine,actuColumn);
 		iterrator++;
 		int nb_testDirection = 0;
-		if (!list_posNode.contains(pos_crypt)){
+		if (!ens_node.containsKey(pos_crypt)){
 			int[] data_direction = detect_isNode(mat,actuLine,actuColumn,preLine,preColumn);
 
 			if (data_direction[DIRECTION_SIZE+1]>1 || mat[actuLine][actuColumn]>0)  { 
@@ -235,81 +210,8 @@ public class Graph {
 				if (nb_testDirection==data_direction[DIRECTION_SIZE+1] ) {break;}
 			}
 		}
-		/*
-		else{
-			/*
-			Si on est dans le cas d'une connexion a une node qui a déjà été créé on entre pas dans le procesus de création de connexion
-			or il se peut que la connexion n'existe pas encore. On recupere ici l'objet node, on ferme l'arc et met a jour les connexions cas pertinent pour : 
-			
-			+   +---+   +---+---+ On s'occupera de P puis de 1 en partant vers le haut mais au retour
-			|   |     1         | du backtrack on testera a droite du 1 pour rejoindre 2 qui a une
-			+   +---+ P +---+   + connexion avec P. Sans ce bloc on ne créera pas la dernierers 
-			|         2 |       | connexions puisque P existe déjà lors du traitement de 2.
-			+---+---+   +   +---+ 
-			 	   	|       | 
-					+---+---+
 
-			
-			current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
-			end_Arc(current_arc,current_node,pos_crypt);
-			update_nodeLink(current_arc);		
-		}*/
-		
-	}
-	/*
-	public void end_Arc2(ArrayList<Integer> globalWay, Arc current_arc, Node current_node, int pos_crypt){
-		current_arc.set_globalWay(globalWay);
-		current_arc.set_endNode(current_node);
-		current_arc.set_stateArc(false);
-
-		//System.out.println(pos_crypt); current_arc.print_arc();
-
-	}
-	public void update_nodeLink2(Arc current_arc){
-		current_arc.get_startNode().add_link(current_arc.get_endNode(),current_arc);
-		current_arc.get_endNode().add_link(current_arc.get_startNode(),current_arc);
-	}
-
-	public void create_graph2(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode, Arc current_arc, ArrayList<Integer> globalWay){
-		//actuLine,j position actuel, preLine,preColumn position precedente
-		//System.out.print("Controle_Create || prePos --> ");System.out.print(preLine);System.out.print(preColumn);
-		//System.out.print(" || actuPos --> ");System.out.print(actuLine);System.out.print(actuColumn);
-		//System.out.print(" || isNode --> ");System.out.println(isNode);
-		
-		Node current_node = null;
-		int pos_crypt= pos_cryptage(actuLine,actuColumn);
-		if (!list_posNode.contains(pos_crypt)){
-
-			if ( mat[actuLine][actuColumn]>0)  { //data_direction[DIRECTION_SIZE+1]>1 ||
-				current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
-				if (!globalWay.isEmpty()) {
-					end_Arc2(globalWay, current_arc,current_node,pos_crypt);
-					update_nodeLink(current_arc); 
-				}
-				isNode = true;
-			}
-			else {isNode = false;}
-
-			if (!isNode) {globalWay.add(pos_crypt);}
-			for (int i = 0; i<= DIRECTION_SIZE; i++){
-				if (check_nextPosition(mat, actuLine, actuColumn, preLine, preColumn,DIRECTION[i],DIRECTION[DIRECTION_SIZE-i]) == 1 ){
-					if (isNode) { 
-						current_arc = start_Arc(pos_crypt,current_node);
-						globalWay =new ArrayList<Integer>();
-						globalWay.add(pos_crypt);
-					}
-					int newLine = actuLine+DIRECTION[i]; int newColumn = actuColumn+DIRECTION[DIRECTION_SIZE-i];
-					create_graph2(mat,newLine,newColumn,actuLine,actuColumn,isNode,current_arc, globalWay);
-				}
-			}
-			int index = globalWay.indexOf(pos_crypt);
-			//for (int h = 0; h< globalWay.size();h++ ) {System.out.print(globalWay.get(h));System.out.print("-");}				
-			//System.out.println(pos_crypt);
-			if (index!=-1){globalWay.remove(index);}
-			
-		}
-	}
-	*/
+	
 	// int matrice_cout = [list_node.length][list_node.length]
 	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
 	// Question:
