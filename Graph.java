@@ -185,6 +185,18 @@ public class Graph {
 					m = i;
 				}
 			}
+			start = m;
+			selected[start] = 1;
+		start = target;
+		j = 0
+		while(start != -1){
+			path[j] = (char)(start+65);
+			j++;
+			start = prev[start];
+		}
+		path[j] = '\0';
+		String pathe =  StringBuilder(new String(path)).reverse().toString();
+		System.out.println(pathe);
 		return dist[target];
 	}*/
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
