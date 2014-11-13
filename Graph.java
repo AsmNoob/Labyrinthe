@@ -346,7 +346,8 @@ public class Graph {
 		start = target.get_nodeValue();
 		int j = 0;
 		while(start != -1){
-			path[j++] = start + 65; // WTFS
+			//path[j++] = start + 65; // WTFS
+			j++;
 			start = prev[start];
 		}
 		path[j] = '\0';
