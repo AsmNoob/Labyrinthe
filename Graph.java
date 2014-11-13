@@ -11,30 +11,51 @@ public class Graph {
 	private int[] DIRECTION = new int[] {-1,1,0,0};
 	private int DIRECTION_SIZE = DIRECTION.length-1;
 	private int iterrator;
-	private int optimisation;
+
+	// define
+	private int IN = 9999;
 	
 
 	// constructeur
 	public Graph(int[][] mat, int[] pacmanCoord){
 		dim = mat.length;
 		iterrator = 0;
-		optimisation = 0;
 		long begin = System.currentTimeMillis();
+<<<<<<< HEAD
+		create_graph(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null); // TO CHANGE: à mon avis tu px éviter ça ^^
+		//create_graph2(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null, new ArrayList<Integer>());
+=======
 		create_graph(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null); 
+>>>>>>> 7f5254444991542c559221cc08d0e1a0e6b66f95
     	long step1 = System.currentTimeMillis();
-		graph_converter();
+		int nbNode_afterOptim = list_posNode.size();
+		// TO FIX: problème avec optimisation_graph quand il rencontre à nouveau Pakkuman il me semble ... 
+		optimisation_graph(list_node.get(0),null);
     	long step2 = System.currentTimeMillis();
+<<<<<<< HEAD
+		graph_converter();
+    	long step3 = System.currentTimeMillis();
+    	print_graph();
+=======
     	//print_graph();
+>>>>>>> 7f5254444991542c559221cc08d0e1a0e6b66f95
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
+		float time3 = ((float) (step3-step2)) / 1000f;
 
 		System.out.print("Time exe || create_graph : ");
 		System.out.print(time1);
+		System.out.print(" || Optimisation : ");
+		System.out.print(time2);
 		System.out.print(" || graph_converter : ");
-		System.out.println(time2);
+		System.out.println(time3);
 
 		System.out.print("Optimisation || nb node : ");
+<<<<<<< HEAD
+		System.out.print(nbNode_afterOptim);
+=======
 		System.out.print(ens_node.size()+optimisation);
+>>>>>>> 7f5254444991542c559221cc08d0e1a0e6b66f95
 		System.out.print(" to ");
 		System.out.println(ens_node.size());
 
@@ -154,16 +175,6 @@ public class Graph {
 		*/
 		return data_direction;
 	}
-
-	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
-		public void optimisation_graph(Node current_node){
-		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
-			if (current_node.get_ensLink().size() < 2 && current_node.get_nodeValue() != 3) {
-				current_node.get_ensLink().get(0).supp_link(current_node);
-				ens_node.remove(current_node.get_posCrypt());
-				optimisation++;
-			}
-	}
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode,Arc current_arc){
 		//actuLine,j position actuel, preLine,preColumn position precedente
@@ -198,37 +209,53 @@ public class Graph {
 				}
 				if (nb_testDirection==data_direction[DIRECTION_SIZE+1] ) {break;}
 			}
-			if(isNode){optimisation_graph(current_node);}
-			}
 		}
-		/*
-		else{
-			/*
-			Si on est dans le cas d'une connexion a une node qui a déjà été créé on entre pas dans le procesus de création de connexion
-			or il se peut que la connexion n'existe pas encore. On recupere ici l'objet node, on ferme l'arc et met a jour les connexions cas pertinent pour : 
-			
-			+   +---+   +---+---+ On s'occupera de P puis de 1 en partant vers le haut mais au retour
-			|   |     1         | du backtrack on testera a droite du 1 pour rejoindre 2 qui a une
-			+   +---+ P +---+   + connexion avec P. Sans ce bloc on ne créera pas la dernierers 
-			|         2 |       | connexions puisque P existe déjà lors du traitement de 2.
-			+---+---+   +   +---+ 
-			 	   	|       | 
-					+---+---+
 
-			
-			current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
-			end_Arc(current_arc,current_node,pos_crypt);
-			update_nodeLink(current_arc);		
-		}*/
-
+	
 	// int matrice_cout = [list_node.length][list_node.length]
 	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
 	// Question:
 
-	public void shortestPath_algorithm(int[][] matrice_cout,Node source,Node target){
-		int dist[] = new int[matrice_cout.length];
-		int prev[] = new int[matrice_cout.length];
-		int selected[] = new int[matrice_cout.length];
+	public int shortestPath_algorithm(int[][] matrice_cout,Node source,Node target){
+		int dist[] = new int[matrice_cout[0].length];
+		int prev[] = new int[matrice_cout[0].length];
+		int selected[] = new int[matrice_cout[0].length];
+		char path[] = new char[matrice_cout[0].length];
+		for(int i = 0; i < matrice_cout[0].length; i++){
+			dist[i] = IN;
+			prev[i] = -1;
+		}
+		int start = source.get_nodeValue();
+		selected[start] = 1;
+		dist[start] = 0;
+		while( selected[target.get_nodeValue()] == 0){
+			int min = IN;
+			int m = 0;
+			for(int i = 0; i < matrice_cout[0].length; i++){
+				int d = dist[start] + matrice_cout[start][i];
+				if(d < dist[i] && selected[i] == 0){
+					dist[i] = d;
+					prev[i] = start;
+				}
+				if(min > dist[i] && selected[i] == 0){
+					min = dist[i];
+					m = i;
+				}
+			}
+			start = m;
+			selected[start] = 1;
+		}
+		start = target.get_nodeValue();
+		int j = 0;
+		while(start != -1){
+			//path[j++] = start + 65; // WTFS
+			j++;
+			start = prev[start];
+		}
+		path[j] = '\0';
+		String pathe = new StringBuffer(new String(path)).reverse().toString();
+		System.out.println(pathe);
+		return dist[target.get_nodeValue()];
 	}
 
 
