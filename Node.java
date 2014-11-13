@@ -24,6 +24,10 @@ public class Node {
 			node.supp_link(this);
 		}
 	}
+	public Arc get_arc(Node node){
+		if (ens_link.containsKey(node)) {return ens_link.get(node);}
+		return null;
+	}
 	public void set_nodeValue(int value){
 		node_value = value;
 	}

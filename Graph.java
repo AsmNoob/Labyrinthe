@@ -20,6 +20,7 @@ public class Graph {
 	// constructeur
 	public Graph(int[][] mat, int[] pacmanCoord){
 		dim = mat.length;
+		System.out.println("Dimension : " + dim);
 		iterrator = 0;
 		optimisation = 0;
 		long begin = System.currentTimeMillis();
@@ -66,7 +67,8 @@ public class Graph {
 		current_arc.get_endNode().add_link(current_arc.get_startNode(),current_arc);
 	}
 	public Arc start_Arc(int pos_crypt, Node start_node){
-		Arc current_arc = new Arc(pos_crypt);
+		Arc current_arc = new Arc();
+		current_arc.add_way(pos_crypt);
 		current_arc.set_startNode(start_node);
 		return current_arc;
 	}
@@ -82,12 +84,15 @@ public class Graph {
 	public int check_nextPosition(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, int line_add, int column_add, boolean test_twoCase){
 		//System.out.print(" actuLine: " );System.out.print(actuLine);System.out.print(" actuColumn: " );System.out.print(actuColumn);System.out.print(" preLine: " );System.out.print(preLine);System.out.print(" preColumn: " );System.out.print(preColumn);System.out.print(" line_add: " );System.out.print(line_add);System.out.print(" column_add: " );System.out.println(column_add);
 		int newLine = actuLine+line_add; int newColumn = actuColumn+column_add;
+		//si on est dans le cas ou l'element vaut la sortie il ne faut pas faire d'appel récursif puisque pour revenir dans les positions courrante et non les murs
+		if (mat[actuLine][actuColumn] == 4) {test_twoCase = true;}
 		if (( (newLine >= 0) && (newLine < dim) && (newColumn>= 0) && (newColumn < dim) && (newLine != preLine || newColumn!= preColumn)) || (preLine == actuLine && preColumn == actuColumn)) {
 			int elem = mat[newLine][newColumn];
 			// mur = -1
+			if (elem == 4) {return 1;}
 			if (elem != -1) {
 				if (!test_twoCase){return check_nextPosition(mat, newLine, newColumn, preLine, preColumn,line_add,column_add,true);}
-				else {return 1;}
+				else {return 2;}
 			}
 		}
 		return 0;
@@ -101,7 +106,6 @@ public class Graph {
 			list_node.get(i).print();
 		}
 	}
-
 	public void graph_converter(){
 		// TO ADD TO MAKEFILE: dot -Tpdf Graph.dot -o Graph.pdf
 		try{
@@ -148,7 +152,7 @@ public class Graph {
 			int test = check_nextPosition(mat, actuLine, actuColumn, preLine, preColumn,DIRECTION[i],DIRECTION[j],false);
 
 			data_direction[i] = test;
-			data_direction[DIRECTION_SIZE+1]+=test;
+			if (test>0){data_direction[DIRECTION_SIZE+1]+=1;}
 			j--;
 		}
 		
@@ -203,15 +207,44 @@ public class Graph {
 		System.out.println(pathe);
 		return dist[target.get_nodeValue()];
 	}
+
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
 	public void optimisation_graph(Node current_node){
 		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
-			if (current_node.get_ensLink().size() < 2 && current_node.get_nodeValue() != 3) {
-				current_node.get_ensLink().get(0).supp_link(current_node);
-				ens_node.remove(current_node.get_posCrypt());
-				optimisation++;
+		if (current_node.get_ensLink().size() < 2 && current_node.get_nodeValue() != 3 && current_node.get_nodeValue() != 4 && current_node.get_nodeValue() != 1) {
+			current_node.get_ensLink().get(0).supp_link(current_node);
+			ens_node.remove(current_node.get_posCrypt());
+			optimisation++;
+		}
+		else if (current_node.get_ensLink().size() == 2 && current_node.get_nodeValue() == 0) {
+			Node nodeLink1 = current_node.get_ensLink().get(0);
+			Node nodeLink2 = current_node.get_ensLink().get(1);
+			Arc arc_toLink = new Arc();
+			ArrayList<Integer> addTo_globalWay;
+			if (nodeLink1.get_arc(current_node).get_weight() <= nodeLink2.get_arc(current_node).get_weight() ) {
+				arc_toLink.set_globalWay(nodeLink1.get_arc(current_node).get_globalWay());
+				addTo_globalWay = nodeLink2.get_arc(current_node).get_globalWay();
 			}
+			else{
+				arc_toLink.set_globalWay(nodeLink2.get_arc(current_node).get_globalWay());
+				addTo_globalWay = nodeLink1.get_arc(current_node).get_globalWay();
+			}
+			for (int i =0;i < addTo_globalWay.size() ;i++ ) {
+				arc_toLink.add_way(addTo_globalWay.get(i));
+			}
+			arc_toLink.set_startNode(nodeLink1);arc_toLink.set_endNode(nodeLink2);
+			nodeLink1.supp_link(current_node); nodeLink2.supp_link(current_node);
+			arc_toLink.set_startNode(nodeLink1);arc_toLink.set_endNode(nodeLink2);
+			arc_toLink.set_stateArc(false);
+			update_nodeLink(arc_toLink);
+			ens_node.remove(current_node.get_posCrypt());
+			optimisation++;
+
+
+
+		}
 	}
+
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode,Arc current_arc){
 		//actuLine,j position actuel, preLine,preColumn position precedente
@@ -238,9 +271,9 @@ public class Graph {
 
 			if (!isNode) {current_arc.add_way(pos_crypt);}
 			for (int i = 0; i <= DIRECTION_SIZE; i++) {
-				if (data_direction[i] == 1) {
+				if (data_direction[i] >= 1) {
 					if (isNode) { current_arc = start_Arc(pos_crypt,current_node);}
-					int newLine = actuLine+(DIRECTION[i]*2); int newColumn = actuColumn+(DIRECTION[DIRECTION_SIZE-i]*2);
+					int newLine = actuLine+(DIRECTION[i]*data_direction[i]); int newColumn = actuColumn+(DIRECTION[DIRECTION_SIZE-i]*data_direction[i]);
 					create_graph(mat,newLine,newColumn,actuLine,actuColumn,isNode,current_arc);
 					nb_testDirection++;
 				}
