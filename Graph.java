@@ -12,36 +12,30 @@ public class Graph {
 	private int[] DIRECTION = new int[] {-1,1,0,0};
 	private int DIRECTION_SIZE = DIRECTION.length-1;
 	private int iterrator;
+	private int optimisation;
 	
 
 	// constructeur
 	public Graph(int[][] mat, int[] pacmanCoord){
 		dim = mat.length;
 		iterrator = 0;
+		optimisation = 0;
 		long begin = System.currentTimeMillis();
 		create_graph(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null); // TO CHANGE: à mon avis tu px éviter ça ^^
-		//create_graph2(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null, new ArrayList<Integer>());
     	long step1 = System.currentTimeMillis();
-		int nbNode_afterOptim = list_posNode.size();
-		// TO FIX: problème avec optimisation_graph quand il rencontre à nouveau Pakkuman il me semble ... 
-		optimisation_graph(list_node.get(0),null);
-    	long step2 = System.currentTimeMillis();
 		graph_converter();
-    	long step3 = System.currentTimeMillis();
+    	long step2 = System.currentTimeMillis();
     	print_graph();
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
-		float time3 = ((float) (step3-step2)) / 1000f;
 
 		System.out.print("Time exe || create_graph : ");
 		System.out.print(time1);
-		System.out.print(" || Optimisation : ");
-		System.out.print(time2);
 		System.out.print(" || graph_converter : ");
-		System.out.println(time3);
+		System.out.println(time2);
 
 		System.out.print("Optimisation || nb node : ");
-		System.out.print(nbNode_afterOptim);
+		System.out.print(list_posNode.size()+optimisation);
 		System.out.print(" to ");
 		System.out.println(list_posNode.size());
 
@@ -171,31 +165,15 @@ public class Graph {
 			}	
 		}
 	}
+
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
-	public boolean optimisation_graph(Node current_node, Node pre_node){
+		public void optimisation_graph(Node current_node){
 		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
-			int i = 0;
-			boolean uselessNode = true;
-			ArrayList<Node> node_link= new ArrayList<Node>(current_node.get_ensLink());
-			while (i < node_link.size()){
-				if (pre_node!= node_link.get(i)) {
-					if ( node_link.get(i).get_nodeValue()== 0 || node_link.get(i).get_nodeValue() ==2){
-						uselessNode = optimisation_graph(node_link.get(i), current_node);
-					}
-					else {uselessNode = false;}
-				}
-				i++;
-			}
-			if (uselessNode) {
-				pre_node.supp_link(current_node);
+			if (current_node.get_ensLink().size() < 2 && current_node.get_nodeValue() != 3) {
+				current_node.get_ensLink().get(0).supp_link(current_node);
 				supp_node(current_node);
+				optimisation++;
 			}
-			//else if (pre_node.get_nbLink() ==2 && pre_node.get_nodeValue() == 0 ) {
-			//	current_node.fusion(pre_node);
-			//}
-			return uselessNode;
-		//}
-		//else {return false;}
 	}
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode,Arc current_arc){
@@ -231,6 +209,8 @@ public class Graph {
 				}
 				if (nb_testDirection==data_direction[DIRECTION_SIZE+1] ) {break;}
 			}
+			if(isNode){optimisation_graph(current_node);}
+			}
 		}
 		/*
 		else{
@@ -251,62 +231,7 @@ public class Graph {
 			end_Arc(current_arc,current_node,pos_crypt);
 			update_nodeLink(current_arc);		
 		}*/
-		
-	}
-	/*
-	public void end_Arc2(ArrayList<Integer> globalWay, Arc current_arc, Node current_node, int pos_crypt){
-		current_arc.set_globalWay(globalWay);
-		current_arc.set_endNode(current_node);
-		current_arc.set_stateArc(false);
 
-		//System.out.println(pos_crypt); current_arc.print_arc();
-
-	}
-	public void update_nodeLink2(Arc current_arc){
-		current_arc.get_startNode().add_link(current_arc.get_endNode(),current_arc);
-		current_arc.get_endNode().add_link(current_arc.get_startNode(),current_arc);
-	}
-
-	public void create_graph2(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode, Arc current_arc, ArrayList<Integer> globalWay){
-		//actuLine,j position actuel, preLine,preColumn position precedente
-		//System.out.print("Controle_Create || prePos --> ");System.out.print(preLine);System.out.print(preColumn);
-		//System.out.print(" || actuPos --> ");System.out.print(actuLine);System.out.print(actuColumn);
-		//System.out.print(" || isNode --> ");System.out.println(isNode);
-		
-		Node current_node = null;
-		int pos_crypt= pos_cryptage(actuLine,actuColumn);
-		if (!list_posNode.contains(pos_crypt)){
-
-			if ( mat[actuLine][actuColumn]>0)  { //data_direction[DIRECTION_SIZE+1]>1 ||
-				current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
-				if (!globalWay.isEmpty()) {
-					end_Arc2(globalWay, current_arc,current_node,pos_crypt);
-					update_nodeLink(current_arc); 
-				}
-				isNode = true;
-			}
-			else {isNode = false;}
-
-			if (!isNode) {globalWay.add(pos_crypt);}
-			for (int i = 0; i<= DIRECTION_SIZE; i++){
-				if (check_nextPosition(mat, actuLine, actuColumn, preLine, preColumn,DIRECTION[i],DIRECTION[DIRECTION_SIZE-i]) == 1 ){
-					if (isNode) { 
-						current_arc = start_Arc(pos_crypt,current_node);
-						globalWay =new ArrayList<Integer>();
-						globalWay.add(pos_crypt);
-					}
-					int newLine = actuLine+DIRECTION[i]; int newColumn = actuColumn+DIRECTION[DIRECTION_SIZE-i];
-					create_graph2(mat,newLine,newColumn,actuLine,actuColumn,isNode,current_arc, globalWay);
-				}
-			}
-			int index = globalWay.indexOf(pos_crypt);
-			//for (int h = 0; h< globalWay.size();h++ ) {System.out.print(globalWay.get(h));System.out.print("-");}				
-			//System.out.println(pos_crypt);
-			if (index!=-1){globalWay.remove(index);}
-			
-		}
-	}
-	*/
 	// int matrice_cout = [list_node.length][list_node.length]
 	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
 	// Question:
