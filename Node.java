@@ -5,8 +5,7 @@ public class Node {
 	private int node_value; //pacman,bonus, monstre ou sortie
 	private int pos_crypt; // position de la node dans la matrice
 	private HashMap<Node,Arc> ens_link = new HashMap<Node,Arc>();
-	private ArrayList<Node> node_link = new ArrayList<Node>();//contient les nodes dont celle ci a une connexion
-	//private ArrayList<Arc> arc_link = new ArrayList<Arc>();// contient les arc lié avec le précedent via leur indice
+
 	//constructeur
 	public Node(int posCrypt, int elem){
 		pos_crypt = posCrypt;
