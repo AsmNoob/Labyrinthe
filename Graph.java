@@ -12,7 +12,10 @@ public class Graph {
 	private int DIRECTION_SIZE = DIRECTION.length-1;
 	private int iterrator;
 	private int optimisation;
+
+	// #define
 	
+	private int IN = 9999; 
 
 	// constructeur
 	public Graph(int[][] mat, int[] pacmanCoord){
@@ -154,7 +157,7 @@ public class Graph {
 		*/
 		return data_direction;
 	}
-/*
+
 	// int matrice_cout = [list_node.length][list_node.length]
 	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
 	// Question:
@@ -182,23 +185,24 @@ public class Graph {
 				}
 				if(min > dist[i] && selected[i] == 0){
 					min = dist[i];
-					m = i;
+					m = i; 
 				}
 			}
 			start = m;
 			selected[start] = 1;
-		start = target;
-		j = 0
+		}
+		start = target.get_nodeValue();
+		int j = 0;
 		while(start != -1){
 			path[j] = (char)(start+65);
 			j++;
 			start = prev[start];
 		}
 		path[j] = '\0';
-		String pathe =  StringBuilder(new String(path)).reverse().toString();
+		String pathe =  new StringBuilder(new String(path)).reverse().toString();
 		System.out.println(pathe);
-		return dist[target];
-	}*/
+		return dist[target.get_nodeValue()];
+	}
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
 	public void optimisation_graph(Node current_node){
 		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
