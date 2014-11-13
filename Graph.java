@@ -351,7 +351,7 @@ public class Graph {
 			start = prev[start];
 		}
 		path[j] = '\0';
-		String pathe = new StringBuffer(String(path)).reverse().toString();
+		String pathe = new StringBuffer(new String(path)).reverse().toString();
 		System.out.println(pathe);
 		return dist[target.get_nodeValue()];
 	}
