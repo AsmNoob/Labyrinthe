@@ -21,15 +21,14 @@ public class Graph {
 		long begin = System.currentTimeMillis();
 		create_graph(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null); // TO CHANGE: à mon avis tu px éviter ça ^^
 		//create_graph2(mat,pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, pacmanCoord[0]*2+1,pacmanCoord[1]*2+1, true, null, new ArrayList<Integer>());
-		print_graph();
     	long step1 = System.currentTimeMillis();
 		int nbNode_afterOptim = list_posNode.size();
 		// TO FIX: problème avec optimisation_graph quand il rencontre à nouveau Pakkuman il me semble ... 
-		//optimisation_graph(list_node.get(0),null);
+		optimisation_graph(list_node.get(0),null);
     	long step2 = System.currentTimeMillis();
 		graph_converter();
     	long step3 = System.currentTimeMillis();
-		//print_graph();
+    	print_graph();
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
 		float time3 = ((float) (step3-step2)) / 1000f;
@@ -85,12 +84,17 @@ public class Graph {
 
 	}
 	// test si la postion suivante est dans les bornes et autre qu'un mur.
-	public int test_nextPosition(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, int line_add, int column_add){
+	//appel recursif de la fonction avec test_twoCase en valeur de controle car les murs se situent entre deux chemin, ils ne constituent pas de chemin en lui même. 
+	public int check_nextPosition(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, int line_add, int column_add, boolean test_twoCase){
 		//System.out.print(" actuLine: " );System.out.print(actuLine);System.out.print(" actuColumn: " );System.out.print(actuColumn);System.out.print(" preLine: " );System.out.print(preLine);System.out.print(" preColumn: " );System.out.print(preColumn);System.out.print(" line_add: " );System.out.print(line_add);System.out.print(" column_add: " );System.out.println(column_add);
-		if (( ((actuLine+line_add) >= 0) && ((actuLine+line_add) < dim) && ((actuColumn+column_add)>= 0) && ((actuColumn+column_add) < dim) && ((actuLine+line_add) != preLine || (actuColumn+column_add) != preColumn)) || (preLine == actuLine && preColumn == actuColumn)) {
-			int elem = mat[actuLine+line_add][actuColumn+column_add];
+		int newLine = actuLine+line_add; int newColumn = actuColumn+column_add;
+		if (( (newLine >= 0) && (newLine < dim) && (newColumn>= 0) && (newColumn < dim) && (newLine != preLine || newColumn!= preColumn)) || (preLine == actuLine && preColumn == actuColumn)) {
+			int elem = mat[newLine][newColumn];
 			// mur = -1
-			if (elem != -1) {return 1;}
+			if (elem != -1) {
+				if (!test_twoCase){return check_nextPosition(mat, newLine, newColumn, preLine, preColumn,line_add,column_add,true);}
+				else {return 1;}
+			}
 		}
 		return 0;
 	}
@@ -146,14 +150,14 @@ public class Graph {
 		int j = DIRECTION_SIZE;
 		int[] data_direction = new int[5];// 4 premier entier -0,1- correspond au direction possible ou non le 5eme si il est >1 nous indiques que c'est une node.
 		for (int i = 0; i<= DIRECTION_SIZE; i++){
-			int test = test_nextPosition(mat, actuLine, actuColumn, preLine, preColumn,DIRECTION[i],DIRECTION[j]);
+			int test = check_nextPosition(mat, actuLine, actuColumn, preLine, preColumn,DIRECTION[i],DIRECTION[j],false);
 
 			data_direction[i] = test;
 			data_direction[DIRECTION_SIZE+1]+=test;
 			j--;
 		}
-		/*
-		System.out.print("Detect_isNode || ");
+		
+		/*System.out.print("Detect_isNode || ");
 		System.out.println(Arrays.toString(data_direction));
 		*/
 		return data_direction;
@@ -175,7 +179,7 @@ public class Graph {
 			ArrayList<Node> node_link= new ArrayList<Node>(current_node.get_ensLink());
 			while (i < node_link.size()){
 				if (pre_node!= node_link.get(i)) {
-					if ( node_link.get(i).get_nodeValue()!= 1 && node_link.get(i).get_nodeValue()!= 3 && node_link.get(i).get_nodeValue()!= 4){
+					if ( node_link.get(i).get_nodeValue()== 0 || node_link.get(i).get_nodeValue() ==2){
 						uselessNode = optimisation_graph(node_link.get(i), current_node);
 					}
 					else {uselessNode = false;}
@@ -221,13 +225,14 @@ public class Graph {
 			for (int i = 0; i <= DIRECTION_SIZE; i++) {
 				if (data_direction[i] == 1) {
 					if (isNode) { current_arc = start_Arc(pos_crypt,current_node);}
-					int newLine = actuLine+DIRECTION[i]; int newColumn = actuColumn+DIRECTION[DIRECTION_SIZE-i];
+					int newLine = actuLine+(DIRECTION[i]*2); int newColumn = actuColumn+(DIRECTION[DIRECTION_SIZE-i]*2);
 					create_graph(mat,newLine,newColumn,actuLine,actuColumn,isNode,current_arc);
 					nb_testDirection++;
 				}
 				if (nb_testDirection==data_direction[DIRECTION_SIZE+1] ) {break;}
 			}
 		}
+		/*
 		else{
 			/*
 			Si on est dans le cas d'une connexion a une node qui a déjà été créé on entre pas dans le procesus de création de connexion
@@ -241,13 +246,14 @@ public class Graph {
 			 	   	|       | 
 					+---+---+
 
-			*/
+			
 			current_node = select_currentNode(mat[actuLine][actuColumn],pos_crypt);
 			end_Arc(current_arc,current_node,pos_crypt);
 			update_nodeLink(current_arc);		
-		}
+		}*/
 		
 	}
+	/*
 	public void end_Arc2(ArrayList<Integer> globalWay, Arc current_arc, Node current_node, int pos_crypt){
 		current_arc.set_globalWay(globalWay);
 		current_arc.set_endNode(current_node);
@@ -263,10 +269,10 @@ public class Graph {
 
 	public void create_graph2(int[][] mat, int actuLine, int actuColumn, int preLine, int preColumn, boolean isNode, Arc current_arc, ArrayList<Integer> globalWay){
 		//actuLine,j position actuel, preLine,preColumn position precedente
-		/*System.out.print("Controle_Create || prePos --> ");System.out.print(preLine);System.out.print(preColumn);
-		System.out.print(" || actuPos --> ");System.out.print(actuLine);System.out.print(actuColumn);
-		System.out.print(" || isNode --> ");System.out.println(isNode);
-		*/
+		//System.out.print("Controle_Create || prePos --> ");System.out.print(preLine);System.out.print(preColumn);
+		//System.out.print(" || actuPos --> ");System.out.print(actuLine);System.out.print(actuColumn);
+		//System.out.print(" || isNode --> ");System.out.println(isNode);
+		
 		Node current_node = null;
 		int pos_crypt= pos_cryptage(actuLine,actuColumn);
 		if (!list_posNode.contains(pos_crypt)){
@@ -283,7 +289,7 @@ public class Graph {
 
 			if (!isNode) {globalWay.add(pos_crypt);}
 			for (int i = 0; i<= DIRECTION_SIZE; i++){
-				if (test_nextPosition(mat, actuLine, actuColumn, preLine, preColumn,DIRECTION[i],DIRECTION[DIRECTION_SIZE-i]) == 1 ){
+				if (check_nextPosition(mat, actuLine, actuColumn, preLine, preColumn,DIRECTION[i],DIRECTION[DIRECTION_SIZE-i]) == 1 ){
 					if (isNode) { 
 						current_arc = start_Arc(pos_crypt,current_node);
 						globalWay =new ArrayList<Integer>();
@@ -300,6 +306,7 @@ public class Graph {
 			
 		}
 	}
+	*/
 	// int matrice_cout = [list_node.length][list_node.length]
 	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
 	// Question:

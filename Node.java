@@ -35,10 +35,11 @@ public class Node {
 	}*/
 	public void supp_link(Node node){
 		for (int i = 0; i< node_link.size() ; i++ ) {
-			if (node == node.get_ensLink().get(i)){
+			if (node == node_link.get(i)){
 				node_link.remove(i);
 				arc_link.remove(i);
 				node.supp_link(this);
+				break;
 			}
 		}
 	}
