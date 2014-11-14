@@ -7,9 +7,8 @@ public class Arc {
 	private Node lastNode; // fin de l'arc avec la node de fin
 	private ArrayList<Integer> global_way = new ArrayList<Integer>();
 	//constructeur
-	public Arc(int pos_cryptInit){
+	public Arc(){
 		openArc = true;
-		add_way(pos_cryptInit);
 	}
 	// Methode ajoutant un chemin de coordonée (x,y) dans l'attribut global_way
 	public void add_way(int pos_crypt){
@@ -40,6 +39,9 @@ public class Arc {
 	}
 	
 	//__________getter
+	public ArrayList<Integer> get_globalWay(){
+		return global_way;
+	}
 	public boolean get_stateArc(){
 		return openArc;
 	}
