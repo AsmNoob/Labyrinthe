@@ -158,7 +158,7 @@ public class Graph {
 		return data_direction;
 	}
 
-	// int matrice_cout = [list_node.length][list_node.length]
+	// matrice_cout.length mustbe NbNoeuds
 	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
 	// Question:
 
