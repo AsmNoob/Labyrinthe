@@ -175,6 +175,87 @@ public class Graph {
 	// matrice_cout.length mustbe NbNoeuds
 	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
 	// Question:
+	public void dijkstra (int nb_nodes,int[][] mat){
+		int IN = 999;
+		int[] predecessor = new int[nb_nodes];
+		int[][] matrix = mat; // utilisé pou le liens entre les noeuds
+		int[] distance = new int[nb_nodes]; // permet de connaitre la distance jusqu'a  un certain noeud
+		int[] visited = new int[nb_nodes]; // permet de savoir les noeuds déjà visités
+		int min;
+		int next_node = 0;
+		for (int i = 0; i < nb_nodes ;i++) {
+			for (int j = 0; j < nb_nodes ;j++) {
+				if(matrix[i][j] == 0){
+					matrix[i][j] = IN; // s'il n'y a pas de lien direct 
+				}
+			}
+		}
+
+		// Algorithme préparé pour que PAKKUMAN soit en mat[0][0]
+
+		distance = matrix[0]; // distance de node0 aux autres nodes
+		visited[0] = 1; // on considère le premier node comme visité
+		distance[0] = 0; // car c'est le noeud de départ
+
+		for(int c = 0; c < nb_nodes; c++){
+			min = IN;
+			for (int i = 0; i < nb_nodes ;i++ ) {
+				if(min > distance[i] && visited[i] != 1){
+					min = distance[i];
+					next_node= i;
+				}			
+			}
+				
+
+			visited[next_node] = 1;
+			
+			for(int j = 0; j < nb_nodes; j++){
+				
+				if(visited[j]!=1){
+					
+					if(min+matrix[next_node][j] < distance[j]){
+						
+						distance[j] = min+matrix[next_node][j];
+						predecessor[j] = next_node;
+						
+					}
+					
+				}
+			}
+
+		}
+		for(int i = 0; i < nb_nodes; i++){
+			
+			System.out.print("|" + distance[i]);
+			
+		}
+		System.out.println("|");
+		
+		int j;
+		for(int i = 0; i < nb_nodes; i++){
+			
+			if(i!=0){
+				
+				System.out.print("Path = " + i);
+				j = i;
+				do{
+					
+					j=predecessor[j];
+					System.out.print(" <- " + j);
+					
+				}while(j!=0);
+				
+			}
+			
+			System.out.println();
+			
+		}
+
+
+
+
+	}
+
 
 	public int shortestPath_algorithm(int[][] matrice_cout,Node source,Node target){
 		int dist[] = new int[matrice_cout[0].length];
