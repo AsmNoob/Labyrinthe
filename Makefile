@@ -9,6 +9,9 @@ all: $(OBJECT)
 $(OBJECT):$(CLASSES)
 	$(JC) $(JFLAGS) $^
 
+%.pdf:%.dot
+	dot -Tpdf Graph.dot -o Graph.pdf
+
 clean:
 	$(RM) *.class
 
