@@ -52,7 +52,7 @@ public class Maze{
 		System.out.println();
 		System.out.println("Controle_MazePrint");
 		System.out.println();
-		PrintMatrix(matrix);
+		//PrintMatrix(matrix);
 		System.out.println();
 		System.out.println("Controle_InitialSituation");
 		System.out.println();
