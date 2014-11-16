@@ -175,7 +175,8 @@ public class Graph {
 	// matrice_cout.length mustbe NbNoeuds
 	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
 	// Question:
-	public void dijkstra (int nb_nodes,int[][] mat){
+	public void dijkstra (int[][] mat){
+		int  nb_nodes = mat[0].length;
 		int IN = 999;
 		int[] predecessor = new int[nb_nodes];
 		int[][] matrix = mat; // utilisé pou le liens entre les noeuds
@@ -199,13 +200,17 @@ public class Graph {
 
 		for(int c = 0; c < nb_nodes; c++){
 			min = IN;
+
+			// On choisit quel est le noeud connecté au noeud actuel avec le plus court chemin.
+
 			for (int i = 0; i < nb_nodes ;i++ ) {
-				if(min > distance[i] && visited[i] != 1){
-					min = distance[i];
-					next_node= i;
+				if(min > distance[i] && visited[i] != 1){ // si le noeud n'a pas été visité et la distance entre les noeuds est < le min
+					min = distance[i]; // min prend la distance entre les noeuds
+					next_node= i; // on svg i comme étant le prochain noeud
 				}			
 			}
-				
+			
+			// On indique que le noeud a été visité
 
 			visited[next_node] = 1;
 			
@@ -213,9 +218,16 @@ public class Graph {
 				
 				if(visited[j]!=1){
 					
+					// On regarde si la distance entre le "min" + la distance du "next_node" est plus petite que la distance à partir du noeud de départ
+
 					if(min+matrix[next_node][j] < distance[j]){
-						
+							
+						// si c'est le cas on indique la nouvelle distance entre le noeud de départ et le noeud 'j'
+
 						distance[j] = min+matrix[next_node][j];
+
+						// on indique par quel noeud on est passé avant
+
 						predecessor[j] = next_node;
 						
 					}
@@ -224,6 +236,9 @@ public class Graph {
 			}
 
 		}
+
+		// On va donc récupérer tous les chemins les plus court en partant 
+
 		for(int i = 0; i < nb_nodes; i++){
 			
 			System.out.print("|" + distance[i]);
