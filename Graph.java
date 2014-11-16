@@ -28,12 +28,13 @@ public class Graph {
 		COLUMN_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_COLUMN))+1);
 		int pacmanPos_crypt = pos_cryptage(pacmanCoord[0]*2+1,pacmanCoord[1]*2+1);
 
+		// Test du temps d'execution du 
+
 		long begin = System.currentTimeMillis();
 		create_graph(mat,pacmanPos_crypt,pacmanPos_crypt, true, null); 
     	long step1 = System.currentTimeMillis();
 		graph_converter();
     	long step2 = System.currentTimeMillis();
-    	//print_graph();
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
 
@@ -41,6 +42,8 @@ public class Graph {
 		System.out.print(time1);
 		System.out.print(" || graph_converter : ");
 		System.out.println(time2);
+		System.out.print("Total Time execution: ");
+		System.out.println(time1+time2);
 
 		System.out.print("Optimisation || nb node : ");
 		System.out.print(ens_node.size()+optimisation);
@@ -48,6 +51,14 @@ public class Graph {
 		System.out.println(ens_node.size());
 
 	}
+
+
+	//------------Getter/Setter----------//
+
+	public HashMap<Integer,Node> get_ensNode(){
+		return ens_node;
+	}
+
 	// creer une node et la place dans la list de stockage
 	// temps d'exe = 0
 	public Node create_node(int elem, int pos_crypt){
@@ -114,7 +125,6 @@ public class Graph {
 		}
 	}
 	public void graph_converter(){
-		// TO ADD TO MAKEFILE: dot -Tpdf Graph.dot -o Graph.pdf
 		try{
 			PrintWriter writer = new PrintWriter ("Graph.dot");
 			writer.println("graph chemin {");
@@ -172,25 +182,48 @@ public class Graph {
 		return data_direction;
 	}
 
-	// matrice_cout.length mustbe NbNoeuds
-	// Avec la distance entre les noeuds et infini dans le cas d'une liaison non-directe
-	// Question:
-	public void dijkstra (int[][] mat){
-		int  nb_nodes = mat[0].length;
-		int IN = 999;
-		int[] predecessor = new int[nb_nodes];
-		int[][] matrix = mat; // utilisé pou le liens entre les noeuds
+	public void dijkstra (){
+
+		int  nb_nodes = ens_node.size();
+		int IN = 9999;
+		int[] predecessor = new int[nb_nodes]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i]
+		
+		//init matrice à patir d'un dico
+		ArrayList<Node> list_node = new ArrayList<Node>(ens_node.values());
+		//ArrayList<Node> nodes_name = new ArrayList<Node>(nb_nodes);
+
+
+		int[][] matrix = new int[nb_nodes][nb_nodes]; // utilisé pou le liens entre les noeuds
+		for(int i = 0; i < nb_nodes; i++){
+			for(int j = i; j < nb_nodes;j++){
+				// MOCHE !!!!!!
+				try{
+					matrix[i][j] = matrix[j][i] = list_node.get(i).get_arc(list_node.get(j)).get_weight();
+				}catch(NullPointerException e){
+					matrix[i][j] = matrix[j][i] = IN;
+				}
+				/*if(list_nodes.get(i).get_arc(nodes_name[j]) != null){
+					matrix[i][j] = matrix[j][i] = list_nodes.get(i).get_arc(nodes_name[j]).get_weight();
+				}else{
+					matrix[i][j] = matrix[j][i] = IN;
+				}*/
+			}
+		}
+
+		/*for(int i = 0; i < nb_nodes; i++){
+			for(int j = 0; j < nb_nodes;j++){
+				System.out.print(matrix[i][j]);System.out.print("|");
+			}
+			System.out.println();
+		}*/
+
+		// NE PAS OUBLIER 0 = IN !!!
+
+
 		int[] distance = new int[nb_nodes]; // permet de connaitre la distance jusqu'a  un certain noeud
 		int[] visited = new int[nb_nodes]; // permet de savoir les noeuds déjà visités
 		int min;
 		int next_node = 0;
-		for (int i = 0; i < nb_nodes ;i++) {
-			for (int j = 0; j < nb_nodes ;j++) {
-				if(matrix[i][j] == 0){
-					matrix[i][j] = IN; // s'il n'y a pas de lien direct 
-				}
-			}
-		}
 
 		// Algorithme préparé pour que PAKKUMAN soit en mat[0][0]
 
@@ -240,39 +273,26 @@ public class Graph {
 		// On va donc récupérer tous les chemins les plus court en partant 
 
 		for(int i = 0; i < nb_nodes; i++){
-			
-			System.out.print("|" + distance[i]);
-			
+			System.out.print("|" +list_node.get(i).get_posCrypt()+": "+ distance[i]);
 		}
 		System.out.println("|");
-		
 		int j;
 		for(int i = 0; i < nb_nodes; i++){
-			
 			if(i!=0){
-				
-				System.out.print("Path = " + i);
+				System.out.print("Path = ");System.out.print(list_node.get(i).get_posCrypt());
 				j = i;
 				do{
-					
 					j=predecessor[j];
-					System.out.print(" <- " + j);
+					System.out.print(" <- ");System.out.print(list_node.get(j).get_posCrypt());
 					
 				}while(j!=0);
-				
 			}
-			
 			System.out.println();
-			
 		}
-
-
-
-
 	}
 
 
-	public int shortestPath_algorithm(int[][] matrice_cout,Node source,Node target){
+	/*public int shortestPath_algorithm(int[][] matrice_cout,Node source,Node target){
 		int dist[] = new int[matrice_cout[0].length];
 		int prev[] = new int[matrice_cout[0].length];
 		int selected[] = new int[matrice_cout[0].length];
@@ -312,7 +332,7 @@ public class Graph {
 		String pathe =  new StringBuilder(new String(path)).reverse().toString();
 		System.out.println(pathe);
 		return dist[target.get_nodeValue()];
-	}
+	}*/
 
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
 	public void optimisation_graph(Node current_node){

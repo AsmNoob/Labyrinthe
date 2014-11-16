@@ -13,7 +13,9 @@ public class Main{
 		System.out.println();
 		System.out.println("Controle_GraphEnd");
 		System.out.println();
+		System.out.println("Controle_DijkstraStart");
+		graph.dijkstra();
+		System.out.println("Controle_DijkstraEnd");
 		System.out.println("Controle_EndMain");
-		System.out.println("TESTLUL: ");
 	}
 }
