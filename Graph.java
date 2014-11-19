@@ -10,34 +10,39 @@ public class Graph {
 	private int DIM_COLUMN; //dimention de la matrice
 	private int LINE_SIZE; //dimention de la matrice 
 	private int COLUMN_SIZE; //dimention de la matrice
-	private HashMap<Integer,Node> ens_node = new HashMap<Integer,Node>();
+	private HashMap<Integer,Node> ENS_NODE = new HashMap<Integer,Node>();
+	private	ArrayList<Node> LIST_NODE;
 	private int[] DIRECTION = new int[] {-1,1,0,0};
 	private int DIRECTION_SIZE = DIRECTION.length-1;
 	private int iterrator = 0;
 	private int optimisation = 0;
-
+	private int pakkumanPos_crypt;
 	// #define
 	
 	private int IN = 9999; 
 
 	// constructeur
-	public Graph(int[][] mat, int[] pacmanCoord){
+	public Graph(int[][] mat, int[] pakkumanCoord){
 		DIM_LINE = mat.length;
 		DIM_COLUMN = mat[0].length;
 		LINE_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_LINE))+1);
 		COLUMN_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_COLUMN))+1);
-		int pacmanPos_crypt = pos_cryptage(pacmanCoord[0]*2+1,pacmanCoord[1]*2+1);
+		pakkumanPos_crypt = pos_cryptage(pakkumanCoord[0]*2+1,pakkumanCoord[1]*2+1);
 
 		// Test du temps d'execution du 
 
 		long begin = System.currentTimeMillis();
-		create_graph(mat,pacmanPos_crypt,pacmanPos_crypt, true, null); 
+		create_graph(mat,pakkumanPos_crypt,pakkumanPos_crypt, true, null); 
+		LIST_NODE = new ArrayList<Node>(ENS_NODE.values());
+		//fais un switch entre la node Pakkuman et la node en premiere position 
+		LIST_NODE.set(LIST_NODE.indexOf(ENS_NODE.get(pakkumanPos_crypt)),LIST_NODE.set(0,ENS_NODE.get(pakkumanPos_crypt)));
+    	
     	long step1 = System.currentTimeMillis();
 		graph_converter();
     	long step2 = System.currentTimeMillis();
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
-
+		//print_graph();
 		System.out.print("Time exe || create_graph : ");
 		System.out.print(time1);
 		System.out.print(" || graph_converter : ");
@@ -46,9 +51,9 @@ public class Graph {
 		System.out.println(time1+time2);
 
 		System.out.print("Optimisation || nb node : ");
-		System.out.print(ens_node.size()+optimisation);
+		System.out.print(ENS_NODE.size()+optimisation);
 		System.out.print(" to ");
-		System.out.println(ens_node.size());
+		System.out.println(ENS_NODE.size());
 
 	}
 
@@ -56,24 +61,24 @@ public class Graph {
 	//------------Getter/Setter----------//
 
 	public HashMap<Integer,Node> get_ensNode(){
-		return ens_node;
+		return ENS_NODE;
 	}
 
 	// creer une node et la place dans la list de stockage
 	// temps d'exe = 0
 	public Node create_node(int elem, int pos_crypt){
 		Node current_node = new Node(pos_crypt, elem);
-		ens_node.put(pos_crypt,current_node);
+		ENS_NODE.put(pos_crypt,current_node);
 		return current_node;
 	}
 	// selectionne la noeud courrant -déjà existant ou non-.
 	public Node select_currentNode(int elem, int pos_crypt){
 		Node current_node = null;
-		if (!ens_node.containsKey(pos_crypt)) {
+		if (!ENS_NODE.containsKey(pos_crypt)) {
 			current_node = create_node(elem, pos_crypt);
 		}
 		else{
-			current_node = ens_node.get(pos_crypt);
+			current_node = ENS_NODE.get(pos_crypt);
 		}
 		return current_node;
 	}
@@ -118,10 +123,9 @@ public class Graph {
 
 	//affichage des données récuperer après analyse du labyrinthe. 
 	public void print_graph(){
-		ArrayList<Node> list_node = new ArrayList<Node>(ens_node.values());
-		int size_dict = list_node.size();
+		int size_dict = LIST_NODE.size();
 		for (int i = 0; i < size_dict; i++ ) {
-			list_node.get(i).print();
+			LIST_NODE.get(i).print();
 		}
 	}
 	public void graph_converter(){
@@ -130,13 +134,19 @@ public class Graph {
 			writer.println("graph chemin {");
 			writer.println();
 			ArrayList<String> list_arcsPrinted = new ArrayList<String>();
-			ArrayList<Node> list_node = new ArrayList<Node>(ens_node.values());
-			for(int i = 0; i < list_node.size(); i++){
+			
+			for(int i = 0; i < LIST_NODE.size(); i++){
 
-				for(int j = 0; j < list_node.get(i).get_ensLink().size();j++){ // parcourt les noeuds lies
-					if(!(list_arcsPrinted.contains(Integer.toString(list_node.get(i).get_ensLink().get(j).get_posCrypt())+Integer.toString(list_node.get(i).get_posCrypt())))){
-						writer.print("	");writer.print(list_node.get(i).get_posCrypt());writer.print(" -- ");writer.print(list_node.get(i).get_ensLink().get(j).get_posCrypt());writer.print(" [label=");writer.print(list_node.get(i).get_ensArc().get(j).get_weight());writer.println("]");
-						String arcPrinted =  Integer.toString(list_node.get(i).get_posCrypt())+ Integer.toString(list_node.get(i).get_ensLink().get(j).get_posCrypt());
+				for(int j = 0; j < LIST_NODE.get(i).get_ensLink().size();j++){ // parcourt les noeuds lies
+					if(!(list_arcsPrinted.contains(Integer.toString(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt())+Integer.toString(LIST_NODE.get(i).get_posCrypt())))){
+						writer.print("	");
+						writer.print(LIST_NODE.get(i).get_posCrypt());
+						writer.print(" -- ");
+						writer.print(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt());
+						writer.print(" [label=");
+						writer.print(LIST_NODE.get(i).get_ensArc().get(j).get_weight());
+						writer.println("]");
+						String arcPrinted =  Integer.toString(LIST_NODE.get(i).get_posCrypt())+ Integer.toString(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt());
 						//System.out.print("arcPrinted: ");System.out.println(arcPrinted);
 						list_arcsPrinted.add(arcPrinted);
 					}
@@ -183,13 +193,11 @@ public class Graph {
 	}
 
 	public void dijkstra (){
-
-		int  nb_nodes = ens_node.size();
+		System.out.println(0>-1);
+		int nb_nodes = ENS_NODE.size();
 		int IN = 9999;
 		int[] predecessor = new int[nb_nodes]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i]
 		
-		//init matrice à patir d'un dico
-		ArrayList<Node> list_node = new ArrayList<Node>(ens_node.values());
 		//ArrayList<Node> nodes_name = new ArrayList<Node>(nb_nodes);
 
 
@@ -198,12 +206,12 @@ public class Graph {
 			for(int j = i; j < nb_nodes;j++){
 				// MOCHE !!!!!!
 				try{
-					matrix[i][j] = matrix[j][i] = list_node.get(i).get_arc(list_node.get(j)).get_weight();
+					matrix[i][j] = matrix[j][i] = LIST_NODE.get(i).get_arc(LIST_NODE.get(j)).get_weight();
 				}catch(NullPointerException e){
 					matrix[i][j] = matrix[j][i] = IN;
 				}
-				/*if(list_nodes.get(i).get_arc(nodes_name[j]) != null){
-					matrix[i][j] = matrix[j][i] = list_nodes.get(i).get_arc(nodes_name[j]).get_weight();
+				/*if(LIST_NODEs.get(i).get_arc(nodes_name[j]) != null){
+					matrix[i][j] = matrix[j][i] = LIST_NODEs.get(i).get_arc(nodes_name[j]).get_weight();
 				}else{
 					matrix[i][j] = matrix[j][i] = IN;
 				}*/
@@ -223,6 +231,7 @@ public class Graph {
 		int[] distance = new int[nb_nodes]; // permet de connaitre la distance jusqu'a  un certain noeud
 		int[] visited = new int[nb_nodes]; // permet de savoir les noeuds déjà visités
 		int min;
+		int alive_monster = 0;
 		int next_node = 0;
 
 		// Algorithme préparé pour que PAKKUMAN soit en mat[0][0]
@@ -237,7 +246,8 @@ public class Graph {
 			// On choisit quel est le noeud connecté au noeud actuel avec le plus court chemin.
 
 			for (int i = 0; i < nb_nodes ;i++ ) {
-				if(min > distance[i] && visited[i] != 1){ // si le noeud n'a pas été visité et la distance entre les noeuds est < le min
+				if(min > distance[i] && visited[i] != 1)
+				{ // si le noeud n'a pas été visité et la distance entre les noeuds est < le min
 					min = distance[i]; // min prend la distance entre les noeuds
 					next_node= i; // on svg i comme étant le prochain noeud
 				}			
@@ -254,36 +264,29 @@ public class Graph {
 					// On regarde si la distance entre le "min" + la distance du "next_node" est plus petite que la distance à partir du noeud de départ
 
 					if(min+matrix[next_node][j] < distance[j]){
-							
 						// si c'est le cas on indique la nouvelle distance entre le noeud de départ et le noeud 'j'
-
 						distance[j] = min+matrix[next_node][j];
-
 						// on indique par quel noeud on est passé avant
-
 						predecessor[j] = next_node;
-						
-					}
-					
+					}	
 				}
 			}
-
 		}
 
 		// On va donc récupérer tous les chemins les plus court en partant 
 
 		for(int i = 0; i < nb_nodes; i++){
-			System.out.print("|" +list_node.get(i).get_posCrypt()+": "+ distance[i]);
+			System.out.print("|" +LIST_NODE.get(i).get_posCrypt()+": "+ distance[i]);
 		}
 		System.out.println("|");
 		int j;
 		for(int i = 0; i < nb_nodes; i++){
 			if(i!=0){
-				System.out.print("Path = ");System.out.print(list_node.get(i).get_posCrypt());
+				System.out.print("Path = ");System.out.print(LIST_NODE.get(i).get_posCrypt());
 				j = i;
 				do{
 					j=predecessor[j];
-					System.out.print(" <- ");System.out.print(list_node.get(j).get_posCrypt());
+					System.out.print(" <- ");System.out.print(LIST_NODE.get(j).get_posCrypt());
 					
 				}while(j!=0);
 			}
@@ -337,12 +340,12 @@ public class Graph {
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
 	public void optimisation_graph(Node current_node){
 		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
-		if (current_node.get_ensLink().size() < 2 && current_node.get_nodeValue() != 3 && current_node.get_nodeValue() != 4 && current_node.get_nodeValue() != 1) {
+		if (current_node.isUnidirectionnel() && (current_node.isFreeSpace() || current_node.isMonster())) {
 			current_node.get_ensLink().get(0).supp_link(current_node);
-			ens_node.remove(current_node.get_posCrypt());
+			ENS_NODE.remove(current_node.get_posCrypt());
 			optimisation++;
 		}
-		else if (current_node.get_ensLink().size() == 2 && current_node.get_nodeValue() == 0) {
+		else if (current_node.isBidirectionnel() && current_node.isFreeSpace()) {
 			Node nodeLink1 = current_node.get_ensLink().get(0);
 			Node nodeLink2 = current_node.get_ensLink().get(1);
 			Arc arc_toLink = new Arc();
@@ -363,7 +366,7 @@ public class Graph {
 			arc_toLink.set_startNode(nodeLink1);arc_toLink.set_endNode(nodeLink2);
 			arc_toLink.set_stateArc(false);
 			update_nodeLink(arc_toLink);
-			ens_node.remove(current_node.get_posCrypt());
+			ENS_NODE.remove(current_node.get_posCrypt());
 			optimisation++;
 
 
@@ -386,7 +389,7 @@ public class Graph {
 		//int pos_crypt= pos_cryptage(actuLine,actuColumn);
 		iterrator++;
 		int nb_testDirection = 0;
-		if (!ens_node.containsKey(pos_crypt)){
+		if (!ENS_NODE.containsKey(pos_crypt)){
 			int[] data_direction = detect_isNode(mat, pos_crypt, prePos_crypt);
 
 			if (data_direction[DIRECTION_SIZE+1]>1 || valueMat(mat, pos_crypt)>0)  { 

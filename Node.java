@@ -39,6 +39,38 @@ public class Node {
 	}
 	
 	//______getter
+	public boolean isUnidirectionnel(){
+		if (ens_link.size() == 1){return true;}
+		return false;
+	}
+	public boolean isBidirectionnel(){
+		if (ens_link.size() == 2){return true;}
+		return false;
+	}
+	public boolean isMultidirectionnel(){
+		if (ens_link.size() > 2){return true;}
+		return false;
+	}
+	public boolean isFreeSpace(){
+		if (node_value == 0) { return true;}
+		return false;
+	}
+	public boolean isPakkuman(){
+		if (node_value == 1) { return true;}
+		return false;
+	}
+	public boolean isMonster(){
+		if (node_value == 2) { return true;}
+		return false;
+	}
+	public boolean isExit(){
+		if (node_value == 4){return true;}
+		return false;
+	}
+	public boolean isSweet(){
+		if (node_value == 3) {return true;}
+		return false;
+	}
 	public int get_nodeValue(){
 		return node_value;
 	}
