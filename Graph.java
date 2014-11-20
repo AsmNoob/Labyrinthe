@@ -17,6 +17,7 @@ public class Graph {
 	private int iterrator = 0;
 	private int optimisation = 0;
 	private int pakkumanPos_crypt;
+	private int exitPos_crypt;
 	// #define
 	
 	private int IN = 9999; 
@@ -192,13 +193,16 @@ public class Graph {
 		return data_direction;
 	}
 
+
+
 	public void dijkstra (){
-		System.out.println(0>-1);
 		int nb_nodes = ENS_NODE.size();
 		int IN = 9999;
-		int[] predecessor = new int[nb_nodes]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i]
-		
 		//ArrayList<Node> nodes_name = new ArrayList<Node>(nb_nodes);
+		for(int i = 0; i < nb_nodes; i++){
+			System.out.print("|" +LIST_NODE.get(i).get_posCrypt());
+		}
+		System.out.println();
 
 
 		int[][] matrix = new int[nb_nodes][nb_nodes]; // utilisé pou le liens entre les noeuds
@@ -217,8 +221,8 @@ public class Graph {
 				}*/
 			}
 		}
-
-		/*for(int i = 0; i < nb_nodes; i++){
+		/*
+		for(int i = 0; i < nb_nodes; i++){
 			for(int j = 0; j < nb_nodes;j++){
 				System.out.print(matrix[i][j]);System.out.print("|");
 			}
@@ -230,6 +234,9 @@ public class Graph {
 
 		int[] distance = new int[nb_nodes]; // permet de connaitre la distance jusqu'a  un certain noeud
 		int[] visited = new int[nb_nodes]; // permet de savoir les noeuds déjà visités
+		int[] predecessor = new int[nb_nodes]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i]
+		int exitPos = LIST_NODE.indexOf(ENS_NODE.get(exitPos_crypt));// permet de recuperer la place de la node de sortie dans la LIST_NODE
+
 		int min;
 		int alive_monster = 0;
 		int next_node = 0;
@@ -240,8 +247,25 @@ public class Graph {
 		visited[0] = 1; // on considère le premier node comme visité
 		distance[0] = 0; // car c'est le noeud de départ
 
-		for(int c = 0; c < nb_nodes; c++){
+		for(int i = 0; i < nb_nodes; i++){
+			System.out.print("|" +distance[i]);
+		}
+		System.out.println();
+
+		while(predecessor[exitPos]==0){ // On s'arrete si on a déjà reussit a passer par la sortie
 			min = IN;
+
+			System.out.println("Distance: ");
+			for(int i = 0; i < nb_nodes; i++){
+				System.out.print("|" +distance[i]);
+			}
+			System.out.println();
+			
+			System.out.println("Predecessor: ");
+			for(int i = 0; i < nb_nodes; i++){
+				System.out.print("|" +predecessor[i]);
+			}
+			System.out.println();
 
 			// On choisit quel est le noeud connecté au noeud actuel avec le plus court chemin.
 
@@ -294,49 +318,6 @@ public class Graph {
 		}
 	}
 
-
-	/*public int shortestPath_algorithm(int[][] matrice_cout,Node source,Node target){
-		int dist[] = new int[matrice_cout[0].length];
-		int prev[] = new int[matrice_cout[0].length];
-		int selected[] = new int[matrice_cout[0].length];
-		char path[] = new char[matrice_cout[0].length];
-		for(int i = 0; i < matrice_cout[0].length; i++){
-			dist[i] = IN;
-			prev[i] = -1;
-		}
-		int start = source.get_nodeValue();
-		selected[start] = 1;
-		dist[start] = 0;
-		while( selected[target.get_nodeValue()] == 0){
-			int min = IN;
-			int m = 0;
-			for(int i = 0; i < matrice_cout[0].length; i++){
-				int d = dist[start] + matrice_cout[start][i];
-				if(d < dist[i] && selected[i] == 0){
-					dist[i] = d;
-					prev[i] = start;
-				}
-				if(min > dist[i] && selected[i] == 0){
-					min = dist[i];
-					m = i; 
-				}
-			}
-			start = m;
-			selected[start] = 1;
-		}
-		start = target.get_nodeValue();
-		int j = 0;
-		while(start != -1){
-			path[j] = (char)(start+65);
-			j++;
-			start = prev[start];
-		}
-		path[j] = '\0';
-		String pathe =  new StringBuilder(new String(path)).reverse().toString();
-		System.out.println(pathe);
-		return dist[target.get_nodeValue()];
-	}*/
-
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
 	public void optimisation_graph(Node current_node){
 		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
@@ -368,9 +349,6 @@ public class Graph {
 			update_nodeLink(arc_toLink);
 			ENS_NODE.remove(current_node.get_posCrypt());
 			optimisation++;
-
-
-
 		}
 	}
 
@@ -378,6 +356,7 @@ public class Graph {
 		int[] positions = pos_decryptage(pos_crypt);
 		return mat[positions[0]][positions[1]];
 	}
+
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int pos_crypt, int prePos_crypt,boolean isNode,Arc current_arc){
 		//actuLine,j position actuel, preLine,preColumn position precedente
@@ -393,7 +372,10 @@ public class Graph {
 			int[] data_direction = detect_isNode(mat, pos_crypt, prePos_crypt);
 
 			if (data_direction[DIRECTION_SIZE+1]>1 || valueMat(mat, pos_crypt)>0)  { 
+
 				current_node = select_currentNode(valueMat(mat, pos_crypt),pos_crypt);
+				if (current_node.isExit()) {exitPos_crypt=pos_crypt;}
+
 				if (current_arc != null) {
 					end_Arc(current_arc,current_node,pos_crypt);
 					update_nodeLink(current_arc); 
