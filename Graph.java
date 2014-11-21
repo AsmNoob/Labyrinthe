@@ -235,11 +235,14 @@ public class Graph {
 		int[] distance = new int[nb_nodes]; // permet de connaitre la distance jusqu'a  un certain noeud
 		int[] visited = new int[nb_nodes]; // permet de savoir les noeuds déjà visités
 		int[] predecessor = new int[nb_nodes]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i]
+		int[] predecessor2 = new int[nb_nodes]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i]
 		int exitPos = LIST_NODE.indexOf(ENS_NODE.get(exitPos_crypt));// permet de recuperer la place de la node de sortie dans la LIST_NODE
 
 		int min;
-		int alive_monster = 0;
+		int nb_sweet = 0;
 		int next_node = 0;
+		int actu_node = 0;
+		boolean goBack = false;
 
 		// Algorithme préparé pour que PAKKUMAN soit en mat[0][0]
 
@@ -270,24 +273,33 @@ public class Graph {
 			// On choisit quel est le noeud connecté au noeud actuel avec le plus court chemin.
 
 			for (int i = 0; i < nb_nodes ;i++ ) {
-				if(min > distance[i] && visited[i] != 1)
-				{ // si le noeud n'a pas été visité et la distance entre les noeuds est < le min
+				System.out.println("ActuNode: " +LIST_NODE.get(actu_node).get_posCrypt()+ " Test_link: " + LIST_NODE.get(i).get_posCrypt() + " state: " + visited[i] + " is_link: " +LIST_NODE.get(actu_node).isLinkTo(LIST_NODE.get(i)));
+ 				//LIST_NODE.get(i).print();
+				if( LIST_NODE.get(actu_node).isLinkTo(LIST_NODE.get(i)) && min > distance[i] && ((visited[i] != 1) || goBack))
+				{ 
+					System.out.println("Short_link: " + LIST_NODE.get(i).get_posCrypt());
+					// si le noeud n'a pas été visité et la distance entre les noeuds est < le min
 					min = distance[i]; // min prend la distance entre les noeuds
 					next_node= i; // on svg i comme étant le prochain noeud
 				}			
 			}
-			
+			actu_node = next_node;
 			// On indique que le noeud a été visité
+			System.out.println("Next_node: " + LIST_NODE.get(next_node).get_posCrypt());
+
+			if (LIST_NODE.get(next_node).isUnidirectionnel()) {goBack=true;}
+			if (LIST_NODE.get(next_node).isMultidirectionnel()) {goBack=false;}
 
 			visited[next_node] = 1;
 			
 			for(int j = 0; j < nb_nodes; j++){
 				
-				if(visited[j]!=1){
+				if(visited[j]!=1 || goBack){
 					
 					// On regarde si la distance entre le "min" + la distance du "next_node" est plus petite que la distance à partir du noeud de départ
 
-					if(min+matrix[next_node][j] < distance[j]){
+					if(min+matrix[next_node][j] < distance[j] && (!LIST_NODE.get(j).isMonster() || (LIST_NODE.get(j).isMonster() && nb_sweet>0 ))){
+						System.out.println("Link_node: " + LIST_NODE.get(j).get_posCrypt());
 						// si c'est le cas on indique la nouvelle distance entre le noeud de départ et le noeud 'j'
 						distance[j] = min+matrix[next_node][j];
 						// on indique par quel noeud on est passé avant
@@ -295,6 +307,8 @@ public class Graph {
 					}	
 				}
 			}
+			if (LIST_NODE.get(next_node).isMonster()){nb_sweet-=1;}
+			if (LIST_NODE.get(next_node).isSweet()) {nb_sweet+=1;}
 		}
 
 		// On va donc récupérer tous les chemins les plus court en partant 

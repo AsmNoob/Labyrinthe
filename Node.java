@@ -39,6 +39,10 @@ public class Node {
 	}
 	
 	//______getter
+	public boolean isLinkTo(Node node_link){
+		if(ens_link.containsKey(node_link)){return true;}
+		return false;
+	}
 	public boolean isUnidirectionnel(){
 		if (ens_link.size() == 1){return true;}
 		return false;
@@ -91,12 +95,14 @@ public class Node {
 	//print liaison entre noeud
 	public void print(){
 		int size_globalWay = ens_link.size();
+		ArrayList<Node> node_link =  new ArrayList<Node>(ens_link.keySet());
 		ArrayList<Arc> arc_link =  new ArrayList<Arc>(ens_link.values());
 		System.out.print("Node : "); this.print_nodePos();
 		System.out.println();
 
 		System.out.println("link : ");
 		for (int i = 0; i < size_globalWay ; i++ ) {
+			System.out.print(node_link.get(i).get_posCrypt());;
 			System.out.print("        ");
 			arc_link.get(i).print_nodes();;System.out.print(" : Arc || ");
 			
