@@ -14,6 +14,7 @@ public class Graph {
 	private	ArrayList<Node> LIST_NODE;
 	private int[] DIRECTION = new int[] {-1,1,0,0};
 	private int DIRECTION_SIZE = DIRECTION.length-1;
+	private int NB_NODES;
 	private int iterrator = 0;
 	private int optimisation = 0;
 	private int pakkumanPos_crypt;
@@ -34,6 +35,7 @@ public class Graph {
 
 		long begin = System.currentTimeMillis();
 		create_graph(mat,pakkumanPos_crypt,pakkumanPos_crypt, true, null); 
+		NB_NODES = ENS_NODE.size();
 		LIST_NODE = new ArrayList<Node>(ENS_NODE.values());
 		//fais un switch entre la node Pakkuman et la node en premiere position 
 		LIST_NODE.set(LIST_NODE.indexOf(ENS_NODE.get(pakkumanPos_crypt)),LIST_NODE.set(0,ENS_NODE.get(pakkumanPos_crypt)));
@@ -194,131 +196,207 @@ public class Graph {
 	}
 
 
-
-	public void dijkstra (){
-		int nb_nodes = ENS_NODE.size();
-		int IN = 9999;
-		//ArrayList<Node> nodes_name = new ArrayList<Node>(nb_nodes);
+	public int[][] createMat_linkNode(){
+		Node actu_node;
+		int[][] matrix = new int[nb_nodes][nb_nodes]; // utilisé pou le liens entre les noeuds
 		for(int i = 0; i < nb_nodes; i++){
+			actu_node = LIST_NODE.get(i);
+			for(int j = i; j < nb_nodes;j++){
+				// MOCHE !!!!!!
+				try{
+					matrix[i][j] = matrix[j][i] = actu_node.get_arc(LIST_NODE.get(j)).get_weight();
+				}catch(NullPointerException e){
+					matrix[i][j] = matrix[j][i] = IN;
+				}
+			}
+		}
+
+		return matrix;
+	}
+
+	
+	public void run_dikstra(){
+		int[][] matrix = createMat_linkNode();
+		for(int i = 0; i < NB_NODES; i++){
 			System.out.print("|" +LIST_NODE.get(i).get_posCrypt());
 		}
 		System.out.println();
 
+	}
+	
+	// On choisit quel est le noeud connecté au noeud actuel avec le plus court chemin.
+	public int[] find_shortWay(int[] distance, int[] visited, int valueToFind){
+		int[] shortWay = int[2];
+		int min = 9999; //IN;
+		int next_node;
+		Node test_node;
 
-		int[][] matrix = new int[nb_nodes][nb_nodes]; // utilisé pou le liens entre les noeuds
-		for(int i = 0; i < nb_nodes; i++){
-			for(int j = i; j < nb_nodes;j++){
-				// MOCHE !!!!!!
-				try{
-					matrix[i][j] = matrix[j][i] = LIST_NODE.get(i).get_arc(LIST_NODE.get(j)).get_weight();
-				}catch(NullPointerException e){
-					matrix[i][j] = matrix[j][i] = IN;
-				}
-				/*if(LIST_NODEs.get(i).get_arc(nodes_name[j]) != null){
-					matrix[i][j] = matrix[j][i] = LIST_NODEs.get(i).get_arc(nodes_name[j]).get_weight();
-				}else{
-					matrix[i][j] = matrix[j][i] = IN;
-				}*/
-			}
+		for (int i = 0; i < NB_NODES ;i++ ) {
+			//System.out.println("ActuNode: " +LIST_NODE.get(actu_node).get_posCrypt()+ " Test_link: " + LIST_NODE.get(i).get_posCrypt() + " state: " + visited[i] + " is_link: " +LIST_NODE.get(actu_node).isLinkTo(LIST_NODE.get(i)));
+ 			//LIST_NODE.get(i).print();
+			test_node =LIST_NODE.get(next_node);
+			if( min > distance[i] && visited[i] != 1 && (!test_node.isUnidirectionnel() || test_node.get_nodeValue() == valueToFind))
+			{ 
+				//System.out.println("Short_link: " + LIST_NODE.get(i).get_posCrypt());
+				// si le noeud n'a pas été visité et la distance entre les noeuds est < le min
+				min = distance[i]; // min prend la distance entre les noeuds
+				next_node= i; // on svg i comme étant le prochain noeud
+			}			
 		}
-		// NE PAS OUBLIER 0 = IN !!!
+		shortWay[0]=min;shortWay[1]=next_node;
+		return shortWay;
+	}
 
+	//verifie si dans le parcous actuelle ne se trouve pas déjà un bonbon
+	public boolean check_actuWay(int[] parcours_ref, int actu_node){
+		int j = actu_node;
+		do{
+			j=predecessor[j];
+			// si on trouve un bonbon avant de trouver un monstre dans le parcours de reference on renvois true
+			if (LIST_NODE.get(j).isSweet()) {return true;}
+			if (LIST_NODE.get(j).isMonster()) {return false;}
 
-		int[] distance = new int[nb_nodes]; // permet de connaitre la distance jusqu'a  un certain noeud
-		int[] visited = new int[nb_nodes]; // permet de savoir les noeuds déjà visités
-		int[] predecessor = new int[nb_nodes]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i]
-		int[] predecessor2 = new int[nb_nodes]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i]
-		int exitPos = LIST_NODE.indexOf(ENS_NODE.get(exitPos_crypt));// permet de recuperer la place de la node de sortie dans la LIST_NODE
+		}while(j!=0); //0 est l'indice zero dans LIST_NODE qui correspond au pakkuman
+	}
 
-		int min;
-		int nb_sweet = 0;
-		int next_node = 0;
-		int actu_node = 0;
-		boolean goBack = false;
+	// parcous le chemin de reference déjà parcouru et crée une list contenant les nodes déjà parcouru et pas l'ensemble des nodes testé
+	public int[] create_visited(int[] parcours_ref, int actu_node){
+		int j = actu_node;
+		int[] visited = new int[NB_NODES];
+		do{
+			visited[j] = 1;
+			j=predecessor[j];
+			// si on trouve un bonbon avant de trouver un monstre dans le parcours de reference on renvois true
+		}while(j!=0); //0 est l'indice zero dans LIST_NODE qui correspond au pakkuman
+		return visited;
+	}
 
-		// Algorithme préparé pour que PAKKUMAN soit en mat[0][0]
+	public int[] find_sweet(int[][] matrix, int[] parcours_ref, int[] multidirectionnel, int actu_node){
 
-		distance = matrix[0]; // distance de node0 aux autres nodes
-		visited[0] = 1; // on considère le premier node comme visité
-		distance[0] = 0; // car c'est le noeud de départ
+		int[] distance = new int[NB_NODES]; // permet de connaitre la distance jusqu'a un certain noeud
+		int[] predecessor = new int[NB_NODES+2]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i] || deux element de plus indiquant le poids de l'arc supplementaire, au maximum un parcours total du graph (impossible),et la valeur du noeud sur lequel il y a une deviation
+		if(check_actuWay(parcours_ref,actu_node)){return predecessor;}
+		int[] visited = create_visited(parcours_ref,actu_node);
 
-		for(int i = 0; i < nb_nodes; i++){
-			System.out.print("|" +distance[i]);
-		}
-		System.out.println();
+		int next_node;
+		int[] shortWay = int[2];
 
-		while(predecessor[exitPos]==0){ // On s'arrete si on a déjà reussit a passer par la sortie
-			min = IN;
+		distance = matrix[indexStartNode]; // distance de node0 aux autres nodes
+		visited[indexStartNode] = 1; // on considère le premier node comme visité
+		distance[indexStartNode] = 0; // car c'est le noeud de départ
 
-			System.out.println("Distance: ");
-			for(int i = 0; i < nb_nodes; i++){
-				System.out.print("|" +distance[i]);
-			}
-			System.out.println();
+		for (int k = 0; k < LIST_NODE ; k++) {
+
+			next_node = k;
+			while(multidirectionnel[k] ==1 && !LIST_NODE.get(next_node).isSweet()){
+				print_state(predecessor,distance);
+
+				shortWay = find_shortWay(distance,visited,3); //3 pour bonbon
+				min=shortWay[0]; next_node =shortWay[1];
+
+				System.out.println("Next_node: " + LIST_NODE.get(next_node).get_posCrypt());
+
+				// On indique que le noeud a été visité
+				visited[next_node] = 1;
 			
-			System.out.println("Predecessor: ");
-			for(int i = 0; i < nb_nodes; i++){
-				System.out.print("|" +predecessor[i]);
-			}
-			System.out.println();
-
-			// On choisit quel est le noeud connecté au noeud actuel avec le plus court chemin.
-
-			for (int i = 0; i < nb_nodes ;i++ ) {
-				System.out.println("ActuNode: " +LIST_NODE.get(actu_node).get_posCrypt()+ " Test_link: " + LIST_NODE.get(i).get_posCrypt() + " state: " + visited[i] + " is_link: " +LIST_NODE.get(actu_node).isLinkTo(LIST_NODE.get(i)));
- 				//LIST_NODE.get(i).print();
-				if( LIST_NODE.get(actu_node).isLinkTo(LIST_NODE.get(i)) && min > distance[i] && ((visited[i] != 1) || goBack))
-				{ 
-					System.out.println("Short_link: " + LIST_NODE.get(i).get_posCrypt());
-					// si le noeud n'a pas été visité et la distance entre les noeuds est < le min
-					min = distance[i]; // min prend la distance entre les noeuds
-					next_node= i; // on svg i comme étant le prochain noeud
-				}			
-			}
-			actu_node = next_node;
-			// On indique que le noeud a été visité
-			System.out.println("Next_node: " + LIST_NODE.get(next_node).get_posCrypt());
-
-			if (LIST_NODE.get(next_node).isUnidirectionnel()) {goBack=true;}
-			if (LIST_NODE.get(next_node).isMultidirectionnel()) {goBack=false;}
-
-			visited[next_node] = 1;
-			
-			for(int j = 0; j < nb_nodes; j++){
+				for(int j = 0; j < NB_NODES; j++){
 				
-				if(visited[j]!=1 || goBack){
-					
 					// On regarde si la distance entre le "min" + la distance du "next_node" est plus petite que la distance à partir du noeud de départ
-
-					if(min+matrix[next_node][j] < distance[j] && (!LIST_NODE.get(j).isMonster() || (LIST_NODE.get(j).isMonster() && nb_sweet>0 ))){
+					if( visited[j]!=1 && (min+matrix[next_node][j] < distance[j]) && !LIST_NODE.get(j).isMonster()){
 						System.out.println("Link_node: " + LIST_NODE.get(j).get_posCrypt());
 						// si c'est le cas on indique la nouvelle distance entre le noeud de départ et le noeud 'j'
 						distance[j] = min+matrix[next_node][j];
 						// on indique par quel noeud on est passé avant
 						predecessor[j] = next_node;
-					}	
+					}
 				}
 			}
-			if (LIST_NODE.get(next_node).isMonster()){nb_sweet-=1;}
-			if (LIST_NODE.get(next_node).isSweet()) {nb_sweet+=1;}
 		}
+		print_way(distance,indexStartNode);
+	}
 
-		// On va donc récupérer tous les chemins les plus court en partant 
+	public void dijkstra (int[][] matrix, int indexStartNode, int valueToFind){
 
-		for(int i = 0; i < nb_nodes; i++){
+		int[] distance = new int[NB_NODES]; // permet de connaitre la distance jusqu'a  un certain noeud
+		int[] visited = new int[NB_NODES]; // permet de savoir les noeuds déjà visités
+		int[] predecessor = new int[NB_NODES]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i]
+		int[] multidirectionnel = new int[NB_NODES]; // 1 pour l'indice des nodes multidirectionnel rencontré.
+		//int exitPos = LIST_NODE.indexOf(ENS_NODE.get(exitPos_crypt));// permet de recuperer la place de la node de sortie dans la LIST_NODE
+
+		int min;
+		int[] shortWay = int[2];
+		int next_node = indexStartNode;
+
+		// Algorithme préparé pour que PAKKUMAN soit en mat[0][0]
+
+		distance = matrix[indexStartNode]; // distance de node0 aux autres nodes
+		visited[indexStartNode] = 1; // on considère le premier node comme visité
+		distance[indexStartNode] = 0; // car c'est le noeud de départ
+
+		while(LIST_NODE.get(next_node).get_nodeValue() != valueToFind){ // On s'arrete si la valeur de la node actuelle traité est celle qu'on cherche
+
+			print_state(predecessor,distance);
+
+			shortWay = find_shortWay(distance,visited,valueToFind);
+			min=shortWay[0]; next_node =shortWay[1];
+
+			System.out.println("Next_node: " + LIST_NODE.get(next_node).get_posCrypt());
+
+			// On indique que le noeud a été visité
+			visited[next_node] = 1;
+			// On indique si le noeud est multidirectionnel
+			if (LIST_NODE.get(next_node).isMultidirectionnel()) {multidirectionnel[next_node]=1;}
+
+			for(int j = 0; j < NB_NODES; j++){
+				
+				// On regarde si la distance entre le "min" + la distance du "next_node" est plus petite que la distance à partir du noeud de départ
+				if( visited[j]!=1 && (min+matrix[next_node][j] < distance[j])){
+					System.out.println("Link_node: " + LIST_NODE.get(j).get_posCrypt());
+					// si c'est le cas on indique la nouvelle distance entre le noeud de départ et le noeud 'j'
+					if () {
+					 	
+					 } find_sweet(matrix, multidirectionnel, parcours);
+					distance[j] = min+matrix[next_node][j];
+					// on indique par quel noeud on est passé avant
+					predecessor[j] = next_node;
+				}
+			}
+		}
+		print_way(distance,indexStartNode);
+	}
+
+
+	public void print_state(int[] predecessor, int[] distance){
+		System.out.println("Distance: ");
+		for(int i = 0; i < NB_NODES; i++){
+			System.out.print("|" +distance[i]);
+		}
+		System.out.println();
+		
+		System.out.println("Predecessor: ");
+		for(int i = 0; i < NB_NODES; i++){
+			System.out.print("|" +predecessor[i]);
+		}
+		System.out.println();
+	}
+
+	// On va donc récupérer tous les chemins les plus court en partant 
+	public void print_way(int[] distance, int indexStartNode){
+
+		for(int i = 0; i < NB_NODES; i++){
 			System.out.print("|" +LIST_NODE.get(i).get_posCrypt()+": "+ distance[i]);
 		}
 		System.out.println("|");
 		int j;
 		for(int i = 0; i < nb_nodes; i++){
-			if(i!=0){
+			if(i!=indexStartNode){
 				System.out.print("Path = ");System.out.print(LIST_NODE.get(i).get_posCrypt());
 				j = i;
 				do{
 					j=predecessor[j];
 					System.out.print(" <- ");System.out.print(LIST_NODE.get(j).get_posCrypt());
 					
-				}while(j!=0);
+				}while(j!=indexStartNode);
 			}
 			System.out.println();
 		}
