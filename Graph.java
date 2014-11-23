@@ -217,7 +217,7 @@ public class Graph {
 
 	public void run_dikstra(){ // Prints Mat_linkNode
 		int[][] matrix = createMat_linkNode();
-		for(int i = 0; i < NB_NODES.size(); i++){
+		for(int i = 0; i < NB_NODES; i++){
 			System.out.print("|" +LIST_NODE.get(i).get_posCrypt());
 		}
 		System.out.println();
@@ -289,7 +289,7 @@ public class Graph {
 		visited[indexStartNode] = 1; // on considère le premier node comme visité
 		distance[indexStartNode] = 0; // car c'est le noeud de départ
 
-		for (int k = 0; k < LIST_NODE ; k++) {
+		for (int k = 0; k < LIST_NODE.size() ; k++) {
 
 			next_node = k;
 			while(multidirectionnel[k] ==1 && !LIST_NODE.get(next_node).isSweet()){
