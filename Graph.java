@@ -221,14 +221,6 @@ public class Graph {
 				}*/
 			}
 		}
-		/*
-		for(int i = 0; i < nb_nodes; i++){
-			for(int j = 0; j < nb_nodes;j++){
-				System.out.print(matrix[i][j]);System.out.print("|");
-			}
-			System.out.println();
-		}*/
-
 		// NE PAS OUBLIER 0 = IN !!!
 
 
