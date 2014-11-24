@@ -198,10 +198,10 @@ public class Graph {
 
 	public int[][] createMat_linkNode(){
 		Node actu_node;
-		int[][] matrix = new int[nb_nodes][nb_nodes]; // utilisé pou le liens entre les noeuds
-		for(int i = 0; i < nb_nodes; i++){
-			actu_node = LIST_NODE.get(i);
-			for(int j = i; j < nb_nodes;j++){
+		int[][] matrix = new int[NB_NODES][NB_NODES]; // utilisé pou le liens entre les noeuds
+		for(int i = 0; i < NB_NODES; i++){
+			actu_node = LIST_NODE.get(i); // Pas cool, tu initialises un noeud par constructeur de copie au lieu d'utiliser une bête référence
+			for(int j = i; j < NB_NODES;j++){
 				// MOCHE !!!!!!
 				try{
 					matrix[i][j] = matrix[j][i] = actu_node.get_arc(LIST_NODE.get(j)).get_weight();
@@ -210,9 +210,12 @@ public class Graph {
 				}
 			}
 		}
+
 		return matrix;
 	}
-	public void run_dikstra(){
+
+
+	public void run_dikstra(){ // Prints Mat_linkNode
 		int[][] matrix = createMat_linkNode();
 		for(int i = 0; i < NB_NODES; i++){
 			System.out.print("|" +LIST_NODE.get(i).get_posCrypt());
@@ -254,6 +257,9 @@ public class Graph {
 			if (LIST_NODE.get(j).isMonster()) {return false;}
 
 		}while(j!=0); //0 est l'indice zero dans LIST_NODE qui correspond au pakkuman
+
+		// Attention si tu trouves ni Bonbon ni Monstre => pas de return renvoyé.
+		return false;
 	}
 
 	// parcous le chemin de reference déjà parcouru et crée une list contenant les nodes déjà parcouru et pas l'ensemble des nodes testé
@@ -281,6 +287,14 @@ public class Graph {
 		for (int k = 0; k < LIST_NODE ; k++) {
 			distance = matrix[k]; // distance de node0 aux autres nodes
 			distance[k] = 0; // car c'est le noeud de départ
+		int[] shortWay = int[2];
+
+		// indexStartNode pas défini et je sais pas trop comment tu voulais l'initialiser
+		distance = matrix[indexStartNode]; // distance de node0 aux autres nodes
+		visited[indexStartNode] = 1; // on considère le premier node comme visité
+		distance[indexStartNode] = 0; // car c'est le noeud de départ
+
+		for (int k = 0; k < NB_NODES ; k++) {
 
 			next_node = k;
 			while(multidirectionnel[k] ==1 && !LIST_NODE.get(next_node).isSweet()){
@@ -407,7 +421,7 @@ public class Graph {
 		}
 		System.out.println("|");
 		int j;
-		for(int i = 0; i < nb_nodes; i++){
+		for(int i = 0; i < NB_NODES; i++){
 			if(i!=indexStartNode){
 				System.out.print("Path = ");System.out.print(LIST_NODE.get(i).get_posCrypt());
 				j = i;
