@@ -7,18 +7,18 @@
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
 \usepackage{fullpage}
-\title{{\normalsize{INFO-F-203 -- Algorithmique 2}}\\Manipulation de graphes\\ Transfert d’argent}
-\author{Romain \textsc{Fontaine} \and Nikita \textsc{Marchant}}
-%\date{20/12/13}
+\title{{\normalsize{INFO-F-203 -- Algorithmique 2}}\\Manipulation de graphes\\ Pakkuman}
+\author{Gérard \textsc{Tio Nogueras} \and Alexis \textsc{Defontaine}}
+date{18/12/14}
 \begin{document}
 \maketitle
 \section{Introduction}
-Ce projet d'algorithmique de deuxième année porte sur les graphes et plus particulièrement les graphes dirigés.
-Le problème est posé aux étudiants comme ceci : il faut écrire un programme qui reçoit un graphe dans lequel chaque noeud représente un cercle étudiant et les arrêtes de celui-ci représentent les dettes que les cercles ont contracté entre eux. Le but du projet est de détecter les cycles dans ce graphe et de les résoudre.
-Pour finir, certains cercles ont de l'argent sur leur compte en banque : l'étape après avoir résolu les cycles est donc de déterminer dans quel ordre les cercles pourront se rembourser les uns les autres.
-\section{Détection de cycles et suppression}
+Ce projet d'algorithmique de deuxième année porte sur les graphes et sur la recherche du plus court chemin.
+Le problème est posé aux étudiants comme ceci : il faut écrire un programme qui reçoit la structure d'un labyrinthe ainsi que la position des éléments importants se trouvant dans celui-ci. 
+Le programme après avoir créé une structure représentant ce labyrinthe, il nous est demandé de trouver le plus court chemin entre l'élément "Pakkuman" et la sortie, en sachant qu'il existe des monstres qui nous bloquent le passage et des bonbons qui nous permettent de passer par les cases monstres.
+\section{Parsage, optimisation de la création de graphe et algorithme du plus court chemin}
 Une première approche à laquelle nous avons pensé est d'utiliser un algorithme de détection de cycles (par exemple celui vu au cours théorique\footnote{Algorithmique-2 (info-f-203) par Bernard \textsc{Fortz} et Olivier \textsc{Markowitch}, pp 44-46}) et par la suite de les supprimer. Cependant, nous n'avons pas retenu cette méthode pour des raisons de performance expliqués au point \ref{others}.
-\subsection{Détection}
+\subsection{Parsage}
 \label{detect}
 L'approche retenue a été de parcourir le graphe en profondeur depuis un noeud quelconque en marquant les noeuds sur notre passage tout en empilant sur une stack\footnote{Cette stack (ou pile) n'en est pas une au vrai sens du terme. En effet, en plus des opérations \texttt{push} et \texttt{pop}, elle supporte aussi les \texttt{get} à un index arbitraire} les arrêtes par lesquelles nous passons. Juste avant d'empiler une arrête, nous vérifions que le noeud de départ de l'arrête n'a pas été déjà empilé en tant que noeud de départ d'une arête de cette même pile.
 Si c'est le cas, nous retenons l'index de cette arrête dans la pile (nommons le $i$) et c'est que nous avons détecté un cycle et nous le supprimons donc avec l'algorithme décrit au point \ref{del} puis revenons à celui-ci.
@@ -38,10 +38,10 @@ La figure \ref{whyTag} est transformée en la figure \ref{whyTagSimpl} après un
 \includegraphics[height=150pt]{whyTagSimpl.pdf}
 \end{figure}
 Dans la figure \ref{whyTagSimpl}, lorsqu'on arrive au noeud $C$, on regarde si on peut passer au noeud $D$ qui est déjà marqué. Si nous avions décidé de l'ignorer et que nous revenons en arrière nous n'aurions pas détecté le cycle $[A \rightarrow B \rightarrow C \rightarrow D \rightarrow E \rightarrow F]$.
-\subsection{Suppression}
+\subsection{Optimisation}
 \label{del}
 Quand un cycle est détecté (avec le méthode décrite en \ref{detect}) nous devons le supprimer. Pour cela, nous devons le parcourir -- c'est à dire en parcourant la pile des arrêtes du bas vers le haut en commençant à l'index $i$ -- en cherchant l'arrête de poids le plus faible. Une fois ce poids déterminé, nous re-parcourons le cycle en soustrayant ce poids à chaque arrête (et en supprimant celles dont le poids atteint 0).
-\subsection{Autres possibilités}
+\subsection{Algorithme du plus court chemin}
 \label{others}
 Dans la section \ref{detect} nous évoquions les autres possibilités auxquelles nous avons pensé mais que nous n'avons pas retenues.
 Une de celles ci -- la plus évidente surement -- était d'utiliser un simple algorithme de détection de cycles et donc de parcourir l'entièreté du graphe pour ensuite supprimer les cycles uns à uns.
@@ -57,11 +57,11 @@ Un parcours depuis un noeud $i$ contient $1 + a_{i} + 2\cdot k_{i} \cdot a_{i}$ 
 Ce parcours est a effectuer tant qu'il reste des noeuds non marqués. Appelons $z_{i}$ le nombre de noeuds non marqués, calculé comme suit : $N-\#(\cup_{j=0}^{i-1} g_{j})$.
 Le nombre total d'opérations sera donc $\sum_{i=0}^{z_{i}+i}(1 + a_{i} \cdot(2\cdot k_{i} +1))$.\\
 $k$ n'étant jamais supérieur à $\frac{A}{2}$ et $i$ ne pouvant pas dépasser $N$, la complexité maximale est donc en $\mathcal{O}(N\cdot (A + 2\cdot A)) = \mathcal{O}(N\cdot A)$
-\section{Résolution de dettes}
-Pour résoudre les dettes, nous avons commencé par sélectionner une tête (c'est à dire un cercle qui n'a pas de créances ou dit autrement un noeud n'ayant pas de père) de laquelle nous transférons son argent à ses créanciers jusqu'à épuisement de son compte ou remboursement de ses dettes.
-Ensuite, nous appliquons la même méthode sur chacun des fils du noeud qui vient de rembourser ses dettes.
-Quand cette opération est finie, nous recommençons pour la tête suivante.
-Le fait d'effectuer cette opération sur chaque tête est bien entendu obligatoire car tous les noeuds ne sont pas accessibles depuis n'importe quelle tête (et le graphe pourrait en plus ne pas être connecté). Cependant, on pourrait penser que repasser sur un noeud quelconque si il a déjà été parcouru est inutile et qu'il faudrait donc les marquer pour éviter cela. Or nous devons parcourir à chaque fois tout le sous-graphe accessible depuis la tête courante puisqu'on peut débloquer une situation du type $C \rightarrow D$ ou $C$ n'a pas assez d'argent après le versement de $A$ vers $C$ mais en aura assez après celui de $B$ (voir figure \ref{resolve}).
+%\section{Résolution de dettes}
+%Pour résoudre les dettes, nous avons commencé par sélectionner une tête (c'est à dire un cercle qui n'a pas de créances ou dit autrement un noeud n'ayant pas de père) de laquelle nous transférons son argent à ses créanciers jusqu'à épuisement de son compte ou remboursement de ses dettes.
+%Ensuite, nous appliquons la même méthode sur chacun des fils du noeud qui vient de rembourser ses dettes.
+%Quand cette opération est finie, nous recommençons pour la tête suivante.
+%Le fait d'effectuer cette opération sur chaque tête est bien entendu obligatoire car tous les noeuds ne sont pas accessibles depuis n'importe quelle tête (et le graphe pourrait en plus ne pas être connecté). Cependant, on pourrait penser que repasser sur un noeud quelconque si il a déjà été parcouru est inutile et qu'il faudrait donc les marquer pour éviter cela. Or nous devons parcourir à chaque fois tout le sous-graphe accessible depuis la tête courante puisqu'on peut débloquer une situation du type $C \rightarrow D$ ou $C$ n'a pas assez d'argent après le versement de $A$ vers $C$ mais en aura assez après celui de $B$ (voir figure \ref{resolve}).
 \begin{figure}[h]
 \caption{\label{resolve} Remboursement en plusieurs étapes}
 \center
