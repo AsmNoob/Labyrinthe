@@ -10,6 +10,8 @@ public class Dijkstra {
 	private int[] VISITED;// permet de savoir les noeuds déjà visités
 	private	int[] PREDECESSOR; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i]
 	private	int[] MULTIDIRECTION; // list dont l'indice des nodes ayant plusieurs direction sont égale a 1
+	private HashMap<Integer,int []> NODE_MONSTER = new HashMap<Integer,int []>();
+
 
 	public Dijkstra(ArrayList<Node> listNode){ // Prints Mat_linkNode
 
@@ -25,9 +27,9 @@ public class Dijkstra {
 			System.out.print("|" +LIST_NODE.get(i).get_posCrypt());
 		}
 		System.out.println();
-
 	}
-	public int[][] createMat_linkNode(){
+
+	public void createMat_linkNode(){
 		MATRIX = new int[NB_NODES][NB_NODES]; // utilisé pou le liens entre les noeuds
 		for(int i = 0; i < NB_NODES; i++){
 			for(int j = i; j < NB_NODES;j++){
@@ -43,24 +45,21 @@ public class Dijkstra {
 	
 	// On choisit quel est le noeud connecté au noeud actuel avec le plus court chemin.
 	public int[] find_lightWay(int[] distance, int[] visited, int valueToFind){
-		int[] lightWay = int[2];
+		int[] lightWay = new int[2];
 		int min = IN;
-		int next_node;
-		Node test_node;
 
 		for (int i = 0; i < NB_NODES ;i++ ) {
 			//System.out.println("ActuNode: " +LIST_NODE.get(actu_node).get_posCrypt()+ " Test_link: " + LIST_NODE.get(i).get_posCrypt() + " state: " + visited[i] + " is_link: " +LIST_NODE.get(actu_node).isLinkTo(LIST_NODE.get(i)));
  			//LIST_NODE.get(i).print();
-			test_node =LIST_NODE.get(next_node);
-			if( min > distance[i] && visited[i] != 1 && (!test_node.isUnidirectionnel() || test_node.get_nodeValue() == valueToFind))
+			if( distance[i] < min && visited[i] != 1 && (!LIST_NODE.get(i).isUnidirectionnel() || LIST_NODE.get(i).get_nodeValue() == valueToFind))
 			{ 
 				//System.out.println("Short_link: " + LIST_NODE.get(i).get_posCrypt());
 				// si le noeud n'a pas été visité et la distance entre les noeuds est < le min
 				min = distance[i]; // min prend la distance entre les noeuds
-				next_node= i; // on svg i comme étant le prochain noeud
+				lightWay[1]= i; // on svg i comme étant le prochain noeud
 			}			
 		}
-		lightWay[0]=min;lightWay[1]=next_node;
+		lightWay[0]=min;
 		return lightWay;
 	}
 
@@ -70,12 +69,11 @@ public class Dijkstra {
 		do{
 			j=PREDECESSOR[j];
 			// si on trouve un bonbon avant de trouver un monstre dans le parcours de reference on renvois true
-			if (LIST_NODE.get(j).isSweet()) && (SWEET_USE[j] == 0 ||  SWEET_USE[j] == monster)) {
+			if (LIST_NODE.get(j).isSweet() && (SWEET_USE[j] == 0 ||  SWEET_USE[j] == monster)) {
 				SWEET_USE[monster] = j; // si on utilise ce bon le monstre et le bonbon son lié.
 				SWEET_USE[j] = monster;
 				return true;
 			}
-
 		}while(j!=0); //0 est l'indice zero dans LIST_NODE qui correspond au pakkuman
 		return false;
 	}
@@ -103,7 +101,7 @@ public class Dijkstra {
 		int[] distance = new int[NB_NODES]; // permet de connaitre la distance jusqu'a un certain noeud
 		int[] predecessor;
 
-
+		int min;
 		int next_node;
 		boolean findConnexion =true;
 		int[] lightWay = new int[2];
@@ -142,6 +140,8 @@ public class Dijkstra {
 				}
 			}
 			if (LIST_NODE.get(next_node).isSweet() && predecessor[NB_NODES+2]< result_info[NB_NODES+2]) {
+				SWEET_USE[monster] = next_node; // si on utilise ce bon le monstre et le bonbon son lié.
+				SWEET_USE[next_node] = monster;
 				result_info = predecessor;
 			}
 		}
@@ -160,7 +160,7 @@ public class Dijkstra {
 
 		// Algorithme préparé pour que PAKKUMAN soit en mat[0][0]
 
-		distance = matrix[indexStartNode]; // distance de node0 aux autres nodes
+		distance = MATRIX[indexStartNode]; // distance de node0 aux autres nodes
 		VISITED[indexStartNode] = 1; // on considère le premier node comme visité
 		distance[indexStartNode] = 0; // car c'est le noeud de départ
 
@@ -168,8 +168,8 @@ public class Dijkstra {
 
 			print_state(PREDECESSOR,distance);
 
-			lightWay = find_lightWay(distance,visited,valueToFind);
-			min=lightWay[0]; next_node =lightWay[1];
+			lightWay = find_lightWay(distance,VISITED,valueToFind);
+			min = lightWay[0]; next_node =lightWay[1];
 
 			System.out.println("Next_node: " + LIST_NODE.get(next_node).get_posCrypt());
 
@@ -188,9 +188,8 @@ public class Dijkstra {
 					if(LIST_NODE.get(j).isMonster()) {
 						info_supp = find_sweet(next_node,j);
 						way_supp = info_supp[NB_NODES+2]*2; // Fois deux car le chemin trouver correspond a un aller simple d'une node spécifique appartenant au chemin actuelle et d'un bonbon
-					 	
 					}
-					if (!LIST_NODE.get(j).isMonster() || min+way_supp+MATRIX[next_node][j] < distance[j]) {
+					if (min+way_supp+MATRIX[next_node][j] < distance[j]) {
 						distance[j] = min+MATRIX[next_node][j];
 						// on indique par quel noeud on est passé avant
 						PREDECESSOR[j] = next_node;
