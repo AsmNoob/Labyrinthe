@@ -138,15 +138,57 @@ public class Graph {
 			writer.println("graph chemin {");
 			writer.println();
 			ArrayList<String> list_arcsPrinted = new ArrayList<String>();
-			
+			int monster_counter = 0;
+			int sweet_counter = 0;
+			HashMap<Integer,Integer> ens_monsters = new HashMap<Integer,Integer>();
+			HashMap<Integer,Integer> ens_sweets = new HashMap<Integer,Integer>();
 			for(int i = 0; i < LIST_NODE.size(); i++){
 
-				for(int j = 0; j < LIST_NODE.get(i).get_ensLink().size();j++){ // parcourt les noeuds lies
+				for(int j = 0; j < LIST_NODE.get(i).get_ensLink().size();j++){ // parcourt les noeuds 
 					if(!(list_arcsPrinted.contains(Integer.toString(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt())+Integer.toString(LIST_NODE.get(i).get_posCrypt())))){
 						writer.print("	");
-						writer.print(LIST_NODE.get(i).get_posCrypt());
+						//writer.print(LIST_NODE.get(i).get_posCrypt());
+						if(test_case(LIST_NODE.get(i).get_nodeValue()) == 'F'){
+							writer.print(LIST_NODE.get(i).get_posCrypt());
+						}else{
+							if(test_case(LIST_NODE.get(i).get_nodeValue()) == 'M'){
+								// Contient pas la posCrypt
+								if(!ens_monsters.containsKey(LIST_NODE.get(i).get_posCrypt())){
+									monster_counter++;
+									ens_monsters.put(LIST_NODE.get(i).get_posCrypt(),monster_counter);
+								}
+								writer.print("M");writer.print(ens_monsters.get(LIST_NODE.get(i).get_posCrypt()));
+							}else if (test_case(LIST_NODE.get(i).get_nodeValue()) == 'B') {
+								if(!ens_sweets.containsKey(LIST_NODE.get(i).get_posCrypt())){
+									sweet_counter++;
+									ens_sweets.put(LIST_NODE.get(i).get_posCrypt(),sweet_counter);
+								}
+								writer.print("B");writer.print(ens_sweets.get(LIST_NODE.get(i).get_posCrypt()));
+							}else{
+								writer.print(test_case(LIST_NODE.get(i).get_nodeValue()));
+							}
+						}
 						writer.print(" -- ");
-						writer.print(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt());
+						//writer.print(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt());
+						if(test_case(LIST_NODE.get(i).get_ensLink().get(j).get_nodeValue()) == 'F'){
+							writer.print(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt());
+						}else{
+							if(test_case(LIST_NODE.get(i).get_ensLink().get(j).get_nodeValue()) == 'M'){
+								if(!ens_monsters.containsKey(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt())){
+									monster_counter++;
+									ens_monsters.put(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt(),monster_counter);
+								}
+								writer.print("M");writer.print(ens_monsters.get(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt()));
+							}else if (test_case(LIST_NODE.get(i).get_ensLink().get(j).get_nodeValue()) == 'B') {
+								if(!ens_sweets.containsKey(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt())){
+									sweet_counter++;
+									ens_sweets.put(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt(),sweet_counter);
+								}
+								writer.print("B");writer.print(ens_sweets.get(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt()));
+							}else{
+								writer.print(test_case(LIST_NODE.get(i).get_ensLink().get(j).get_nodeValue()));
+							}
+						}
 						writer.print(" [label=");
 						writer.print(LIST_NODE.get(i).get_ensArc().get(j).get_weight());
 						writer.println("]");
@@ -162,6 +204,20 @@ public class Graph {
 		}catch(FileNotFoundException e){
 			System.err.println("Caught FileNotFoundException: " + e.getMessage());
 		}
+	}
+
+	public char test_case(int cases){
+		char res = 'F';
+		if(cases == 1){
+			res = 'P';
+		}else if(cases == 2){
+			res = 'M';
+		}else if (cases == 3) {
+			res = 'B';
+		}else if(cases == 4){
+			res = 'S';
+		}
+		return res;
 	}
 	// cryptage de la position i,j
 	public int pos_cryptage(int i, int j){
