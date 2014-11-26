@@ -3,13 +3,15 @@ import java.util.*;
 
 public class Dijkstra {
 	private int[][] MATRIX;
+	private int[][] SWEET_WAYS;
 	private ArrayList<Node> LIST_NODE;
 	private int NB_NODES;
 	private int IN = 9999;
 	private int[] SWEET_USE; // chaque monstre possedant un bonbon déjà utilisé voit sa valeur modifier SWEET_USE[MONSTRE] = BONBON et inversement SWEET_USE[BONBON] = MONSTER
 	private int[] VISITED;// permet de savoir les noeuds déjà visités
+	private int[] VISITED_REAL; // permet de savoir les noeuds reellement visité par le parcours choisi.
 	private	int[] PREDECESSOR; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i]
-	private	int[] MULTIDIRECTION; // list dont l'indice des nodes ayant plusieurs direction sont égale a 1
+	private	ArrayList<Integer> EXTRA_NODE =new ArrayList<Integer>(); // list dont l'indice des nodes ayant plusieurs direction sont égale a 1
 	private HashMap<Integer,int []> NODE_MONSTER = new HashMap<Integer,int []>();
 
 
@@ -63,91 +65,112 @@ public class Dijkstra {
 		return lightWay;
 	}
 
-	//verifie si dans le parcous actuelle ne se trouve pas déjà un bonbon
-	public boolean check_actuWay(int actu_node, int monster){
+	// Parcours le chemin actuelle, repere les nodes multidirectionnelle, met a jour les nodes rellement visitée, verifie si le monstre pour lequel on a besoin d'un bonbon le trouve dans le chemin choisi
+	public boolean check_actuWay(int actu_node,int monster){
+		ArrayList<Integer> indexLast_monster = new ArrayList<Integer>(1);
+
 		int j = actu_node;
+		int nbMonster = 1; // car on appel cet fonction a la suite d'une recherche de distance entre l'actu_node et le monstre qui suit.
+		
+		EXTRA_NODE.clear();
+		EXTRA_NODE.add(monster);
+		VISITED_REAL = new int[NB_NODES];
+
 		do{
-			j=PREDECESSOR[j];
-			// si on trouve un bonbon avant de trouver un monstre dans le parcours de reference on renvois true
-			if (LIST_NODE.get(j).isSweet() && (SWEET_USE[j] == 0 ||  SWEET_USE[j] == monster)) {
-				SWEET_USE[monster] = j; // si on utilise ce bon le monstre et le bonbon son lié.
-				SWEET_USE[j] = monster;
-				return true;
+			if (LIST_NODE.get(j).isMultidirectionnel() || LIST_NODE.get(j).isMonster()) {
+				EXTRA_NODE.add(j+NB_NODES); // permet d'utiliser le remove(int index) dans une arrayList d'entier.
 			}
+
+			if (LIST_NODE.get(j).isSweet()) {
+				if (nbMonster>0) { 
+					EXTRA_NODE.remove(indexLast_monster.get(nbMonster));
+					nbMonster-=1;
+				} // ON retire de a liste le dernier monstre entré dans celle ci en faisant appel a son indice present dans indexLast_monster
+			}
+			if (LIST_NODE.get(j).isMonster()) {
+				if (nbMonster<0) { nbMonster = 0;}
+				nbMonster+=1;
+				indexLast_monster.add(EXTRA_NODE.size()-1);// ajoute l'indice du monstre qu'on vient d'entrer qui se trouve en derniere position de la liste [0,1,2,...,size()-1]
+			}
+
+			j=PREDECESSOR[j];
+			VISITED_REAL[j] = 1;
 		}while(j!=0); //0 est l'indice zero dans LIST_NODE qui correspond au pakkuman
+		if(nbMonster == 0){return true;}
 		return false;
 	}
 
-	// parcous le chemin de reference déjà parcouru et crée une list contenant les nodes déjà parcouru et pas l'ensemble des nodes testées
-	public int[] modif_visited(int[] visited, int[] predecessor, int actu_node){
-		int j = actu_node;
-		MULTIDIRECTION = new int[NB_NODES];
-		do{
-			if (LIST_NODE.get(j).isMultidirectionnel()) {MULTIDIRECTION[j]=1;}
-			visited[j] = 1;
-			j=predecessor[j];
-		}while(j!=0); //0 est l'indice zero dans LIST_NODE qui correspond au pakkuman
-		return visited;
-	}
+	public int find_sweet(int actu_node, int monster){
+		int[][] SWEET_WAYS = new int[EXTRA_NODE.size()][NB_NODES+1];
 
-	public int[] find_sweet(int actu_node, int monster){
-		int[] result_info = new int[NB_NODES+2]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i] || deux element de plus indiquant le poids de l'arc supplementaire, au maximum un parcours total du graph (impossible),et la valeur du noeud sur lequel il y a une deviation
+		if(check_actuWay(actu_node,monster)){return 0;}
 
-		if(check_actuWay(actu_node,monster)){return result_info;}
-		else{ result_info[NB_NODES+2] = IN;}
-
-		int[] visited = new int[NB_NODES];
-		visited = modif_visited(visited, PREDECESSOR, actu_node);
 		int[] distance = new int[NB_NODES]; // permet de connaitre la distance jusqu'a un certain noeud
 		int[] predecessor;
 
 		int min;
+		int moveTo_add = 0;
 		int next_node;
 		boolean findConnexion =true;
 		int[] lightWay = new int[2];
 
 		// indexStartNode pas défini et je sais pas trop comment tu voulais l'initialiser
-		for (int k = 0; k < NB_NODES ; k++) {
-			predecessor = new int[NB_NODES+2]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i] || deux element de plus indiquant le poids de l'arc supplementaire, au maximum un parcours total du graph (impossible),et la valeur du noeud sur lequel il y a une deviation
+		for (int k = 0; k < EXTRA_NODE.size() ; k++) {
+			actu_node = EXTRA_NODE.get(k);
+			predecessor = new int[NB_NODES+1]; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i] || deux element de plus indiquant le poids de l'arc supplementaire, au maximum un parcours total du graph (impossible),et la valeur du noeud sur lequel il y a une deviation
 
-			distance = MATRIX[k]; // distance de node0 aux autres nodes
-			distance[k] = 0; // car c'est le noeud de départ
-			next_node = k;
+			distance = MATRIX[actu_node]; // distance de node0 aux autres nodes
+			distance[actu_node] = 0; // car c'est le noeud de départ
+			next_node = actu_node;
 
-			while(MULTIDIRECTION[k] ==1 && !LIST_NODE.get(next_node).isSweet() && findConnexion){
+			while(!LIST_NODE.get(actu_node).isMonster() && !LIST_NODE.get(next_node).isSweet() && findConnexion){
 				findConnexion = false;
 				print_state(predecessor,distance);
 
-				lightWay = find_lightWay(distance,visited,3); //3 pour bonbon
+				lightWay = find_lightWay(distance,VISITED_REAL,3); //3 pour bonbon
 				min=lightWay[0]; next_node =lightWay[1];
 
 				System.out.println("Next_node: " + LIST_NODE.get(next_node).get_posCrypt());
 
 				// On indique que le noeud a été visité
-				visited[next_node] = 1;
+				VISITED_REAL[next_node] = 1;
 			
 				for(int j = 0; j < NB_NODES; j++){
 				
 					// On regarde si la distance entre le "min" + la distance du "next_node" est plus petite que la distance à partir du noeud de départ
-					if( visited[j]!=1 && (min+MATRIX[next_node][j] < distance[j]) && !LIST_NODE.get(j).isMonster()){
+					if( VISITED_REAL[j]!=1 && (min+MATRIX[next_node][j] < distance[j]) && !LIST_NODE.get(j).isMonster()){
 						System.out.println("Link_node: " + LIST_NODE.get(j).get_posCrypt());
 						// si c'est le cas on indique la nouvelle distance entre le noeud de départ et le noeud 'j'
-						distance[j] = predecessor[NB_NODES+2] = min+MATRIX[next_node][j];
+						distance[j] = predecessor[NB_NODES+1] = min+MATRIX[next_node][j];
 						// on indique par quel noeud on est passé avant
-						predecessor[j] = predecessor[NB_NODES+1] = next_node;
+						predecessor[j] = next_node;
 						findConnexion = true;
 					}
 				}
 			}
-			if (LIST_NODE.get(next_node).isSweet() && predecessor[NB_NODES+2]< result_info[NB_NODES+2]) {
-				SWEET_USE[monster] = next_node; // si on utilise ce bon le monstre et le bonbon son lié.
-				SWEET_USE[next_node] = monster;
-				result_info = predecessor;
+			if (LIST_NODE.get(next_node).isSweet()){
+				SWEET_WAYS[k] = predecessor;
+			}
+			if (LIST_NODE.get(actu_node).isMonster()) {
+				moveTo_add+=find_shortWay();
 			}
 		}
-		return result_info;
+		return moveTo_add;
 	}
 
+	public int find_shortWay(){
+		int min = IN;
+		int choice =0 ;// utiliser un try
+		for (int i = 0; i< EXTRA_NODE.size() ;i++ ) {
+
+			if (min > SWEET_WAYS[i][NB_NODES+1] && SWEET_WAYS[i][NB_NODES+1] > 0) { 
+				choice = i;
+				min = SWEET_WAYS[i][NB_NODES+1];
+			}
+		}
+		SWEET_WAYS[choice][NB_NODES+1] = 0;
+		return min;
+	}
 	public void dijkstra (int indexStartNode, int valueToFind){
 
 		int[] distance = new int[NB_NODES]; // permet de connaitre la distance jusqu'a  un certain noeud
@@ -186,8 +209,7 @@ public class Dijkstra {
 					System.out.println("Link_node: " + LIST_NODE.get(j).get_posCrypt());
 					// si c'est le cas on indique la nouvelle distance entre le noeud de départ et le noeud 'j'
 					if(LIST_NODE.get(j).isMonster()) {
-						info_supp = find_sweet(next_node,j);
-						way_supp = info_supp[NB_NODES+2]*2; // Fois deux car le chemin trouver correspond a un aller simple d'une node spécifique appartenant au chemin actuelle et d'un bonbon
+						way_supp = find_sweet(next_node,j)*2;// Fois deux car le chemin trouver correspond a un aller simple d'une node spécifique appartenant au chemin actuelle et d'un bonbon
 					}
 					if (min+way_supp+MATRIX[next_node][j] < distance[j]) {
 						distance[j] = min+MATRIX[next_node][j];
