@@ -15,9 +15,9 @@ date{18/12/14}
 \section{Introduction}
 Ce projet d'algorithmique de deuxième année porte sur les graphes et sur la recherche du plus court chemin.
 Le problème est posé aux étudiants comme ceci : il faut écrire un programme qui reçoit la structure d'un labyrinthe ainsi que la position des éléments importants se trouvant dans celui-ci. 
-Le programme après avoir créé une structure représentant ce labyrinthe, il nous est demandé de trouver le plus court chemin entre l'élément "Pakkuman" et la sortie, en sachant qu'il existe des monstres qui nous bloquent le passage et des bonbons qui nous permettent de passer par les cases monstres.
+Après avoir créé une structure représentant ce labyrinthe, il nous est demandé de trouver le plus court chemin entre l'élément "Pakkuman" et la sortie, en sachant qu'il existe des monstres qui nous bloquent le passage et des bonbons qui nous permettent de passer par les cases monstres.
 \section{Parsage, optimisation de la création de graphe et algorithme du plus court chemin}
-Une première approche à laquelle nous avons pensé est d'utiliser un algorithme de détection de cycles (par exemple celui vu au cours théorique\footnote{Algorithmique-2 (info-f-203) par Bernard \textsc{Fortz} et Olivier \textsc{Markowitch}, pp 44-46}) et par la suite de les supprimer. Cependant, nous n'avons pas retenu cette méthode pour des raisons de performance expliqués au point \ref{others}.
+On a divisé le projet en 3 étapes: le parsage du fichier, la création du graph, son affichage et son optimisation et finalement l'algorithme du plus court chemin.
 \subsection{Parsage}
 \label{detect}
 L'approche retenue a été de parcourir le graphe en profondeur depuis un noeud quelconque en marquant les noeuds sur notre passage tout en empilant sur une stack\footnote{Cette stack (ou pile) n'en est pas une au vrai sens du terme. En effet, en plus des opérations \texttt{push} et \texttt{pop}, elle supporte aussi les \texttt{get} à un index arbitraire} les arrêtes par lesquelles nous passons. Juste avant d'empiler une arrête, nous vérifions que le noeud de départ de l'arrête n'a pas été déjà empilé en tant que noeud de départ d'une arête de cette même pile.
