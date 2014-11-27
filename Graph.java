@@ -157,15 +157,15 @@ public class Graph {
 									monster_counter++;
 									ens_monsters.put(LIST_NODE.get(i).get_posCrypt(),monster_counter);
 								}
-								writer.print("M");writer.print(ens_monsters.get(LIST_NODE.get(i).get_posCrypt()));
+								writer.print("M");writer.print(ens_monsters.get(LIST_NODE.get(i).get_posCrypt()));writer.print("_");writer.print(LIST_NODE.get(i).get_posCrypt());
 							}else if (test_case(LIST_NODE.get(i).get_nodeValue()) == 'B') {
 								if(!ens_sweets.containsKey(LIST_NODE.get(i).get_posCrypt())){
 									sweet_counter++;
 									ens_sweets.put(LIST_NODE.get(i).get_posCrypt(),sweet_counter);
 								}
-								writer.print("B");writer.print(ens_sweets.get(LIST_NODE.get(i).get_posCrypt()));
+								writer.print("B");writer.print(ens_sweets.get(LIST_NODE.get(i).get_posCrypt()));writer.print("_");writer.print(LIST_NODE.get(i).get_posCrypt());
 							}else{
-								writer.print(test_case(LIST_NODE.get(i).get_nodeValue()));
+								writer.print(test_case(LIST_NODE.get(i).get_nodeValue()));writer.print("_");writer.print(LIST_NODE.get(i).get_posCrypt());
 							}
 						}
 						writer.print(" -- ");
@@ -178,15 +178,15 @@ public class Graph {
 									monster_counter++;
 									ens_monsters.put(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt(),monster_counter);
 								}
-								writer.print("M");writer.print(ens_monsters.get(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt()));
+									writer.print("M");writer.print(ens_monsters.get(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt()));writer.print("_");writer.print(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt());
 							}else if (test_case(LIST_NODE.get(i).get_ensLink().get(j).get_nodeValue()) == 'B') {
 								if(!ens_sweets.containsKey(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt())){
 									sweet_counter++;
 									ens_sweets.put(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt(),sweet_counter);
 								}
-								writer.print("B");writer.print(ens_sweets.get(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt()));
+								writer.print("B");writer.print(ens_sweets.get(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt()));writer.print("_");writer.print(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt());
 							}else{
-								writer.print(test_case(LIST_NODE.get(i).get_ensLink().get(j).get_nodeValue()));
+								writer.print(test_case(LIST_NODE.get(i).get_ensLink().get(j).get_nodeValue()));writer.print("_");writer.print(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt());
 							}
 						}
 						writer.print(" [label=");
