@@ -206,11 +206,14 @@ public class Maze{
 		try{
 			PrintWriter writer = new PrintWriter ("InitialSituation.txt");
 			writer.println("Situation de départ:");
+			for(int k = 0; k < matrix.length;k++){ System.out.print(k%10 + " ");}
+			System.out.println();
 			for(int i = 0; i < matrix.length;i++){
 				for(int j = 0; j < matrix[0].length;j++){
 					System.out.print(OutputAnalyse(matrix[i][j],i,j));
 					writer.print(OutputAnalyse(matrix[i][j],i,j)); // Verifier
 				}
+				System.out.print(" " + i);
 				System.out.println();
 				writer.println();
 			}

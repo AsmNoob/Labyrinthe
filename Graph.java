@@ -291,6 +291,8 @@ public class Graph {
 		return mat[positions[0]][positions[1]];
 	}
 
+
+
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int pos_crypt, int prePos_crypt,boolean isNode,Arc current_arc){
 		//actuLine,j position actuel, preLine,preColumn position precedente
