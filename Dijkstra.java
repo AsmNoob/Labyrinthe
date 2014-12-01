@@ -54,14 +54,14 @@ public class Dijkstra {
 	}
 
 	// On choisit quel est le noeud connecté au noeud actuel avec le plus court chemin.
-	public int[] find_lightWay(int[] distance, int[] visited, int valueToFind){
+	public int[] find_lightWay(int[] distance, int[] visited,int nb_sweet, int valueToFind){
 		int[] lightWay = new int[2];
 		int min = IN;
 
 		for (int i = 0; i < NB_NODES ;i++ ) {
 			//System.out.println("ActuNode: " +LIST_NODE.get(actu_node).get_posCrypt()+ " Test_link: " + LIST_NODE.get(i).get_posCrypt() + " state: " + visited[i] + " is_link: " +LIST_NODE.get(actu_node).isLinkTo(LIST_NODE.get(i)));
  			//LIST_NODE.get(i).print();
-			if( distance[i] < min && visited[i] != 1 && (!LIST_NODE.get(i).isUnidirectionnel() || LIST_NODE.get(i).get_nodeValue() == valueToFind))
+			if( distance[i] < min && visited[i] != 1 && (!LIST_NODE.get(i).isUnidirectionnel() || LIST_NODE.get(i).get_nodeValue() == valueToFind) && (!LIST_NODE.get(i).isMonster() || nb_sweet > 0))
 			{ 
 				//System.out.println("Short_link: " + LIST_NODE.get(i).get_posCrypt());
 				// si le noeud n'a pas été visité et la distance entre les noeuds est < le min
@@ -153,7 +153,7 @@ public class Dijkstra {
 			print_state(predecessor,distance,VISITED_REAL);
 
 			pre_node = next_node;
-			lightWay = find_lightWay(distance,VISITED_REAL,SWEET);
+			lightWay = find_lightWay(distance,VISITED_REAL,nb_sweet[next_node],SWEET);
 			min = lightWay[0]; next_node =lightWay[1];
 			if (pre_node == next_node) {break;}
 			else{ pre_node = predecessor[next_node];}
@@ -224,7 +224,7 @@ public class Dijkstra {
 
 			print_state(PREDECESSOR,distance,VISITED);
 			pre_node = next_node;
-			lightWay = find_lightWay(distance,VISITED,valueToFind);
+			lightWay = find_lightWay(distance,VISITED,nb_sweet[next_node],valueToFind);
 			min = lightWay[0]; next_node =lightWay[1];
 			if (pre_node == next_node) {break;}
 			else{ pre_node = PREDECESSOR[next_node];}

@@ -221,7 +221,7 @@ public class Graph {
 	}
 	// cryptage de la position i,j
 	public int pos_cryptage(int i, int j){
-		int pos = (LINE_SIZE*COLUMN_SIZE)+(i*LINE_SIZE)+j;
+		int pos = (LINE_SIZE*COLUMN_SIZE)+(i*COLUMN_SIZE)+j;
 		return pos;
 	}
 	public int modif_posCrypt(int pos_crypt, int addLine, int addColumn){
