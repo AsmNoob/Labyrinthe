@@ -17,8 +17,8 @@ public class Graph {
 	private int NB_NODES;
 	private int iterrator = 0;
 	private int optimisation = 0;
-	private int pakkumanPos_crypt;
-	private int exitPos_crypt;
+	private int PAKKUMAN_CRYPT;
+	private int EXIT_CRYPT;
 	// #define
 	
 	private int IN = 9999; 
@@ -29,15 +29,13 @@ public class Graph {
 		DIM_COLUMN = mat[0].length;
 		LINE_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_LINE))+1);
 		COLUMN_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_COLUMN))+1);
-		pakkumanPos_crypt = pos_cryptage(pakkumanCoord[0]*2+1,pakkumanCoord[1]*2+1);
+		PAKKUMAN_CRYPT = pos_cryptage(pakkumanCoord[0]*2+1,pakkumanCoord[1]*2+1);
 
-		// Test du temps d'execution du 
-
-		create_graph(mat,pakkumanPos_crypt,pakkumanPos_crypt, true, null); 
+		create_graph(mat,PAKKUMAN_CRYPT,PAKKUMAN_CRYPT, true, null); 
 		NB_NODES = ENS_NODE.size();
 		LIST_NODE = new ArrayList<Node>(ENS_NODE.values());
 		//fais un switch entre la node Pakkuman et la node en premiere position 
-		LIST_NODE.set(LIST_NODE.indexOf(ENS_NODE.get(pakkumanPos_crypt)),LIST_NODE.set(0,ENS_NODE.get(pakkumanPos_crypt)));
+		LIST_NODE.set(LIST_NODE.indexOf(ENS_NODE.get(PAKKUMAN_CRYPT)),LIST_NODE.set(0,ENS_NODE.get(PAKKUMAN_CRYPT)));
     	
 		graph_converter();
 		
@@ -45,7 +43,7 @@ public class Graph {
 		System.out.print(ENS_NODE.size()+optimisation);
 		System.out.print(" to ");
 		System.out.println(ENS_NODE.size());
-		ENS_NODE.get(pakkumanPos_crypt).print();
+		ENS_NODE.get(PAKKUMAN_CRYPT).print();
 
 	}
 
@@ -299,7 +297,7 @@ public class Graph {
 			if (data_direction[DIRECTION_SIZE+1]>1 || valueMat(mat, pos_crypt)>0)  { 
 
 				current_node = select_currentNode(valueMat(mat, pos_crypt),pos_crypt);
-				if (current_node.isExit()) {exitPos_crypt=pos_crypt;}
+				if (current_node.isExit()) {EXIT_CRYPT=pos_crypt;}
 
 				if (current_arc != null) {
 					end_Arc(current_arc,current_node,pos_crypt);

@@ -36,22 +36,19 @@ public class Dijkstra {
 
 		createData_struc();
 		dijkstra(0,EXIT);
-		for(int i = 0; i < NB_NODES; i++){
-			System.out.print("|" +LIST_NODE.get(i).get_posCrypt());
-		}
 
 		System.out.println();
 		System.out.println();
 		System.out.println("-------------- End Dijkstra --------------");
 
-		print_allWay(DISTANCE,PREDECESSOR, 0);
+		//print_allWay(DISTANCE,PREDECESSOR, 0);
 		System.out.println();
 		System.out.println();
 		System.out.println("-------------- EXIT --------------");
 		print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
 
 	}
-
+//--------------------------------------------------------------------------------------------------------------//
 	public void createData_struc(){
 
 		MATRIX = new int[NB_NODES][NB_NODES]; // utilisé pou le liens entre les noeuds
@@ -99,6 +96,7 @@ public class Dijkstra {
 		lightWay[0]=min;
 		return lightWay;
 	}
+//--------------------------------------------------------------------------------------------------------------//
 
 	public void state_actuWay(int actu_node){
 
@@ -241,6 +239,8 @@ public class Dijkstra {
 		DATA_SWEET[index][2] = predecessor;
 	}
 
+//--------------------------------------------------------------------------------------------------------------//
+
 	public void dijkstra (int indexStartNode, int valueToFind){
 
 		int[] nb_sweet = new int[NB_NODES]; // permet de savoir combien de bonbon le chemin jusqu'à cette node possède.
@@ -303,6 +303,8 @@ public class Dijkstra {
 			actu_node = next_node;
 		}
 	}
+
+//--------------------------------------------------------------------------------------------------------------//
 
 	public void print_state(int[] predecessor, int[] distance, int[] visited){
 		System.out.print(ELEM + "|--|--|-- Indice node: ");
