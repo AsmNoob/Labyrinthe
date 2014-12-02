@@ -77,7 +77,7 @@ public class Dijkstra {
 	public int[] find_lightWay(int[] distance, int[] visited,int[] nb_sweet, int valueToFind){
 		int[] lightWay = new int[2];
 		int min = IN;
-		System.out.print(ELEM);
+		//System.out.print(ELEM);
 		for (int i = 0; i < NB_NODES ;i++ ) {
 			//System.out.println("ActuNode: " +LIST_NODE.get(actu_node).get_posCrypt()+ " Test_link: " + LIST_NODE.get(i).get_posCrypt() + " state: " + visited[i] + " is_link: " +LIST_NODE.get(actu_node).isLinkTo(LIST_NODE.get(i)));
  			//LIST_NODE.get(i).print();
@@ -109,7 +109,6 @@ public class Dijkstra {
 			else {j= -1;}
 		}while(j>=0); //0 est l'indice zero dans LIST_NODE qui correspond au pakkuman
 		DATA_SWEET = new int[MULTI_NODE.size()][3][NB_NODES];// Matrix reprenant pour chaque noeud multidirectionnel les listes predecessor/distance/nb_sweet
-
 	}
 
 	public int find_sweet(int actu_node, int monster){

@@ -119,6 +119,7 @@ public class Graph {
 			LIST_NODE.get(i).print();
 		}
 	}
+	
 	public void graph_converter(){
 		try{
 			PrintWriter writer = new PrintWriter ("Graph.dot");
@@ -171,8 +172,7 @@ public class Graph {
 	}
 	// cryptage de la position i,j
 	public int pos_cryptage(int i, int j){
-		int pos = (LINE_SIZE*COLUMN_SIZE)+(i*COLUMN_SIZE)+j;
-		return pos;
+		return ((LINE_SIZE*COLUMN_SIZE)+(i*COLUMN_SIZE)+j);
 	}
 	public int modif_posCrypt(int pos_crypt, int addLine, int addColumn){
 		return pos_cryptage(pos_decryptage(pos_crypt)[0]+addLine,pos_decryptage(pos_crypt)[1]+addColumn);
@@ -195,10 +195,7 @@ public class Graph {
 			if (test>0){data_direction[DIRECTION_SIZE+1]+=1;}
 			j--;
 		}
-		
-		/*System.out.print("Detect_isNode || ");
-		System.out.println(Arrays.toString(data_direction));
-		*/
+
 		return data_direction;
 	}
 
@@ -240,8 +237,6 @@ public class Graph {
 		int[] positions = pos_decryptage(pos_crypt);
 		return mat[positions[0]][positions[1]];
 	}
-
-
 
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int pos_crypt, int prePos_crypt,boolean isNode,Arc current_arc){
@@ -286,17 +281,3 @@ public class Graph {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
