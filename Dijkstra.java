@@ -8,7 +8,7 @@ public class Dijkstra {
 	private int EXIT = 5;
 	private int[][] MATRIX;
 	private int[][] MATRIX_SWEET; // contient les bonbons ne faisant pas partie du parcours d'origine et utilisé pour un monstre dans celui ci
-	private int[][] MATRIX_NODESUPP; 
+	private int[][] WAY_SUPP; 
 	private int[][][] DATA_SWEET;
 	private int NB_NODES;
 	private int IN = 99999;
@@ -50,7 +50,7 @@ public class Dijkstra {
 	public void createData_struc(){
 
 		MATRIX = new int[NB_NODES][NB_NODES]; // utilisé pou le liens entre les noeuds
-		MATRIX_NODESUPP = new int[NB_NODES][NB_NODES]; // matrice permettant pour chaque noeuds de garder en mémoire les chemins supplementaire existant pour récuperer des bonbons.
+		WAY_SUPP = new int[NB_NODES][NB_NODES]; // matrice permettant pour chaque noeuds de garder en mémoire les chemins supplementaire existant pour récuperer des bonbons.
 		DISTANCE = new int[NB_NODES]; 
 		PREDECESSOR_INIT = new int[NB_NODES];
 		
@@ -62,7 +62,7 @@ public class Dijkstra {
 			if (LIST_NODE.get(i).isExit()) {INDEX_EXIT = i;}
 			for(int j = i; j < NB_NODES;j++){
 				// MOCHE !!!!!!
-				MATRIX_NODESUPP[i][j] = -1; // initialise la matrice a -1
+				WAY_SUPP[i][j] = -1; // initialise la matrice a -1
 				try{
 					MATRIX[i][j] = MATRIX[j][i] = LIST_NODE.get(i).get_arc(LIST_NODE.get(j)).get_weight();
 				}catch(NullPointerException e){
@@ -153,7 +153,7 @@ public class Dijkstra {
 		int l=sweet;
 		int k =-1; // predecessor temporaire
 		do{
-			if (k != -1 && MATRIX_NODESUPP[monster][k] == -1 ) {MATRIX_NODESUPP[monster][k] = l;}
+			if (k != -1 && WAY_SUPP[monster][k] == -1 ) {WAY_SUPP[monster][k] = l;}
 			k = l;
 			System.out.print(l + "<--");
 			l=DATA_SWEET[multi_node][2][l];
@@ -162,7 +162,7 @@ public class Dijkstra {
 		System.out.println();
 		System.out.print(ELEM + " PREDECESSOR_SUPP: ");
 		for(int i = 0; i < NB_NODES; i++){
-			System.out.print("|" +MATRIX_NODESUPP[monster][i]);
+			System.out.print("|" +WAY_SUPP[monster][i]);
 		}
 		System.out.println();
 		System.out.println(ELEM + SWEET_INDEX);
@@ -206,7 +206,7 @@ public class Dijkstra {
 			// On regarde si la distance entre le "min" + la distance du "actu_node" est plus petite que la distance à partir du noeud de départ
 				link_node = INDEX_NODE.get(ensLink.get(i));
 				min_real = min+MATRIX[actu_node][link_node];
-				if (MATRIX_NODESUPP[monster][link_node] != -1) {min_real = min;} // test si le chemin tester n'est pas délink_nodeà utilisé pour une précedente recherche de bonbon si oui il n'y a aucune distance supplémentaire a alink_nodeouter
+				if (WAY_SUPP[monster][link_node] != -1) {min_real = min;} // test si le chemin tester n'est pas délink_nodeà utilisé pour une précedente recherche de bonbon si oui il n'y a aucune distance supplémentaire a alink_nodeouter
 					
 				if( VISITED_REAL[link_node]!=1 && (min_real < distance[link_node])){// && LIST_NODE.get(actu_node).isLinkTo(LIST_NODE.get(link_node))){
 					System.out.println(ELEM + "Link_node: " + LIST_NODE.get(link_node).get_posCrypt());
@@ -241,12 +241,12 @@ public class Dijkstra {
 
 	public void dijkstra (int indexStartNode, int valueToFind){
 
+		int[] lightWay = new int[2];
 		int[] nb_sweet = new int[NB_NODES]; // permet de savoir combien de bonbon le chemin jusqu'à cette node possède.
 		ArrayList<Node> ensLink;
 
 		int min = 0;
 		int way_supp;
-		int[] lightWay = new int[2];
 		int link_node;
 		int next_node;
 		int actu_node = indexStartNode;
@@ -273,7 +273,7 @@ public class Dijkstra {
 					
 					// si c'est le cas on indique la nouvelle distance entre le noeud de départ et le noeud 'next_node'
 					MATRIX_SWEET[link_node] = MATRIX_SWEET[actu_node].clone();
-					MATRIX_NODESUPP[link_node] = MATRIX_NODESUPP[actu_node].clone();
+					WAY_SUPP[link_node] = WAY_SUPP[actu_node].clone();
 					if(LIST_NODE.get(link_node).isMonster() && nb_sweet[actu_node] <=0) { 
 						way_supp = find_sweet(actu_node, link_node);
 						if (way_supp!=IN) {nb_sweet[actu_node]+=1;} //si way_supp est different de IN c'est qu'on a trouvé un bonbon
@@ -351,7 +351,6 @@ public class Dijkstra {
 			System.out.println();
 		}
 		print_addWay(node);
-
 	}
 
 	public void print_addWay(int node){
@@ -361,7 +360,7 @@ public class Dijkstra {
 				m = SWEET_INDEX.get(k);
 				System.out.print("    Add for sweet = ");System.out.print(LIST_NODE.get(m).get_posCrypt());
 				do{
-					m=MATRIX_NODESUPP[node][m];
+					m=WAY_SUPP[node][m];
 					if(m>=0) {System.out.print(" <- ");System.out.print(LIST_NODE.get(m).get_posCrypt());}
 					
 			}while(m>=0);	
