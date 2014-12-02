@@ -42,8 +42,6 @@ public class Dijkstra {
 		System.out.println("-------------- End Dijkstra --------------");
 
 		//print_allWay(DISTANCE,PREDECESSOR, 0);
-		System.out.println();
-		System.out.println();
 		System.out.println("-------------- EXIT --------------");
 		print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
 
@@ -252,7 +250,6 @@ public class Dijkstra {
 		int link_node;
 		int next_node;
 		int actu_node = indexStartNode;
-		int[] info_supp = new int[NB_NODES+2]; // 2 elements de plus pour contenir les informations supplementaire concernant a un ajout de chemin afin de trouver un bonbon 
 
 		// Algorithme préparé pour que PAKKUMAN soit en mat[0][0]
 		VISITED[indexStartNode] = 1; // on considère le premier node comme visité
@@ -273,12 +270,13 @@ public class Dijkstra {
 				if( VISITED[link_node]!=1 && (min+MATRIX[actu_node][link_node] <= DISTANCE[link_node])){//} && LIST_NODE.get(actu_node).isLinkTo(LIST_NODE.get(link_node))){ // test si 
 
 					System.out.println("Link_node: " + LIST_NODE.get(link_node).get_posCrypt() + " dist : " +(min+MATRIX[actu_node][link_node]) + " "+  DISTANCE[link_node]);
+					
 					// si c'est le cas on indique la nouvelle distance entre le noeud de départ et le noeud 'next_node'
 					MATRIX_SWEET[link_node] = MATRIX_SWEET[actu_node].clone();
 					MATRIX_NODESUPP[link_node] = MATRIX_NODESUPP[actu_node].clone();
 					if(LIST_NODE.get(link_node).isMonster() && nb_sweet[actu_node] <=0) { 
 						way_supp = find_sweet(actu_node, link_node);
-						if (way_supp!=IN) {nb_sweet[actu_node]+=1;}
+						if (way_supp!=IN) {nb_sweet[actu_node]+=1;} //si way_supp est different de IN c'est qu'on a trouvé un bonbon
 					}
 					System.out.println("Distance_linkNode: " + (min+way_supp+MATRIX[actu_node][link_node]));
 					System.out.println("Distance_record: " +DISTANCE[link_node]);
