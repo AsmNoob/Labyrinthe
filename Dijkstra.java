@@ -135,33 +135,34 @@ public class Dijkstra {
 				if (DATA_SWEET[i][0][j] >= 1 && DATA_SWEET[i][1][j] < min) {
 					min = DATA_SWEET[i][1][j]; 
 					sweet = j;
-					multi_node=i;//MULTI_NODE.get(i);
+					multi_node=i;
 				}
 			}
 		}
 		System.out.println(ELEM + actu_node + " Sweet: " + sweet + " Min: " + min);
-		if (min != IN) {
-			int l=sweet;
-			int k =-1; // predecessor temporaire
-			do{
-				if (k != -1 && MATRIX_NODESUPP[actu_node][k] == -1 ) {MATRIX_NODESUPP[actu_node][k] = l;}
-				k = l;
-				System.out.print(l + "<--");
-				l=DATA_SWEET[multi_node][2][l];
-				if (k == l) {break;}
-			}while(l>=0);
-			System.out.println();
-			System.out.print(ELEM + " PREDECESSOR_SUPP: ");
-
-			for(int i = 0; i < NB_NODES; i++){
-				System.out.print("|" +MATRIX_NODESUPP[actu_node][i]);
-			}
-			System.out.println();
-			System.out.println(ELEM + SWEET_INDEX);
-
-			MATRIX_SWEET[actu_node][SWEET_INDEX.indexOf(sweet)] = 1;
-		}
+		if (min != IN) { updateData_newSweet(actu_node, multi_node, sweet);}
 		return min;
+	}
+
+	public void updateData_newSweet(int actu_node, ,int multi_node, int sweet){
+		int l=sweet;
+		int k =-1; // predecessor temporaire
+		do{
+			if (k != -1 && MATRIX_NODESUPP[actu_node][k] == -1 ) {MATRIX_NODESUPP[actu_node][k] = l;}
+			k = l;
+			System.out.print(l + "<--");
+			l=DATA_SWEET[multi_node][2][l];
+			if (k == l) {break;}
+		}while(l>=0);
+		System.out.println();
+		System.out.print(ELEM + " PREDECESSOR_SUPP: ");
+		for(int i = 0; i < NB_NODES; i++){
+			System.out.print("|" +MATRIX_NODESUPP[actu_node][i]);
+		}
+		System.out.println();
+		System.out.println(ELEM + SWEET_INDEX);
+		MATRIX_SWEET[actu_node][SWEET_INDEX.indexOf(sweet)] = 1;
+
 	}
 
 	public boolean sweet_notUse(int actu_node, int sweet){
@@ -219,11 +220,10 @@ public class Dijkstra {
 
 			if (pre_node == next_node) {break;}
 			predecessor[next_node] = pre_node;
-			pre_node = predecessor[next_node];
 
 			System.out.println(ELEM + "Next_node: " + LIST_NODE.get(next_node).get_posCrypt());
 
-			nb_sweet[next_node] = nb_sweet[pre_node];
+			nb_sweet[next_node] = nb_sweet[predecessor[next_node]];
 			if (LIST_NODE.get(next_node).isMonster()) {nb_sweet[next_node] -=1;}
 			if (LIST_NODE.get(next_node).isSweet() && sweet_notUse(actu_node,next_node)) {nb_sweet[next_node] +=1;}
 		}
