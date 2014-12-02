@@ -11,14 +11,13 @@ public class Dijkstra {
 	private int[][] MATRIX_NODESUPP; 
 	private int[][][] DATA_SWEET;
 	private int NB_NODES;
-	private int IN = 9999;
+	private int IN = 99999;
 	private int[] VISITED;// permet de savoir les noeuds déjà visités
 	private int[] VISITED_REAL; // permet de savoir les noeuds reellement visité par le parcours choisi.
 	private	int[] PREDECESSOR; // garde en mémoire de quel noeud on est venu pour arriver en predecessor[i]
 	private int[] PREDECESSOR_INIT;
 	private int[] DISTANCE; // permet de connaitre la distance jusqu'a  un certain node.
-	private ArrayList<Node> D_LINK_NODE;
-	private ArrayList<Node> DS_LINK_NODE;
+
 	private ArrayList<Node> LIST_NODE;
 	private	ArrayList<Integer> MULTI_NODE =new ArrayList<Integer>(); // list dont l'indice des nodes ayant plusieurs direction sont égale a 1
 	private ArrayList<Integer> SWEET_INDEX =new ArrayList<Integer>();
