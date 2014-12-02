@@ -158,17 +158,16 @@ public class Graph {
 	}
 
 	public char test_case(int cases){
-		char res = 'F';
 		if(cases == 1){
-			res = 'P';
+			return'P';
 		}else if(cases == 2){
-			res = 'M';
+			return 'M';
 		}else if (cases == 3) {
-			res = 'B';
+			return 'B';
 		}else if(cases == 4){
-			res = 'S';
+			return 'S';
 		}
-		return res;
+		return 'F';
 	}
 	// cryptage de la position i,j
 	public int pos_cryptage(int i, int j){
