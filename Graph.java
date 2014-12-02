@@ -33,26 +33,14 @@ public class Graph {
 
 		// Test du temps d'execution du 
 
-		long begin = System.currentTimeMillis();
 		create_graph(mat,pakkumanPos_crypt,pakkumanPos_crypt, true, null); 
 		NB_NODES = ENS_NODE.size();
 		LIST_NODE = new ArrayList<Node>(ENS_NODE.values());
 		//fais un switch entre la node Pakkuman et la node en premiere position 
 		LIST_NODE.set(LIST_NODE.indexOf(ENS_NODE.get(pakkumanPos_crypt)),LIST_NODE.set(0,ENS_NODE.get(pakkumanPos_crypt)));
     	
-    	long step1 = System.currentTimeMillis();
 		graph_converter();
-    	long step2 = System.currentTimeMillis();
-		float time1 = ((float) (step1-begin)) / 1000f;
-		float time2 = ((float) (step2-step1)) / 1000f;
-		//print_graph();
-		System.out.print("Time exe || create_graph : ");
-		System.out.print(time1);
-		System.out.print(" || graph_converter : ");
-		System.out.println(time2);
-		System.out.print("Total Time execution: ");
-		System.out.println(time1+time2);
-
+		
 		System.out.print("Optimisation || nb node : ");
 		System.out.print(ENS_NODE.size()+optimisation);
 		System.out.print(" to ");
