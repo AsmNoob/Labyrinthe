@@ -52,7 +52,7 @@ public class Node {
 		return false;
 	}
 	public boolean isMultidirectionnel(){
-		if (ens_link.size() > 2){return true;}
+		if (ens_link.size() > 2 || (isPakkuman() && ens_link.size() >= 2)){return true;}
 		return false;
 	}
 	public boolean isFreeSpace(){
