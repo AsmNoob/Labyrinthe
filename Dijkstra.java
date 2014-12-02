@@ -158,13 +158,13 @@ public class Dijkstra {
 			l=DATA_SWEET[multi_node][2][l];
 			if (k == l) {break;}
 		}while(l>=0);
-		System.out.println();
+		/*System.out.println();
 		System.out.print(ELEM + " PREDECESSOR_SUPP: ");
 		for(int i = 0; i < NB_NODES; i++){
 			System.out.print("|" +WAY_SUPP[monster][i]);
 		}
 		System.out.println();
-		System.out.println(ELEM + SWEET_INDEX);
+		System.out.println(ELEM + SWEET_INDEX);*/
 		MATRIX_SWEET[monster][SWEET_INDEX.indexOf(sweet)] = 1;
 
 	}

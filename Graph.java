@@ -119,7 +119,7 @@ public class Graph {
 			LIST_NODE.get(i).print();
 		}
 	}
-	
+
 	public void graph_converter(){
 		try{
 			PrintWriter writer = new PrintWriter ("Graph.dot");
@@ -127,7 +127,7 @@ public class Graph {
 			writer.println();
 			ArrayList<String> list_arcsPrinted = new ArrayList<String>();
 
-			for(int i = 0; i < LIST_NODE.size(); i++){
+			for(int i = 0; i < NB_NODES; i++){
 
 				for(int j = 0; j < LIST_NODE.get(i).get_ensLink().size();j++){ // parcourt les noeuds 
 					if(!(list_arcsPrinted.contains(Integer.toString(LIST_NODE.get(i).get_ensLink().get(j).get_posCrypt())+Integer.toString(LIST_NODE.get(i).get_posCrypt())))){
@@ -202,16 +202,20 @@ public class Graph {
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
 	public void optimisation_graph(Node current_node){
 		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
+		//premiere optimisation permettant de supprimer les noeuds en fin de parcours étant un monstre ou un noeud quelconque 
 		if (current_node.isUnidirectionnel() && (current_node.isFreeSpace() || current_node.isMonster())) {
 			current_node.get_ensLink().get(0).supp_link(current_node);
 			ENS_NODE.remove(current_node.get_posCrypt());
 			optimisation++;
 		}
+		// cette deuxieme optimisation permet de rassembler deux nodes ensemble qui serait quelconque et tout deux bidirectionnel
+		// la node actuelle pourrait etre fusionné avec un bonbon ou un monstre.
 		else if (current_node.isBidirectionnel() && current_node.isFreeSpace()) {
 			Node nodeLink1 = current_node.get_ensLink().get(0);
 			Node nodeLink2 = current_node.get_ensLink().get(1);
 			Arc arc_toLink = new Arc();
 			ArrayList<Integer> addTo_globalWay;
+			// On test pour savoir lequel des deux arc
 			if (nodeLink1.get_arc(current_node).get_weight() <= nodeLink2.get_arc(current_node).get_weight() ) {
 				arc_toLink.set_globalWay(nodeLink1.get_arc(current_node).get_globalWay());
 				addTo_globalWay = nodeLink2.get_arc(current_node).get_globalWay();
