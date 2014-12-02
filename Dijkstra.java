@@ -144,7 +144,7 @@ public class Dijkstra {
 		return min;
 	}
 
-	public void updateData_newSweet(int actu_node, ,int multi_node, int sweet){
+	public void updateData_newSweet(int actu_node,int multi_node, int sweet){
 		int l=sweet;
 		int k =-1; // predecessor temporaire
 		do{
