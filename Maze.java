@@ -237,6 +237,8 @@ public class Maze{
 			writer.close();
 		}catch(FileNotFoundException e){
 			System.err.println("Caught FileNotFoundException: " + e.getMessage());
+		}catch(NullPointerException e){
+			System.err.println("Caught NullPointerException: " + e.getMessage());
 		}
 		
 	}
