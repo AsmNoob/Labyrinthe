@@ -35,8 +35,10 @@ public class Maze{
 	//Constructeurs
 	public Maze(String FileName){
 		System.out.println("Controle_MazeStart");
+		long begin = System.currentTimeMillis();
 		Parsing(FileName);
-		System.out.println();
+		long step1 = System.currentTimeMillis();
+		/*System.out.println();
 		System.out.println("Controle_MazeParsedObjects");
 		System.out.println();
 		System.out.print("PukkamansPos: ");
@@ -53,15 +55,30 @@ public class Maze{
 		System.out.println("Controle_MazePrint");
 		System.out.println();
 		//PrintMatrix(matrix);
-		System.out.println();
+		System.out.println();*/
 		System.out.println("Controle_InitialSituation");
-		System.out.println();
+		/*System.out.println();*/
 		InitialSituation(matrix);
+		long step2 = System.currentTimeMillis();
 		System.out.println();
 		System.out.println("Controle_FinalSituation");
 		System.out.println();
 		FinalSituation(matrix);
+		long step3 = System.currentTimeMillis();
 		System.out.println();
+		float time1 = ((float) (step1-begin)) / 1000f;
+		float time2 = ((float) (step2-step1)) / 1000f;
+		float time3 = ((float) (step3-step2)) / 1000f;
+
+		System.out.print("Time exe || Parsing : ");
+		System.out.print(time1);
+		System.out.print(" || InitialSituation : ");
+		System.out.print(time2);
+		System.out.print(" || FinalSituation : ");
+		System.out.println(time3);
+		System.out.print("Total Time execution: ");
+		System.out.println(time1+time2+time3);
+
 	}
 
 	//Méthodes
@@ -207,14 +224,14 @@ public class Maze{
 			PrintWriter writer = new PrintWriter ("InitialSituation.txt");
 			writer.println("Situation de départ:");
 			for(int k = 0; k < matrix.length;k++){ System.out.print(k%10 + " ");}
-			System.out.println();
+			//System.out.println();
 			for(int i = 0; i < matrix.length;i++){
 				for(int j = 0; j < matrix[0].length;j++){
-					System.out.print(OutputAnalyse(matrix[i][j],i,j));
+					//System.out.print(OutputAnalyse(matrix[i][j],i,j));
 					writer.print(OutputAnalyse(matrix[i][j],i,j)); // Verifier
 				}
-				System.out.print(" " + i);
-				System.out.println();
+				//System.out.print(" " + i);
+				//System.out.println();
 				writer.println();
 			}
 			writer.close();
