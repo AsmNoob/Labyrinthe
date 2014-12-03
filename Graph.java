@@ -114,8 +114,7 @@ public class Graph {
 
 	//affichage des données récuperer après analyse du labyrinthe. 
 	public void print_graph(){
-		int size_dict = LIST_NODE.size();
-		for (int i = 0; i < size_dict; i++ ) {
+		for (int i = 0; i < LIST_NODE.size(); i++ ) {
 			LIST_NODE.get(i).print();
 		}
 	}
@@ -188,8 +187,9 @@ public class Graph {
 	public int[] detect_isNode(int[][] mat, int pos_crypt, int prePos_crypt){
 		int j = DIRECTION_SIZE;
 		int[] data_direction = new int[5];// 4 premier entier -0,1- correspond au direction possible ou non le 5eme si il est >1 nous indiques que c'est une node.
+		int test;
 		for (int i = 0; i<= DIRECTION_SIZE; i++){
-			int test = check_nextPosition(mat, pos_crypt, prePos_crypt,DIRECTION[i],DIRECTION[j],false);
+			test = check_nextPosition(mat, pos_crypt, prePos_crypt,DIRECTION[i],DIRECTION[j],false);
 
 			data_direction[i] = test;
 			if (test>0){data_direction[DIRECTION_SIZE+1]+=1;}
@@ -250,7 +250,6 @@ public class Graph {
 		System.out.print(" || isNode --> ");System.out.println(isNode);
 		*/
 		Node current_node = null;
-		//int pos_crypt= pos_cryptage(actuLine,actuColumn);
 		iterrator++;
 		int nb_testDirection = 0;
 		if (!ENS_NODE.containsKey(pos_crypt)){
@@ -270,16 +269,17 @@ public class Graph {
 			else {isNode = false;}
 
 			if (!isNode) {current_arc.add_way(pos_crypt);}
-			for (int i = 0; i <= DIRECTION_SIZE; i++) {
+			int i = 0;int newPos_crypt;
+			do{
 				if (data_direction[i] >= 1) {
 					if (isNode) { current_arc = start_Arc(pos_crypt,current_node);}
 					
-					int newPos_crypt = modif_posCrypt(pos_crypt,(DIRECTION[i]*data_direction[i]),(DIRECTION[DIRECTION_SIZE-i]*data_direction[i]));
+					newPos_crypt = modif_posCrypt(pos_crypt,(DIRECTION[i]*data_direction[i]),(DIRECTION[DIRECTION_SIZE-i]*data_direction[i]));
 					create_graph(mat,newPos_crypt, pos_crypt,isNode,current_arc);
 					nb_testDirection++;
 				}
-				if (nb_testDirection==data_direction[DIRECTION_SIZE+1] ) {break;}
-			}
+				i++;
+			}while(nb_testDirection<data_direction[DIRECTION_SIZE+1]);
 			if(isNode){optimisation_graph(current_node);}
 		
 		}
