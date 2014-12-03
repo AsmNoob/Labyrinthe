@@ -43,7 +43,6 @@ public class Graph {
 		System.out.print(ENS_NODE.size()+optimisation);
 		System.out.print(" to ");
 		System.out.println(ENS_NODE.size());
-		ENS_NODE.get(PAKKUMAN_CRYPT).print();
 
 	}
 
