@@ -25,9 +25,9 @@ public class Node {
 		}
 	}
 	public Arc get_arc(Node node){
-		if (ens_link.containsKey(node)){
+		try{
 			return ens_link.get(node);
-		}else{
+		}catch(NullPointerException e){
 			return null;
 		}
 	}

@@ -18,11 +18,14 @@ public class Main{
 		System.out.println("Controle_GraphEnd");
 		System.out.println();
 		System.out.println("Controle_DijkstraStart");
+		System.out.println();
 		Dijkstra dijkstra = new Dijkstra(graph.get_listNode());
     	long step3 = System.currentTimeMillis();
-
+		System.out.println();
 		System.out.println("Controle_DijkstraEnd");
+		System.out.println();
 		System.out.println("Controle_EndMain");
+		System.out.println();
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
 		float time3 = ((float) (step3-step2)) / 1000f;
