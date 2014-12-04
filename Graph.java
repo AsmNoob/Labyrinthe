@@ -25,24 +25,28 @@ public class Graph {
 
 	// constructeur
 	public Graph(int[][] mat, int[] pakkumanCoord){
-		DIM_LINE = mat.length;
-		DIM_COLUMN = mat[0].length;
-		LINE_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_LINE))+1);
-		COLUMN_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_COLUMN))+1);
-		PAKKUMAN_CRYPT = pos_cryptage(pakkumanCoord[0]*2+1,pakkumanCoord[1]*2+1);
+		try{
+			DIM_LINE = mat.length;
+			DIM_COLUMN = mat[0].length;
+			LINE_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_LINE))+1);
+			COLUMN_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_COLUMN))+1);
+			PAKKUMAN_CRYPT = pos_cryptage(pakkumanCoord[0]*2+1,pakkumanCoord[1]*2+1);
 
-		create_graph(mat,PAKKUMAN_CRYPT,PAKKUMAN_CRYPT, true, null); 
-		NB_NODES = ENS_NODE.size();
-		LIST_NODE = new ArrayList<Node>(ENS_NODE.values());
-		//fais un switch entre la node Pakkuman et la node en premiere position 
-		LIST_NODE.set(LIST_NODE.indexOf(ENS_NODE.get(PAKKUMAN_CRYPT)),LIST_NODE.set(0,ENS_NODE.get(PAKKUMAN_CRYPT)));
-    	
-		graph_converter();
-		
-		System.out.print("Optimisation || nb node : ");
-		System.out.print(ENS_NODE.size()+optimisation);
-		System.out.print(" to ");
-		System.out.println(ENS_NODE.size());
+			create_graph(mat,PAKKUMAN_CRYPT,PAKKUMAN_CRYPT, true, null); 
+			NB_NODES = ENS_NODE.size();
+			LIST_NODE = new ArrayList<Node>(ENS_NODE.values());
+			//fais un switch entre la node Pakkuman et la node en premiere position 
+			LIST_NODE.set(LIST_NODE.indexOf(ENS_NODE.get(PAKKUMAN_CRYPT)),LIST_NODE.set(0,ENS_NODE.get(PAKKUMAN_CRYPT)));
+	    	
+			graph_converter();
+			
+			System.out.print("Optimisation || nb node : ");
+			System.out.print(ENS_NODE.size()+optimisation);
+			System.out.print(" to ");
+			System.out.println(ENS_NODE.size());
+		}catch(NullPointerException e ){
+			System.err.println("Caught NullPointerException in Graph creation: " + e.getMessage());
+		}
 
 	}
 

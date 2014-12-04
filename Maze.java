@@ -177,9 +177,9 @@ public class Maze{
 				matrix[coord.get(0)*2+1][coord.get(1)*2+1] = SWEET;
 			}
 		}catch(FileNotFoundException e){
-			System.err.println("Caught FileNotFoundException: " + e.getMessage());
+			System.err.println("Caught FileNotFoundException in Maze Parsing: " + e.getMessage());
 		}catch(IOException e){
-			System.err.println("Caught IOException: " + e.getMessage());
+			System.err.println("Caught IOException in Maze Parsing: " + e.getMessage());
 		}
 	}
 
@@ -236,9 +236,9 @@ public class Maze{
 			}
 			writer.close();
 		}catch(FileNotFoundException e){
-			System.err.println("Caught FileNotFoundException: " + e.getMessage());
+			System.err.println("Caught FileNotFoundException in Maze InitialSituation writing: " + e.getMessage());
 		}catch(NullPointerException e){
-			System.err.println("Caught NullPointerException: " + e.getMessage());
+			System.err.println("Caught NullPointerException in Maze InitialSituation writing: " + e.getMessage());
 		}
 		
 	}

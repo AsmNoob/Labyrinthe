@@ -26,17 +26,19 @@ public class Dijkstra {
 
 
 	public Dijkstra(ArrayList<Node> listNode){ // Prints Mat_linkNode
-		LIST_NODE = listNode;
-		for (int i = 0;i < LIST_NODE.size() ;i++ ) {
-			INDEX_NODE.put(listNode.get(i),i);
-		}
-		NB_NODES = LIST_NODE.size();
-		VISITED = new int[NB_NODES]; 
-		PREDECESSOR = new int[NB_NODES]; 
+		try{
+			LIST_NODE = listNode;
+			for (int i = 0;i < LIST_NODE.size() ;i++ ) {
+				INDEX_NODE.put(listNode.get(i),i);
+			}
+			NB_NODES = LIST_NODE.size();
+			VISITED = new int[NB_NODES]; 
+			PREDECESSOR = new int[NB_NODES]; 
 
-		createData_struc();
-		dijkstra(0,EXIT);
+			createData_struc();
+			dijkstra(0,EXIT);
 
+<<<<<<< HEAD
 		//print_allWay(DISTANCE,PREDECESSOR, 0);
 		//System.out.println("-------------- EXIT --------------");
 		print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
@@ -44,6 +46,13 @@ public class Dijkstra {
 		for (int i = 0;i < way.size() ;i++ ) {
 			System.out.print(way.get(i).get_posCrypt() + "|");
 			
+=======
+			//print_allWay(DISTANCE,PREDECESSOR, 0);
+			//System.out.println("-------------- EXIT --------------");
+			print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
+		}catch(NullPointerException e){
+			System.err.println("Caught NullPointerException in Dijkstra algorithm: " + e.getMessage());
+>>>>>>> 49bcb0ec8e71c06584fe3d979726246ca42c836c
 		}
 
 	}
