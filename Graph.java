@@ -218,7 +218,7 @@ public class Graph {
 			Node nodeLink2 = current_node.get_ensLink().get(1);
 			Arc arc_toLink = new Arc();
 			ArrayList<Integer> addTo_globalWay;
-			// On test pour savoir lequel des deux arc
+			// On test pour savoir lequel des deux arc est le plus cours pour ajouter au plus long le plus court arc
 			if (nodeLink1.get_arc(current_node).get_weight() <= nodeLink2.get_arc(current_node).get_weight() ) {
 				arc_toLink.set_globalWay(nodeLink1.get_arc(current_node).get_globalWay());
 				addTo_globalWay = nodeLink2.get_arc(current_node).get_globalWay();
@@ -230,7 +230,6 @@ public class Graph {
 			for (int i =0;i < addTo_globalWay.size() ;i++ ) {
 				arc_toLink.add_way(addTo_globalWay.get(i));
 			}
-			arc_toLink.set_startNode(nodeLink1);arc_toLink.set_endNode(nodeLink2);
 			nodeLink1.supp_link(current_node); nodeLink2.supp_link(current_node);
 			arc_toLink.set_startNode(nodeLink1);arc_toLink.set_endNode(nodeLink2);
 			arc_toLink.set_stateArc(false);

@@ -54,8 +54,8 @@ public class Maze{
 		System.out.println();
 		System.out.println("Controle_MazePrint");
 		System.out.println();
-		//PrintMatrix(matrix);
 		System.out.println();*/
+		//PrintMatrix(matrix);
 		System.out.println("Controle_InitialSituation");
 		/*System.out.println();*/
 		InitialSituation(matrix);
@@ -94,9 +94,9 @@ public class Maze{
 			String[] splitted_line;
 			line = br.readLine();
 			splitted_line = line.split(" ");
-			for(int i = 0; i < splitted_line.length;i++){
+			/*for(int i = 0; i < splitted_line.length;i++){
 				System.out.println(splitted_line[i]);
-			}
+			}*/
 			lines = Integer.parseInt(splitted_line[1]);
 			columns = Integer.parseInt(splitted_line[3]);
 			matrix = new int[2*lines+1][2*columns+1]; // [0 -> 8] 

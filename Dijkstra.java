@@ -41,12 +41,39 @@ public class Dijkstra {
 			//print_allWay(DISTANCE,PREDECESSOR, 0);
 			//System.out.println("-------------- EXIT --------------");
 			print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
+			ArrayList<Node> way = get_finalWay();
+			
+			for (int i = 0;i < way.size() ;i++ ) {
+				System.out.print(way.get(i).get_posCrypt() + "|");
+			}
 		}catch(NullPointerException e){
 			System.err.println("Caught NullPointerException in Dijkstra algorithm: " + e.getMessage());
 		}
-
 	}
+
 //--------------------------------------------------------------------------------------------------------------//
+	public ArrayList<Node> get_finalWay(){
+		ArrayList<Node> finalWay = new ArrayList<Node>();
+		int j = INDEX_EXIT;
+		do{
+			finalWay.add(0,LIST_NODE.get(j));
+			j=PREDECESSOR[j];
+			
+		}while(j!=0);
+		finalWay.add(0,LIST_NODE.get(j));
+
+		int m;
+		for (int k = 0; k < SWEET_INDEX.size(); k++) {
+			if (MATRIX_SWEET[INDEX_EXIT][k] != 0) {// difference entre afficher un chemin et devoir l'utiliser. L'actualisation du
+				m = SWEET_INDEX.get(k);
+				do{
+					finalWay.add(LIST_NODE.get(m));
+					m=WAY_SUPP[INDEX_EXIT][m];
+				}while(m>=0);	
+			}
+		}
+		return finalWay;
+	}
 	public void createData_struc(){
 
 		WAY_SUPP = new int[NB_NODES][NB_NODES]; // matrice permettant pour chaque noeuds de garder en mémoire les chemins supplementaire existant pour récuperer des bonbons.
@@ -80,7 +107,7 @@ public class Dijkstra {
 			if( distance[i] < min && visited[i] != 1 && (!LIST_NODE.get(i).isUnidirectionnel() || LIST_NODE.get(i).get_nodeValue() == valueToFind) && (!LIST_NODE.get(i).isMonster() || nb_sweet[i] > 0))
 			{ 
 				// si le noeud n'a pas été visité et la distance entre les noeuds est < le min
-				min = distance[i]; // min prend la distance entre les noeuds
+			min = distance[i]; // min prend la distance entre les noeuds
 				lightWay[1]= i; // on svg i comme étant le prochain noeud
 			}			
 		}
