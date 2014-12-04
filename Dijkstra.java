@@ -38,24 +38,19 @@ public class Dijkstra {
 			createData_struc();
 			dijkstra(0,EXIT);
 
-<<<<<<< HEAD
-		//print_allWay(DISTANCE,PREDECESSOR, 0);
-		//System.out.println("-------------- EXIT --------------");
-		print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
-		ArrayList<Node> way = get_finalWay();
-		for (int i = 0;i < way.size() ;i++ ) {
-			System.out.print(way.get(i).get_posCrypt() + "|");
-			
-=======
 			//print_allWay(DISTANCE,PREDECESSOR, 0);
 			//System.out.println("-------------- EXIT --------------");
 			print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
+			ArrayList<Node> way = get_finalWay();
+			
+			for (int i = 0;i < way.size() ;i++ ) {
+				System.out.print(way.get(i).get_posCrypt() + "|");
+			}
 		}catch(NullPointerException e){
 			System.err.println("Caught NullPointerException in Dijkstra algorithm: " + e.getMessage());
->>>>>>> 49bcb0ec8e71c06584fe3d979726246ca42c836c
 		}
-
 	}
+
 //--------------------------------------------------------------------------------------------------------------//
 	public ArrayList<Node> get_finalWay(){
 		ArrayList<Node> finalWay = new ArrayList<Node>();
