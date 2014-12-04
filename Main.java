@@ -24,19 +24,29 @@ public class Main{
 		System.out.println();
 		System.out.println("Controle_DijkstraEnd");
 		System.out.println();
+		System.out.println("Controle_SituationFinaleStart");
+		System.out.println();
+		maze.FinalSituation(dijkstra.get_finalWay());
+		long step4 = System.currentTimeMillis();
+		System.out.println();
+		System.out.println("Controle_SituationFinaleEnd");
+		System.out.println();
 		System.out.println("Controle_EndMain");
 		System.out.println();
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
 		float time3 = ((float) (step3-step2)) / 1000f;
+		float time4 = ((float) (step4-step3)) / 1000f;
 
 		System.out.print("Time exe || Maze : ");
 		System.out.print(time1);
 		System.out.print(" || Graph : ");
 		System.out.print(time2);
 		System.out.print(" || Dijkstra : ");
-		System.out.println(time3);
+		System.out.print(time3);
+		System.out.print(" || FinalSituation : ");
+		System.out.println(time4);
 		System.out.print("Total Time execution: ");
-		System.out.println(time1+time2+time3);
+		System.out.println(time1+time2+time3+time4);
 	}
 }

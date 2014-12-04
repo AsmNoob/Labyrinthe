@@ -58,26 +58,19 @@ public class Maze{
 		//PrintMatrix(matrix);
 		System.out.println("Controle_InitialSituation");
 		/*System.out.println();*/
-		InitialSituation(matrix);
+		InitialSituation();
 		long step2 = System.currentTimeMillis();
 		System.out.println();
-		System.out.println("Controle_FinalSituation");
-		System.out.println();
-		FinalSituation(matrix);
-		long step3 = System.currentTimeMillis();
 		System.out.println();
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
-		float time3 = ((float) (step3-step2)) / 1000f;
 
 		System.out.print("Time exe || Parsing : ");
 		System.out.print(time1);
 		System.out.print(" || InitialSituation : ");
-		System.out.print(time2);
-		System.out.print(" || FinalSituation : ");
-		System.out.println(time3);
-		System.out.print("Total Time execution: ");
-		System.out.println(time1+time2+time3);
+		System.out.println(time2);
+		System.out.print(" Total Time execution: ");
+		System.out.println(time1+time2);
 
 	}
 
@@ -218,7 +211,7 @@ public class Maze{
 
 	//------ MazeSituations ------//
 
-	public void InitialSituation(int[][] matrix){
+	public void InitialSituation(){
 		// renvoie la situation initiale du Labyrinthe
 		try{
 			PrintWriter writer = new PrintWriter ("InitialSituation.txt");
@@ -243,7 +236,7 @@ public class Maze{
 		
 	}
 
-	public void FinalSituation(int[][] matrix){
+	public void FinalSituation(ArrayList<Node> way){
 		System.out.println();
 		System.out.print("Le labyrinthe a une dimension de ");System.out.print(lines);System.out.print(" fois ");System.out.print(columns);System.out.println(".");
 		System.out.print("Il contient ");System.out.print(NbMonsters);System.out.print(" monstres et ");System.out.print(NbSweets);System.out.println(" bonbons.");
@@ -260,9 +253,13 @@ public class Maze{
 		System.out.println();
 		System.out.println();
 		System.out.println("Déplacements de M.Pakkuman:");
-
+		/*for(int i = 0; i < way.size();i++){
+			int pos = way.get(i).get_posCrypt()
+			(pos_crypt-LINE_SIZE*COLUMN_SIZE-(pos_crypt%COLUMN_SIZE))/COLUMN_SIZE,pos_crypt %COLUMN_SIZE
+		}*/
 
 	}
+
 
 	//--------- Printing method ---------//
 
