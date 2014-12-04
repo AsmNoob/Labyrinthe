@@ -26,20 +26,24 @@ public class Dijkstra {
 
 
 	public Dijkstra(ArrayList<Node> listNode){ // Prints Mat_linkNode
-		LIST_NODE = listNode;
-		for (int i = 0;i < LIST_NODE.size() ;i++ ) {
-			INDEX_NODE.put(listNode.get(i),i);
+		try{
+			LIST_NODE = listNode;
+			for (int i = 0;i < LIST_NODE.size() ;i++ ) {
+				INDEX_NODE.put(listNode.get(i),i);
+			}
+			NB_NODES = LIST_NODE.size();
+			VISITED = new int[NB_NODES]; 
+			PREDECESSOR = new int[NB_NODES]; 
+
+			createData_struc();
+			dijkstra(0,EXIT);
+
+			//print_allWay(DISTANCE,PREDECESSOR, 0);
+			//System.out.println("-------------- EXIT --------------");
+			print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
+		}catch(NullPointerException e){
+			System.err.println("Caught NullPointerException in Dijkstra algorithm: " + e.getMessage());
 		}
-		NB_NODES = LIST_NODE.size();
-		VISITED = new int[NB_NODES]; 
-		PREDECESSOR = new int[NB_NODES]; 
-
-		createData_struc();
-		dijkstra(0,EXIT);
-
-		//print_allWay(DISTANCE,PREDECESSOR, 0);
-		//System.out.println("-------------- EXIT --------------");
-		print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
 
 	}
 //--------------------------------------------------------------------------------------------------------------//
