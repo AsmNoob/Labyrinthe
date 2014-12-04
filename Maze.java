@@ -264,6 +264,8 @@ public class Maze{
 
 	}
 
+	//--------- Printing method ---------//
+
 	public void PrintMatrix(int[][] matrix){
 		for(int i = 0; i < matrix.length;i++){
 			for(int j = 0; j < matrix[0].length;j++){
@@ -272,6 +274,9 @@ public class Maze{
 			System.out.println();
 		}
 	}
+
+	// ------------ Method that analyzes the value received and returns its char value-------- //
+	//------------ Used for Outputing the maze -------------//
 
 	public String OutputAnalyse(int value,int line,int column){
 		String res = "PROBLEM"; // Pour résoudre le cas où res n'est pas initialisé
@@ -304,5 +309,4 @@ public class Maze{
 		return res;
 	}
 
-	//--------- Check autour de la case des types d'objets trouvés --------//
 }
