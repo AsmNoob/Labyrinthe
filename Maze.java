@@ -262,7 +262,9 @@ public class Maze{
 
 		System.out.println("Déplacements de M.Pakkuman:");
 		int[] pred = new int[2];
-		HashMap<Integer,Node> directions = new HashMap<Integer,Node>();
+		//(i,j): (+1,0) => sud | (-1,0) => nord | (0,-1) => ouest |(0,+1) => est
+		HashMap<Integer,String> directions = new HashMap<Integer,String>();
+		//directions.put
 		// parcours des nodes principales
 		for(int i = 0; i < way.size();i++){
 			System.out.println("//---------------"+way.get(i).get_posCrypt()+"-------------------//");
@@ -294,7 +296,7 @@ public class Maze{
 
 	//-------------analyse_way()------------//
 
-	public String analyse_way(Node node,int[] pred,HashMap<Integer,Node> directions){
+	public String analyse_way(Node node,int[] pred,HashMap<Integer,String> directions){
 
 		
 		return " ";
