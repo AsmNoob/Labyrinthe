@@ -54,23 +54,27 @@ public class Dijkstra {
 //--------------------------------------------------------------------------------------------------------------//
 	public ArrayList<Node> get_finalWay(){
 		ArrayList<Node> finalWay = new ArrayList<Node>();
-		int j = INDEX_EXIT;
-		do{
+		try{			
+			int j = INDEX_EXIT;
+			do{
+				finalWay.add(0,LIST_NODE.get(j));
+				j=PREDECESSOR[j];
+				
+			}while(j!=0);
 			finalWay.add(0,LIST_NODE.get(j));
-			j=PREDECESSOR[j];
-			
-		}while(j!=0);
-		finalWay.add(0,LIST_NODE.get(j));
 
-		int m;
-		for (int k = 0; k < SWEET_INDEX.size(); k++) {
-			if (MATRIX_SWEET[INDEX_EXIT][k] != 0) {// difference entre afficher un chemin et devoir l'utiliser. L'actualisation du
-				m = SWEET_INDEX.get(k);
-				do{
-					finalWay.add(LIST_NODE.get(m));
-					m=WAY_SUPP[INDEX_EXIT][m];
-				}while(m>=0);	
+			int m;
+			for (int k = 0; k < SWEET_INDEX.size(); k++) {
+				if (MATRIX_SWEET[INDEX_EXIT][k] != 0) {// difference entre afficher un chemin et devoir l'utiliser. L'actualisation du
+					m = SWEET_INDEX.get(k);
+					do{
+						finalWay.add(LIST_NODE.get(m));
+						m=WAY_SUPP[INDEX_EXIT][m];
+					}while(m>=0);	
+				}
 			}
+		}catch(NullPointerException e){
+			System.err.println("Caught NullPointerException in Dijkstra.get_way() method: " + e.getMessage());
 		}
 		return finalWay;
 	}

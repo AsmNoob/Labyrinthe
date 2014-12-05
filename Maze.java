@@ -1,4 +1,4 @@
-	/* TIO NOGUERAS Gérard - 000333083 - INFO2 */
+/* TIO NOGUERAS Gérard - 000333083 - INFO2 */
 /* DEFONTAINE Alexis -  - INFO2 */
 import java.io.*;
 import java.util.*;
@@ -58,26 +58,19 @@ public class Maze{
 		//PrintMatrix(matrix);
 		System.out.println("Controle_InitialSituation");
 		/*System.out.println();*/
-		InitialSituation(matrix);
+		InitialSituation();
 		long step2 = System.currentTimeMillis();
 		System.out.println();
-		System.out.println("Controle_FinalSituation");
-		System.out.println();
-		FinalSituation(matrix);
-		long step3 = System.currentTimeMillis();
 		System.out.println();
 		float time1 = ((float) (step1-begin)) / 1000f;
 		float time2 = ((float) (step2-step1)) / 1000f;
-		float time3 = ((float) (step3-step2)) / 1000f;
 
 		System.out.print("Time exe || Parsing : ");
 		System.out.print(time1);
 		System.out.print(" || InitialSituation : ");
-		System.out.print(time2);
-		System.out.print(" || FinalSituation : ");
-		System.out.println(time3);
-		System.out.print("Total Time execution: ");
-		System.out.println(time1+time2+time3);
+		System.out.println(time2);
+		System.out.print(" Total Time execution: ");
+		System.out.println(time1+time2);
 
 	}
 
@@ -218,12 +211,14 @@ public class Maze{
 
 	//------ MazeSituations ------//
 
-	public void InitialSituation(int[][] matrix){
+	public void InitialSituation(){
 		// renvoie la situation initiale du Labyrinthe
 		try{
 			PrintWriter writer = new PrintWriter ("InitialSituation.txt");
 			writer.println("Situation de départ:");
-			for(int k = 0; k < matrix.length;k++){ System.out.print(k%10 + " ");}
+			/*for(int k = 0; k < matrix.length;k++){ 
+				System.out.print(k%10 + " ");
+			}*/
 			//System.out.println();
 			for(int i = 0; i < matrix.length;i++){
 				for(int j = 0; j < matrix[0].length;j++){
@@ -243,7 +238,10 @@ public class Maze{
 		
 	}
 
-	public void FinalSituation(int[][] matrix){
+
+	//---------- Output en terminal et écriture sur fichier ----------//
+
+	public void FinalSituation(ArrayList<Node> way){
 		System.out.println();
 		System.out.print("Le labyrinthe a une dimension de ");System.out.print(lines);System.out.print(" fois ");System.out.print(columns);System.out.println(".");
 		System.out.print("Il contient ");System.out.print(NbMonsters);System.out.print(" monstres et ");System.out.print(NbSweets);System.out.println(" bonbons.");
@@ -259,10 +257,51 @@ public class Maze{
 		}
 		System.out.println();
 		System.out.println();
-		System.out.println("Déplacements de M.Pakkuman:");
 
+		// Chemin parcouru
+
+		System.out.println("Déplacements de M.Pakkuman:");
+		int[] pred = new int[2];
+		HashMap<Integer,Node> directions = new HashMap<Integer,Node>();
+		// parcours des nodes principales
+		for(int i = 0; i < way.size();i++){
+			System.out.println("//---------------"+way.get(i).get_posCrypt()+"-------------------//");
+			System.out.println("//---- SOUS-Noeuds-----//");
+			ArrayList<Node> ens_linkNode = way.get(i).get_ensLink();
+			for(int j = 0; j < ens_linkNode.size();j++){
+				int posTest = ens_linkNode.get(j).get_posCrypt();
+				String valTest = Integer.toString(posTest);
+				int n1T =  Integer.parseInt(valTest.substring(1,(valTest.length())/2+1));
+				int n2T = Integer.parseInt(valTest.substring((valTest.length())/2+1));
+				n1T = (n1T%2==1) ? (n1T-1)/2 : n1T/2;
+				n2T = (n2T%2==1) ? (n2T-1)/2 : n2T/2;
+				System.out.println("("+n1T+","+n2T+")");
+			}
+			System.out.println("//---------------oOo------------------//");
+			int pos = way.get(i).get_posCrypt();
+			String val = Integer.toString(pos);
+
+			int n1 =  Integer.parseInt(val.substring(1,(val.length())/2+1));
+			int n2 = Integer.parseInt(val.substring((val.length())/2+1));
+			n1 = (n1%2==1) ? (n1-1)/2 : n1/2;
+			n2 = (n2%2==1) ? (n2-1)/2 : n2/2;
+
+			System.out.println((i+1)+". ("+n1+","+n2+") "+analyse_way(way.get(i),pred,directions));
+			pred = new int[]{n1,n2};
+		}
 
 	}
+
+	//-------------analyse_way()------------//
+
+	public String analyse_way(Node node,int[] pred,HashMap<Integer,Node> directions){
+
+		
+		return " ";
+	}
+
+
+	//--------- Printing method ---------//
 
 	public void PrintMatrix(int[][] matrix){
 		for(int i = 0; i < matrix.length;i++){
@@ -272,6 +311,9 @@ public class Maze{
 			System.out.println();
 		}
 	}
+
+	// ------------ Method that analyzes the value received and returns its char value-------- //
+	//------------ Used for Outputing the maze -------------//
 
 	public String OutputAnalyse(int value,int line,int column){
 		String res = "PROBLEM"; // Pour résoudre le cas où res n'est pas initialisé
@@ -304,5 +346,4 @@ public class Maze{
 		return res;
 	}
 
-	//--------- Check autour de la case des types d'objets trouvés --------//
 }
