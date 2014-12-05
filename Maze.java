@@ -216,7 +216,9 @@ public class Maze{
 		try{
 			PrintWriter writer = new PrintWriter ("InitialSituation.txt");
 			writer.println("Situation de départ:");
-			for(int k = 0; k < matrix.length;k++){ System.out.print(k%10 + " ");}
+			/*for(int k = 0; k < matrix.length;k++){ 
+				System.out.print(k%10 + " ");
+			}*/
 			//System.out.println();
 			for(int i = 0; i < matrix.length;i++){
 				for(int j = 0; j < matrix[0].length;j++){
@@ -236,6 +238,9 @@ public class Maze{
 		
 	}
 
+
+	//---------- Output en terminal et écriture sur fichier ----------//
+
 	public void FinalSituation(ArrayList<Node> way){
 		System.out.println();
 		System.out.print("Le labyrinthe a une dimension de ");System.out.print(lines);System.out.print(" fois ");System.out.print(columns);System.out.println(".");
@@ -253,11 +258,42 @@ public class Maze{
 		System.out.println();
 		System.out.println();
 		System.out.println("Déplacements de M.Pakkuman:");
-		/*for(int i = 0; i < way.size();i++){
-			int pos = way.get(i).get_posCrypt()
-			(pos_crypt-LINE_SIZE*COLUMN_SIZE-(pos_crypt%COLUMN_SIZE))/COLUMN_SIZE,pos_crypt %COLUMN_SIZE
-		}*/
+		int[] pred = new int[2];
+		for(int i = 0; i < way.size();i++){
+			System.out.println("//---------------"+way.get(i).get_posCrypt()+"-------------------//");
+			System.out.println("//---- SOUS-Noeuds-----//");
+			ArrayList<Node> ens_linkNode = way.get(i).get_ensLink();
+			for(int j = 0; j < ens_linkNode.size();j++){
+				int posTest = ens_linkNode.get(j).get_posCrypt();
+				String valTest = Integer.toString(posTest);
+				int n1T =  Integer.parseInt(valTest.substring(1,(valTest.length())/2+1));
+				int n2T = Integer.parseInt(valTest.substring((valTest.length())/2+1));
+				n1T = (n1T%2==1) ? (n1T-1)/2 : n1T/2;
+				n2T = (n2T%2==1) ? (n2T-1)/2 : n2T/2;
+				System.out.println("("+n1T+","+n2T+")");
+			}
+			System.out.println("//---------------oOo------------------//");
+			int pos = way.get(i).get_posCrypt();
+			String val = Integer.toString(pos);
 
+			int n1 =  Integer.parseInt(val.substring(1,(val.length())/2+1));
+			int n2 = Integer.parseInt(val.substring((val.length())/2+1));
+			n1 = (n1%2==1) ? (n1-1)/2 : n1/2;
+			n2 = (n2%2==1) ? (n2-1)/2 : n2/2;
+
+			System.out.println((i+1)+". ("+n1+","+n2+") "+analyse_way(way.get(i),pred));
+			pred = new int[]{n1,n2};
+		}
+
+	}
+
+	//-------------analyse_way()------------//
+
+	public String analyse_way(Node node,int[] pred){
+		HashMap<Integer,Node> directions = new HashMap<Integer,Node>();
+
+		
+		return " ";
 	}
 
 
