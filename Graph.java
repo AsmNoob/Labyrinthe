@@ -30,9 +30,7 @@ public class Graph {
 			DIM_COLUMN = mat[0].length;
 			LINE_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_LINE))+1);
 			COLUMN_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_COLUMN))+1);
-			System.out.println("REAL :::::line_size: "+LINE_SIZE+" column_size: "+COLUMN_SIZE+" line*col: "+(LINE_SIZE*COLUMN_SIZE));
 			PAKKUMAN_CRYPT = pos_cryptage(pakkumanCoord[0]*2+1,pakkumanCoord[1]*2+1);
-
 			create_graph(mat,PAKKUMAN_CRYPT,PAKKUMAN_CRYPT, true, null); 
 			NB_NODES = ENS_NODE.size();
 			LIST_NODE = new ArrayList<Node>(ENS_NODE.values());

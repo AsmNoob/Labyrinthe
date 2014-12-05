@@ -257,8 +257,13 @@ public class Maze{
 		}
 		System.out.println();
 		System.out.println();
+
+		// Chemin parcouru
+
 		System.out.println("Déplacements de M.Pakkuman:");
 		int[] pred = new int[2];
+		HashMap<Integer,Node> directions = new HashMap<Integer,Node>();
+		// parcours des nodes principales
 		for(int i = 0; i < way.size();i++){
 			System.out.println("//---------------"+way.get(i).get_posCrypt()+"-------------------//");
 			System.out.println("//---- SOUS-Noeuds-----//");
@@ -281,7 +286,7 @@ public class Maze{
 			n1 = (n1%2==1) ? (n1-1)/2 : n1/2;
 			n2 = (n2%2==1) ? (n2-1)/2 : n2/2;
 
-			System.out.println((i+1)+". ("+n1+","+n2+") "+analyse_way(way.get(i),pred));
+			System.out.println((i+1)+". ("+n1+","+n2+") "+analyse_way(way.get(i),pred,directions));
 			pred = new int[]{n1,n2};
 		}
 
@@ -289,8 +294,7 @@ public class Maze{
 
 	//-------------analyse_way()------------//
 
-	public String analyse_way(Node node,int[] pred){
-		HashMap<Integer,Node> directions = new HashMap<Integer,Node>();
+	public String analyse_way(Node node,int[] pred,HashMap<Integer,Node> directions){
 
 		
 		return " ";
