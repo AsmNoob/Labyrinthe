@@ -275,7 +275,7 @@ public class Maze{
 				int n2T = Integer.parseInt(valTest.substring((valTest.length())/2+1));
 				n1T = (n1T%2==1) ? (n1T-1)/2 : n1T/2;
 				n2T = (n2T%2==1) ? (n2T-1)/2 : n2T/2;
-				System.out.println("("+n1T+","+n2T+")");
+				System.out.println( posTest + " ("+n1T+","+n2T+")");
 			}
 			System.out.println("//---------------oOo------------------//");
 			int pos = way.get(i).get_posCrypt();
