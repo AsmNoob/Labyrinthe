@@ -261,10 +261,16 @@ public class Maze{
 		// Chemin parcouru
 
 		System.out.println("Déplacements de M.Pakkuman:");
-		int[] pred = new int[2];
+		ArrayList<Integer> pred = new ArrayList<Integer>(2);
+		pred.add(0);pred.add(0);
+		ArrayList<Integer> actual = new ArrayList<Integer>(2);
 		//(i,j): (+1,0) => sud | (-1,0) => nord | (0,-1) => ouest |(0,+1) => est
+		//(i*2,j) => 2,-2,-1,1
 		HashMap<Integer,String> directions = new HashMap<Integer,String>();
-		//directions.put
+		directions.put(2,"sud");
+		directions.put(-2,"nord");
+		directions.put(-1,"ouest");
+		directions.put(1,"est");
 		// parcours des nodes principales
 		for(int i = 0; i < way.size();i++){
 			System.out.println("//---------------"+way.get(i).get_posCrypt()+"-------------------//");
@@ -287,22 +293,35 @@ public class Maze{
 			int n2 = Integer.parseInt(val.substring((val.length())/2+1));
 			n1 = (n1%2==1) ? (n1-1)/2 : n1/2;
 			n2 = (n2%2==1) ? (n2-1)/2 : n2/2;
-
-			System.out.println((i+1)+". ("+n1+","+n2+") "+analyse_way(way.get(i),pred,directions));
-			pred = new int[]{n1,n2};
+			actual.add(0,n1);actual.add(1,n2);
+			System.out.println((i+1)+". ("+n1+","+n2+") "+analyse_way(way.get(i),actual,pred,directions));
+			pred.add(0,n1);pred.add(1,n2);
 		}
+		System.out.println("Trouvé un plus court chemin de longueur"+".");
+		System.out.println("M. Pakkuman a récolté "+"bonbon(s) et rencontré "+"monstre(s).");
 
 	}
 
 	//-------------analyse_way()------------//
 
-	public String analyse_way(Node node,int[] pred,HashMap<Integer,String> directions){
-
-		
-		return " ";
+	public String analyse_way(Node node,ArrayList<Integer> actual, ArrayList<Integer> pred,HashMap<Integer,String> directions){
+		int key = (actual.get(0)-pred.get(0))*2 + (actual.get(1)-pred.get(1));
+		String direction;
+		if(key == 0 ){
+			direction = "Départ";
+		}else if (node.isSweet()){
+			direction = directions.get(key)+", bonbon récolté";
+		}else if (node.isMonster()){
+			direction = directions.get(key)+", bonbon donné au petit monstre";
+		}else if (node.isExit()){
+			direction = "Sortie!";
+		}else{
+			direction = directions.get(key);
+		}
+		return direction;
 	}
 
-
+	
 	//--------- Printing method ---------//
 
 	public void PrintMatrix(int[][] matrix){
