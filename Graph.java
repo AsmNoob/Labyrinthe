@@ -50,6 +50,9 @@ public class Graph {
 	}
 
 	//------------Getter/Setter----------//
+	public int get_exitPos(){
+		return EXIT_CRYPT;
+	}
 	public ArrayList<Node> get_listNode(){
 		return LIST_NODE;
 	}
@@ -213,12 +216,15 @@ public class Graph {
 		// cette deuxieme optimisation permet de rassembler deux nodes ensemble qui serait quelconque et tout deux bidirectionnel
 		// la node actuelle pourrait etre fusionné avec un bonbon ou un monstre.
 		else if (current_node.isBidirectionnel() && current_node.isFreeSpace()) {
+			int pos_current = current_node.get_posCrypt();
 			Node nodeLink1 = current_node.get_ensLink().get(0);
 			Node nodeLink2 = current_node.get_ensLink().get(1);
 			Arc arc_toLink = new Arc();
 			ArrayList<Integer> addTo_globalWay;
+			boolean right_order = true;
 			// On test pour savoir lequel des deux arc est le plus cours pour ajouter au plus long le plus court arc
 			if (nodeLink1.get_arc(current_node).get_weight() <= nodeLink2.get_arc(current_node).get_weight() ) {
+				arc_toLink.set_startNode(nodeLink1);arc_toLink.set_endNode(nodeLink2);
 				arc_toLink.set_globalWay(nodeLink1.get_arc(current_node).get_globalWay());
 				addTo_globalWay = nodeLink2.get_arc(current_node).get_globalWay();
 			}
@@ -226,11 +232,19 @@ public class Graph {
 				arc_toLink.set_globalWay(nodeLink2.get_arc(current_node).get_globalWay());
 				addTo_globalWay = nodeLink1.get_arc(current_node).get_globalWay();
 			}
+			if (addTo_globalWay.get(0) != pos_current) {Collections.reverse(addTo_globalWay);}
+			if (arc_toLink.get(arc_toLink.get_weight()-1) != pos_current) {right_order = false;}
+			
 			for (int i =0;i < addTo_globalWay.size() ;i++ ) {
-				arc_toLink.add_way(addTo_globalWay.get(i));
+				if(!right_order) {arc_toLink.insert_way(0, addTo_globalWay.get(i));}
+				else{arc_toLink.add_way(addTo_globalWay.get(i));}
 			}
+
 			nodeLink1.supp_link(current_node); nodeLink2.supp_link(current_node);
-			arc_toLink.set_startNode(nodeLink1);arc_toLink.set_endNode(nodeLink2);
+			if (arc_toLink.get(0) == nodeLink1.get_posCrypt()){
+				arc_toLink.set_startNode(nodeLink1);arc_toLink.set_endNode(nodeLink2);}
+			else{
+				arc_toLink.set_startNode(nodeLink2);arc_toLink.set_endNode(nodeLink1);}
 			arc_toLink.set_stateArc(false);
 			update_nodeLink(arc_toLink);
 			ENS_NODE.remove(current_node.get_posCrypt());
