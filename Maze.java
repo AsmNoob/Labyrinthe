@@ -1,4 +1,4 @@
-	/* TIO NOGUERAS Gérard - 000333083 - INFO2 */
+/* TIO NOGUERAS Gérard - 000333083 - INFO2 */
 /* DEFONTAINE Alexis -  - INFO2 */
 import java.io.*;
 import java.util.*;
