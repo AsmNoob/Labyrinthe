@@ -220,15 +220,7 @@ public class Maze{
 				System.out.print(k%10 + " ");
 			}*/
 			//System.out.println();
-			for(int i = 0; i < matrix.length;i++){
-				for(int j = 0; j < matrix[0].length;j++){
-					//System.out.print(OutputAnalyse(matrix[i][j],i,j));
-					writer.print(OutputAnalyse(matrix[i][j],i,j)); // Verifier
-				}
-				//System.out.print(" " + i);
-				//System.out.println();
-				writer.println();
-			}
+			matrix_Printer(writer);
 			writer.close();
 		}catch(FileNotFoundException e){
 			System.err.println("Caught FileNotFoundException in Maze InitialSituation writing: " + e.getMessage());
@@ -236,6 +228,18 @@ public class Maze{
 			System.err.println("Caught NullPointerException in Maze InitialSituation writing: " + e.getMessage());
 		}
 		
+	}
+
+	public void matrix_Printer(PrintWriter writer){
+		for(int i = 0; i < matrix.length;i++){
+			for(int j = 0; j < matrix[0].length;j++){
+				//System.out.print(OutputAnalyse(matrix[i][j],i,j));
+				writer.print(OutputAnalyse(matrix[i][j],i,j)); // Verifier
+			}
+			//System.out.print(" " + i);
+			//System.out.println();
+			writer.println();
+		}
 	}
 
 	public String get_direction(int[] prePos, int[] actuPos){
@@ -312,14 +316,14 @@ public class Maze{
 			int numbre_monsters = 0;
 			int number_sweets = 0;
 			int index = 0;
-
-
+			String deplacement = "";
 			// parcours des nodes principales
 			for(int i = 1; i < way.size();i++){
 				index++;
 				coord = graph.pos_decryptage(way.get(i-1).get_posCrypt()); //coordonée décrypté. vérifié et correcte
 				coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
 				System.out.print( index+". ("+coord[0]+","+coord[1]+") " );
+				deplacement+="("+coord[0]+","+coord[1]+") ";
 				if (i == 1) { System.out.println("Départ");
 				}
 				else if (way.get(i-1).isMonster()) {
@@ -330,37 +334,61 @@ public class Maze{
 					System.out.println(get_direction(pred,coord) + ", bonbon récolté");
 					number_sweets+=1;
 				}
-				else{System.out.println(get_direction(pred,coord));}
+				else{
+					// Comme la position n'est ni P, ni B, ni M => on peut écrire dessus
+					matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
+					System.out.println(get_direction(pred,coord));}
 
 				pred = coord.clone();
 
 				ArrayList<Integer> arc = way.get(i-1).get_arc(way.get(i)).get_globalWay();
 				
 				if (arc.get(0) != way.get(i-1).get_posCrypt()) { Collections.reverse(arc);}
-					
+				//System.out.println("TEST VALEURS: arc;get(i-1) = "+way.get(i-1).get_posCrypt()+" et graph.get_exitPos() = "+graph.get_exitPos());
 				for (int j = 1; j <arc.size()-1 ;j++ ) {
 					index++;
 					coord = graph.pos_decryptage(arc.get(j)); //coordonée décrypté. vérifié et correcte
-					//System.out.println("TEST VALEURS: arc;get(j) = "+arc.get(j)+" et graph.get_exitPos() = "+graph.get_exitPos());
+					//System.out.println(" j = "+j+"arc size ="+ arc.size());
 					if (arc.get(j) == graph.get_exitPos()) {find_exit= true;}
 					coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
-					System.out.print( index+". ("+coord[0]+","+coord[1]+") "); 
-					/*if (find_exit) {
+					System.out.print( index+". ("+coord[0]+","+coord[1]+") ");
+					deplacement+="("+coord[0]+","+coord[1]+") ";
+					matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
+					// Pas très propre
+					if (way.get(i).get_posCrypt() == graph.get_exitPos() && j == (arc.size()-2)) {
 						System.out.println("Sortie!");
-					}*/
+						find_exit = true;
+					}
 					else {System.out.println(get_direction(pred,coord));}
 					pred = coord.clone();
 				}
-				if(way.get(i).get_posCrypt() == graph.get_exitPos()){
+				if(way.get(i).get_posCrypt() == graph.get_exitPos() && !find_exit){
 					System.out.println("Sortie!");
 					find_exit = true;
 				}
 			}
-			System.out.println();System.out.println("Trouvé un plus court chemin de longueur "+length+".");
-			System.out.println("M. Pakkuman a récolté "+number_sweets+" bonbon(s) et rencontré "+numbre_monsters+" monstre(s).");
-			if( !find_exit){System.out.println("Il n'y a pas de sortie.");}
+			if( !find_exit){
+				System.out.println("Il n'y a pas de sortie.");
+			}else{
+				System.out.println();System.out.println("Trouvé un plus court chemin de longueur "+index+".");
+				System.out.println("M. Pakkuman a récolté "+number_sweets+" bonbon(s) et rencontré "+numbre_monsters+" monstre(s).");
+			}
+			PrintWriter writer = new PrintWriter ("FinalSituation.txt");
+			writer.println("Situation finale:");
+			matrix_Printer(writer);
+			if(find_exit){
+				writer.println("Trouvé un plus court chemin de longueur "+index+".");
+			}else{
+				writer.println("Il n'y a pas moyen de sortir.");
+			}
+			
+			writer.println("M. Pakkuman a pris "+number_sweets+" Bonbons !");
+			writer.println("Déplacements de M.Pakkuman: "+deplacement);
+			writer.close();
 		}catch(NullPointerException e){
 			System.err.println("Caught NullPointerException in Maze FinalSituation: " + e.getMessage());
+		}catch(FileNotFoundException e){
+			System.err.println("Caught FileNotFoundException in FinalSituation: " + e.getMessage());
 		}
 	}
 
