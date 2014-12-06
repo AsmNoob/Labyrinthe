@@ -352,7 +352,6 @@ public class Maze{
 			}
 			if( !find_exit){System.out.println("Il n'y a pas de sortie.");}
 		}catch(NullPointerException e){
-			
 			System.err.println("Caught NullPointerException in Maze FinalSituation: " + e.getMessage());
 		}
 	}
