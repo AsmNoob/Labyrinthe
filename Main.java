@@ -30,7 +30,7 @@ public class Main{
 		System.out.println();
 		System.out.println("Controle_SituationFinaleStart");
 		System.out.println();
-		maze.FinalSituation(dijkstra.get_finalWay(),graph);
+		maze.FinalSituation(dijkstra.get_finalWay(),graph,dijkstra.get_totalWeight());
 		long step4 = System.currentTimeMillis();
 		System.out.println();
 		System.out.println("Controle_SituationFinaleEnd");

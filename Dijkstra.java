@@ -42,7 +42,6 @@ public class Dijkstra {
 			//System.out.println("-------------- EXIT --------------");
 			print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
 
-			System.out.println("TEST WEIGHT: "+get_totalWeight(DISTANCE,INDEX_EXIT));
 
 			ArrayList<Node> way = get_finalWay();
 			
@@ -56,8 +55,15 @@ public class Dijkstra {
 
 //--------------------------------------------------------------------------------------------------------------//
 	
-	public int get_totalWeight(int[] distance, int node){
-		return distance[node];
+	public int get_totalWeight(){
+		int weight = IN;
+		try{
+			weight = DISTANCE[INDEX_EXIT];
+		}catch (NullPointerException e) {
+			System.err.println("Caught NullPointerException in get_totalWeight(): " + e.getMessage());
+		}
+		return weight;
+		
 	}
 
 	public ArrayList<Node> get_finalWay(){

@@ -246,7 +246,7 @@ public class Maze{
 	}
 	//---------- Output en terminal et écriture sur fichier ----------//
 
-	public void FinalSituation(ArrayList<Node> way, Graph graph){
+	public void FinalSituation(ArrayList<Node> way, Graph graph,int length){
 		System.out.println();
 		System.out.print("Le labyrinthe a une dimension de ");System.out.print(lines);System.out.print(" fois ");System.out.print(columns);System.out.println(".");
 		System.out.print("Il contient ");System.out.print(NbMonsters);System.out.print(" monstres et ");System.out.print(NbSweets);System.out.println(" bonbons.");
@@ -309,20 +309,26 @@ public class Maze{
 			int[] pred = new int[2];
 			int[] coord;
 			boolean find_exit = false;
+			int numbre_monsters = 0;
+			int number_sweets = 0;
+			int index = 0;
 
 
 			// parcours des nodes principales
 			for(int i = 1; i < way.size();i++){
+				index++;
 				coord = graph.pos_decryptage(way.get(i-1).get_posCrypt()); //coordonée décrypté. vérifié et correcte
 				coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
-				System.out.print( "("+coord[0]+","+coord[1]+") " );
+				System.out.print( index+". ("+coord[0]+","+coord[1]+") " );
 				if (i == 1) { System.out.println("Départ");
 				}
 				else if (way.get(i-1).isMonster()) {
 					System.out.println(get_direction(pred,coord) + ", bonbon donné au petit monstre");
+					numbre_monsters+=1;
 				}
 				else if (way.get(i-1).isSweet()) {
 					System.out.println(get_direction(pred,coord) + ", bonbon récolté");
+					number_sweets+=1;
 				}
 				else{System.out.println(get_direction(pred,coord));}
 
@@ -333,15 +339,15 @@ public class Maze{
 				if (arc.get(0) != way.get(i-1).get_posCrypt()) { Collections.reverse(arc);}
 					
 				for (int j = 1; j <arc.size()-1 ;j++ ) {
-
+					index++;
 					coord = graph.pos_decryptage(arc.get(j)); //coordonée décrypté. vérifié et correcte
 					//System.out.println("TEST VALEURS: arc;get(j) = "+arc.get(j)+" et graph.get_exitPos() = "+graph.get_exitPos());
 					if (arc.get(j) == graph.get_exitPos()) {find_exit= true;}
 					coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
-					System.out.print( "("+coord[0]+","+coord[1]+") "); 
-					if (find_exit) {
+					System.out.print( index+". ("+coord[0]+","+coord[1]+") "); 
+					/*if (find_exit) {
 						System.out.println("Sortie!");
-					}
+					}*/
 					else {System.out.println(get_direction(pred,coord));}
 					pred = coord.clone();
 				}
@@ -350,6 +356,8 @@ public class Maze{
 					find_exit = true;
 				}
 			}
+			System.out.println();System.out.println("Trouvé un plus court chemin de longueur "+length+".");
+			System.out.println("M. Pakkuman a récolté "+number_sweets+" bonbon(s) et rencontré "+numbre_monsters+" monstre(s).");
 			if( !find_exit){System.out.println("Il n'y a pas de sortie.");}
 		}catch(NullPointerException e){
 			System.err.println("Caught NullPointerException in Maze FinalSituation: " + e.getMessage());
