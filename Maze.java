@@ -238,10 +238,15 @@ public class Maze{
 		
 	}
 
-
+	public String get_direction(int[] prePos, int[] actuPos){
+		if (actuPos[0]-prePos[0]==-1) {return "nord";}
+		if (actuPos[0]-prePos[0]==1) {return "sud";}
+		if (actuPos[1]-prePos[1]==-1) {return "ouest";}
+		return "est";
+	}
 	//---------- Output en terminal et écriture sur fichier ----------//
 
-	public void FinalSituation(ArrayList<Node> way){
+	public void FinalSituation(ArrayList<Node> way, Graph graph){
 		System.out.println();
 		System.out.print("Le labyrinthe a une dimension de ");System.out.print(lines);System.out.print(" fois ");System.out.print(columns);System.out.println(".");
 		System.out.print("Il contient ");System.out.print(NbMonsters);System.out.print(" monstres et ");System.out.print(NbSweets);System.out.println(" bonbons.");
@@ -260,50 +265,102 @@ public class Maze{
 
 		// Chemin parcouru
 
-		System.out.println("Déplacements de M.Pakkuman:");
-		ArrayList<Integer> pred = new ArrayList<Integer>(2);
-		pred.add(0);pred.add(0);
-		ArrayList<Integer> actual = new ArrayList<Integer>(2);
-		//(i,j): (+1,0) => sud | (-1,0) => nord | (0,-1) => ouest |(0,+1) => est
-		//(i*2,j) => 2,-2,-1,1
-		HashMap<Integer,String> directions = new HashMap<Integer,String>();
-		directions.put(2,"sud");
-		directions.put(-2,"nord");
-		directions.put(-1,"ouest");
-		directions.put(1,"est");
-		// parcours des nodes principales
-		for(int i = 0; i < way.size();i++){
-			System.out.println("//---------------"+way.get(i).get_posCrypt()+"-------------------//");
-			System.out.println("//---- SOUS-Noeuds-----//");
-			ArrayList<Node> ens_linkNode = way.get(i).get_ensLink();
-			for(int j = 0; j < ens_linkNode.size();j++){
-				int posTest = ens_linkNode.get(j).get_posCrypt();
-				String valTest = Integer.toString(posTest);
-				int n1T =  Integer.parseInt(valTest.substring(1,(valTest.length())/2+1));
-				int n2T = Integer.parseInt(valTest.substring((valTest.length())/2+1));
-				n1T = (n1T%2==1) ? (n1T-1)/2 : n1T/2;
-				n2T = (n2T%2==1) ? (n2T-1)/2 : n2T/2;
-				System.out.println("("+n1T+","+n2T+")");
+		try {
+			System.out.println("Déplacements de M.Pakkuman:");
+			/*ArrayList<Integer> pred = new ArrayList<Integer>(2);
+			pred.add(0);pred.add(0);
+			ArrayList<Integer> actual = new ArrayList<Integer>(2);
+			//(i,j): (+1,0) => sud | (-1,0) => nord | (0,-1) => ouest |(0,+1) => est
+			//(i*2,j) => 2,-2,-1,1
+			HashMap<Integer,String> directions = new HashMap<Integer,String>();
+			directions.put(2,"sud");
+			directions.put(-2,"nord");
+			directions.put(-1,"ouest");
+			directions.put(1,"est");
+			// parcours des nodes principales
+			for(int i = 0; i < way.size();i++){
+				System.out.println("//---------------"+way.get(i).get_posCrypt()+"-------------------//");
+				System.out.println("//---- SOUS-Noeuds-----//");
+				ArrayList<Node> ens_linkNode = way.get(i).get_ensLink();
+				for(int j = 0; j < ens_linkNode.size();j++){
+					int posTest = ens_linkNode.get(j).get_posCrypt();
+					String valTest = Integer.toString(posTest);
+					int n1T =  Integer.parseInt(valTest.substring(1,(valTest.length())/2+1));
+					int n2T = Integer.parseInt(valTest.substring((valTest.length())/2+1));
+					n1T = (n1T%2==1) ? (n1T-1)/2 : n1T/2;
+					n2T = (n2T%2==1) ? (n2T-1)/2 : n2T/2;
+					System.out.println("("+n1T+","+n2T+")");
+				}
+				System.out.println("//---------------oOo------------------//");
+				int pos = way.get(i).get_posCrypt();
+				String val = Integer.toString(pos);
+
+				int n1 =  Integer.parseInt(val.substring(1,(val.length())/2+1));
+				int n2 = Integer.parseInt(val.substring((val.length())/2+1));
+				n1 = (n1%2==1) ? (n1-1)/2 : n1/2;
+				n2 = (n2%2==1) ? (n2-1)/2 : n2/2;
+				actual.add(0,n1);actual.add(1,n2);
+				System.out.println((i+1)+". ("+n1+","+n2+") "+analyse_way(way.get(i),actual,pred,directions));
+				pred.add(0,n1);pred.add(1,n2);
 			}
-			System.out.println("//---------------oOo------------------//");
-			int pos = way.get(i).get_posCrypt();
-			String val = Integer.toString(pos);
+			System.out.println("Trouvé un plus court chemin de longueur"+".");
+			System.out.println("M. Pakkuman a récolté "+"bonbon(s) et rencontré "+"monstre(s).");*/
 
-			int n1 =  Integer.parseInt(val.substring(1,(val.length())/2+1));
-			int n2 = Integer.parseInt(val.substring((val.length())/2+1));
-			n1 = (n1%2==1) ? (n1-1)/2 : n1/2;
-			n2 = (n2%2==1) ? (n2-1)/2 : n2/2;
-			actual.add(0,n1);actual.add(1,n2);
-			System.out.println((i+1)+". ("+n1+","+n2+") "+analyse_way(way.get(i),actual,pred,directions));
-			pred.add(0,n1);pred.add(1,n2);
+			int[] pred = new int[2];
+			int[] coord;
+			boolean find_exit = false;
+
+
+			// parcours des nodes principales
+			for(int i = 1; i < way.size();i++){
+				coord = graph.pos_decryptage(way.get(i-1).get_posCrypt()); //coordonée décrypté. vérifié et correcte
+				coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
+				System.out.print( "("+coord[0]+","+coord[1]+") " );
+				if (i == 1) { System.out.println("Départ");
+				}
+				else if (way.get(i-1).isMonster()) {
+					System.out.println(get_direction(pred,coord) + ", bonbon donné au petit monstre");
+				}
+				else if (way.get(i-1).isSweet()) {
+					System.out.println(get_direction(pred,coord) + ", bonbon récolté");
+				}
+				else{System.out.println(get_direction(pred,coord));}
+
+				pred = coord.clone();
+
+				ArrayList<Integer> arc = way.get(i-1).get_arc(way.get(i)).get_globalWay();
+				
+				if (arc.get(0) != way.get(i-1).get_posCrypt()) { Collections.reverse(arc);}
+					
+				for (int j = 1; j <arc.size()-1 ;j++ ) {
+
+					coord = graph.pos_decryptage(arc.get(j)); //coordonée décrypté. vérifié et correcte
+					//System.out.println("TEST VALEURS: arc;get(j) = "+arc.get(j)+" et graph.get_exitPos() = "+graph.get_exitPos());
+					if (arc.get(j) == graph.get_exitPos()) {find_exit= true;}
+					coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
+					System.out.print( "("+coord[0]+","+coord[1]+") "); 
+					if (find_exit) {
+						System.out.println("Sortie!");
+					}
+					else {System.out.println(get_direction(pred,coord));}
+					pred = coord.clone();
+				}
+				if(way.get(i).get_posCrypt() == graph.get_exitPos()){
+					System.out.println("Sortie!");
+					find_exit = true;
+				}
+			}
+			if( !find_exit){System.out.println("Il n'y a pas de sortie.");}
+		}catch(NullPointerException e){
+			
+			System.err.println("Caught NullPointerException in Maze FinalSituation: " + e.getMessage());
 		}
-		System.out.println("Trouvé un plus court chemin de longueur"+".");
-		System.out.println("M. Pakkuman a récolté "+"bonbon(s) et rencontré "+"monstre(s).");
-
 	}
+
 
 	//-------------analyse_way()------------//
 
+/*
 	public String analyse_way(Node node,ArrayList<Integer> actual, ArrayList<Integer> pred,HashMap<Integer,String> directions){
 		int key = (actual.get(0)-pred.get(0))*2 + (actual.get(1)-pred.get(1));
 		String direction;
@@ -319,7 +376,7 @@ public class Maze{
 			direction = directions.get(key);
 		}
 		return direction;
-	}
+	}*/
 
 	
 	//--------- Printing method ---------//

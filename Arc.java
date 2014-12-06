@@ -16,6 +16,11 @@ public class Arc {
 			global_way.add(pos_crypt);
 		}
 	}
+	public void insert_way(int pos, int pos_crypt){
+		if (!global_way.contains(pos_crypt) && openArc && pos>=0 && pos<=global_way.size()) {
+			global_way.add(pos,pos_crypt);
+		}
+	}
 	public void supp_way(int pos_crypt){
 		for (int i = 0; i < global_way.size() ;i++ ) {
 			if (global_way.get(i) == pos_crypt){

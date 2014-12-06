@@ -5,9 +5,13 @@ public class Main{
 		System.out.println();
 		System.out.println(args[0]);
 		System.out.println();
+		System.out.println("Controle_MazeStart");
+		System.out.println();
 		long begin = System.currentTimeMillis();
 		Maze maze = new Maze(args[0]);
     	long step1 = System.currentTimeMillis();
+    	System.out.println();
+		System.out.println("Controle_MazeEnd");
 		System.out.println();
 		System.out.println("Controle_GraphStart");
 		System.out.println();
@@ -26,7 +30,7 @@ public class Main{
 		System.out.println();
 		System.out.println("Controle_SituationFinaleStart");
 		System.out.println();
-		maze.FinalSituation(dijkstra.get_finalWay());
+		maze.FinalSituation(dijkstra.get_finalWay(),graph);
 		long step4 = System.currentTimeMillis();
 		System.out.println();
 		System.out.println("Controle_SituationFinaleEnd");
