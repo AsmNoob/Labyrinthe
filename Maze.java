@@ -335,8 +335,10 @@ public class Maze{
 					number_sweets+=1;
 				}
 				else{
-					// Comme la position n'est ni P, ni B, ni M => on peut écrire dessus
-					matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
+					// Comme la position n'est ni B, ni M => on peut écrire dessus
+					if(coord[0] != PukkamansPos[0] || coord[1] != PukkamansPos[1]){
+						matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
+					}
 					System.out.println(get_direction(pred,coord));}
 
 				pred = coord.clone();
@@ -353,7 +355,9 @@ public class Maze{
 					coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
 					System.out.print( index+". ("+coord[0]+","+coord[1]+") ");
 					deplacement+="("+coord[0]+","+coord[1]+") ";
-					matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
+					if(coord[0] != PukkamansPos[0] || coord[1] != PukkamansPos[1]){
+						matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
+					}
 					// Pas très propre
 					if (way.get(i).get_posCrypt() == graph.get_exitPos() && j == (arc.size()-2)) {
 						System.out.println("Sortie!");
