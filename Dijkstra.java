@@ -95,15 +95,23 @@ public class Dijkstra {
 				if (MATRIX_SWEET[indexOut][k] != 0) {// difference entre afficher un chemin et devoir l'utiliser. L'actualisation du
 					m = SWEET_INDEX.get(k);
 					int dim1 = finalWay.size();
-					//finalWay.add(LIST_NODE.get(m));
-
+					boolean notFind_link = true;
 					do{
-						finalWay.add(LIST_NODE.get(m));
-						m=WAY_SUPP[indexOut][m];
+						if (notFind_link) {
+							if (finalWay.contains(LIST_NODE.get(m))) { notFind_link = false;}
+							finalWay.add(LIST_NODE.get(m));
+							m=WAY_SUPP[indexOut][m];
+						}
+						else {m=-1;}
 
-					}while(m>=0);	
+					}while(m>=0);
+
 					int dim2 = finalWay.size();
-					finalWay = sort_way(finalWay,dim2-dim1);
+					if (dim2-dim1 > 1) {
+						finalWay = sort_way(finalWay,dim2-dim1);	
+					}
+					else{finalWay.remove(finalWay.size()-1);}
+					
 				}
 
 			}
@@ -113,7 +121,7 @@ public class Dijkstra {
 		return finalWay;
 	}
 
-	public ArrayList<Node>  sort_way(ArrayList<Node> way, int size){
+	public ArrayList<Node> sort_way(ArrayList<Node> way, int size){
 		int index_insert = way.indexOf(way.get(way.size()-1)) +1; // on veut inserer après le noeuds de connexion
 		way.add(index_insert,way.get(way.size()-1));
 		way.remove(way.size()-1);
