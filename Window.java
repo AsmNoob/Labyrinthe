@@ -36,13 +36,13 @@ public class Window extends JFrame{
 	      			x= maze.get_completeWay().get(i-1).get(1)*2*block_size+45+(diff_x*j/(2*block_size));
 	      			y= maze.get_completeWay().get(i-1).get(0)*2*block_size+45+(diff_y*j/(2*block_size));
 	      			//System.out.println("1: "+diff_x*j/(2*block_size)+" 2: "+diff_y*j/(2*block_size));
-	      			if(j >0){
+	      			/*if(j >0){
 	      				panel.setPosX1(maze.get_completeWay().get(i-1).get(1)*2*block_size+45+(diff_x*(j-1)/(2*block_size)));
 	      				panel.setPosY1(maze.get_completeWay().get(i-1).get(0)*2*block_size+45+(diff_y*(j-1)/(2*block_size)));
 	      			}else{
 	      				panel.setPosX1(maze.get_completeWay().get(i-1).get(1)*2*block_size+45+(diff_x*(0)/(2*block_size)));
 	      				panel.setPosY1(maze.get_completeWay().get(i-1).get(0)*2*block_size+45+(diff_y*(0)/(2*block_size)));
-	      			}
+	      			}*/
 	      			panel.setPosX(x);
 	      			panel.setPosY(y);
 	      			panel.repaint(); 

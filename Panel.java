@@ -9,17 +9,18 @@ import javax.swing.JPanel;
  
 public class Panel extends JPanel {
   	private Maze maze_;
-  	private int posX1;
-  	private int posY1;
+  	// private int posX1;
+  	// private int posY1;
   	private int posX;
   	private int posY;
-  	private int block_size = 25;
+  	private int block_size;
 
 	public Panel(Maze maze){
 		maze_ = maze;
 		posX = maze.getCoordPukkaman()[1]*block_size*2+45;
 		posY = maze.getCoordPukkaman()[0]*block_size*2+45;
-
+		block_size = 25 - (maze.getMaze().size()/25);
+		System.out.println(block_size);
 	}
 
 
@@ -29,7 +30,7 @@ public class Panel extends JPanel {
 	    graph.fillRect(0, 0, this.getWidth(), this.getHeight());
 	    //this.setBackground(Color.BLACK);
 	    graph.setColor(Color.WHITE);
-	    graph.fillOval(posX1, posY1, 10,10);
+	    // graph.fillOval(posX1, posY1, 10,10);
 	    try{
 	    	Image pakkuman = ImageIO.read(new File("pakkuman.png"));
 	    	Image ghost = ImageIO.read(new File("ghost.png"));
@@ -91,13 +92,13 @@ public class Panel extends JPanel {
 
 	}
 
-	public void setPosX1(int pos){
-		this.posX1 = pos;
-	}
+	// public void setPosX1(int pos){
+	// 	this.posX1 = pos;
+	// }
 
-	public void setPosY1(int pos){
-		this.posY1 = pos;
-	}
+	// public void setPosY1(int pos){
+	// 	this.posY1 = pos;
+	// }
 
 	public int getPosX() {
 	    return posX;
