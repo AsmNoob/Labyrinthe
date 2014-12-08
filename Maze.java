@@ -14,6 +14,8 @@ public class Maze{
 	private int[] PukkamansPos = new int[2];
 	private ArrayList<ArrayList<Integer>> MonstersList = new ArrayList<ArrayList<Integer>>();
 	private ArrayList<ArrayList<Integer>> SweetsList = new ArrayList<ArrayList<Integer>>();
+	private ArrayList<ArrayList<Integer>> Complete_way = new ArrayList<ArrayList<Integer>>();
+			
 
 	// à mettre en define
 	/*  Murs = -1
@@ -193,6 +195,10 @@ public class Maze{
 
 	//------ Getters/Setters ------//
 
+	public ArrayList<ArrayList<Integer>> get_completeWay(){
+		return Complete_way;
+	}
+
 	public int[] getCoordPukkaman(){
 		return PukkamansPos;
 	}
@@ -309,7 +315,6 @@ public class Maze{
 			}
 			System.out.println("Trouvé un plus court chemin de longueur"+".");
 			System.out.println("M. Pakkuman a récolté "+"bonbon(s) et rencontré "+"monstre(s).");*/
-
 			int[] pred = new int[2];
 			int[] coord;
 			boolean find_exit = false;
@@ -324,6 +329,9 @@ public class Maze{
 				coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
 				System.out.print( index+". ("+coord[0]+","+coord[1]+") " );
 				deplacement+="("+coord[0]+","+coord[1]+") ";
+				ArrayList<Integer> coor = new ArrayList<Integer>(2);
+				coor.add(coord[0]);coor.add(coord[1]);
+				Complete_way.add(coor);
 				if (i == 1) { System.out.println("Départ");
 				}
 				else if (way.get(i-1).isMonster()) {
@@ -355,6 +363,9 @@ public class Maze{
 					coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
 					System.out.print( index+". ("+coord[0]+","+coord[1]+") ");
 					deplacement+="("+coord[0]+","+coord[1]+") ";
+					coor = new ArrayList<Integer>(2);
+					coor.add(coord[0]);coor.add(coord[1]);
+					Complete_way.add(coor);
 					if(coord[0] != PukkamansPos[0] || coord[1] != PukkamansPos[1]){
 						matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
 					}
