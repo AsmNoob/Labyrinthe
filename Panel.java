@@ -19,7 +19,7 @@ public class Panel extends JPanel {
 		maze_ = maze;
 		posX = maze.getCoordPukkaman()[1]*block_size*2+45;
 		posY = maze.getCoordPukkaman()[0]*block_size*2+45;
-		block_size = 25 - (maze.getMaze().size()/25);
+		block_size = 25 - (maze.getMaze().length/10);
 		System.out.println(block_size);
 	}
 
