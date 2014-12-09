@@ -15,12 +15,11 @@ public class Panel extends JPanel {
   	private int posY;
   	private int block_size;
 
-	public Panel(Maze maze){
+	public Panel(Maze maze,int block){
 		maze_ = maze;
 		posX = maze.getCoordPukkaman()[1]*block_size*2+45;
 		posY = maze.getCoordPukkaman()[0]*block_size*2+45;
-		block_size = 25 - (maze.getMaze().length/10);
-		System.out.println(block_size);
+		block_size = block;
 	}
 
 
@@ -37,7 +36,7 @@ public class Panel extends JPanel {
 	    	Image candy = ImageIO.read(new File("candy.png"));
 	    	//graph.drawImage(pakkuman,posX, posY, 10,10, this);
 	    	graph.setColor(Color.BLACK);
-	    	graph.fillOval(posX, posY, 10,10);
+	    	graph.fillOval(posX, posY, block_size/2,block_size/2);
 	    	//graph.drawImage(ghost, 37+50, 37, 25, 25, this);
 	    	//graph.drawImage(candy, 37, 37+50, 25, 25, this);
 		    //int x1 = this.getWidth()/4;
@@ -59,9 +58,11 @@ public class Panel extends JPanel {
 		    		}else if (value == "|") {
 		    			graph.drawLine(j*block_size+25,(i-1)*block_size+25, j*block_size+25,(i+1)*block_size+25);
 		    		}else if (value == " B "){
-		    			graph.drawImage(candy, (j-1)*block_size+37, (i-1)*block_size+37, 25, 25, this);
+		    			graph.drawImage(candy, (j-1)*block_size+(25+block_size/2), (i-1)*block_size+(25+block_size/2), block_size , block_size, this);//+37 à la base
 		    		}else if (value == " M ") {
-		    			graph.drawImage(ghost, (j-1)*block_size+37, (i-1)*block_size+37, 25, 25, this);
+		    			graph.drawImage(ghost, (j-1)*block_size+(25+block_size/2), (i-1)*block_size+(25+block_size/2),block_size , block_size, this);
+		    		}else if (value == " P ") {
+		    			graph.drawImage(pakkuman, (j-1)*block_size+(25+block_size/2), (i-1)*block_size+(25+block_size/2),block_size , block_size, this);
 		    		}
 		    	}
 		    }
