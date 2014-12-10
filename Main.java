@@ -37,12 +37,20 @@ public class Main{
 			System.out.println();
 			System.out.println("Controle_SituationFinaleEnd");
 			System.out.println();
+			System.out.println("Controle_WindowStart");
+			System.out.println();
+			Window window = new Window(maze);
+			long step5 = System.currentTimeMillis();
+			System.out.println();			
+			System.out.println("Controle_WindowEnd");
+			System.out.println();
 			System.out.println("Controle_EndMain");
 			System.out.println();
 			float time1 = ((float) (step1-begin)) / 1000f;
 			float time2 = ((float) (step2-step1)) / 1000f;
 			float time3 = ((float) (step3-step2)) / 1000f;
 			float time4 = ((float) (step4-step3)) / 1000f;
+			float time5 = ((float) (step5-step4)) / 1000f;
 
 			System.out.print("Time exe || Maze : ");
 			System.out.print(time1);
@@ -52,9 +60,10 @@ public class Main{
 			System.out.print(time3);
 			System.out.print(" || FinalSituation : ");
 			System.out.println(time4);
+			System.out.print(" || Window: ");
+			System.out.println(time5);
 			System.out.print("Total Time execution: ");	
-			System.out.println(time1+time2+time3+time4);
-			Window window = new Window(maze);
+			System.out.println(time1+time2+time3+time4+time5);
 		}catch(ArrayIndexOutOfBoundsException e){
 			System.err.println("Caught ArrayIndexOutOfBoundsException in Main: " + e.getMessage());
 			System.out.println("InputError: No maze given in input('java Main labyXX.txt').");

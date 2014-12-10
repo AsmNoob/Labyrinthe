@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import java.util.*;
  
 public class Panel extends JPanel {
   	private Maze maze_;
@@ -14,6 +15,7 @@ public class Panel extends JPanel {
   	private int posX;
   	private int posY;
   	private int block_size;
+  	ArrayList<ArrayList<Integer>> blackList = new ArrayList<ArrayList<Integer>>();
 
 	public Panel(Maze maze,int block){
 		maze_ = maze;
@@ -33,10 +35,11 @@ public class Panel extends JPanel {
 	    try{
 	    	Image pakkuman = ImageIO.read(new File("pakkuman.png"));
 	    	Image ghost = ImageIO.read(new File("ghost.png"));
-	    	Image candy = ImageIO.read(new File("candy.png"));
+	    	Image candy = ImageIO.read(new File("candy3.png"));
 	    	//graph.drawImage(pakkuman,posX, posY, 10,10, this);
 	    	graph.setColor(Color.BLACK);
-	    	graph.fillOval(posX, posY, block_size/2,block_size/2);
+	    	graph.fillOval(posX, posY, block_size/**3/5*/,block_size/**3/5*/);
+	    	//graph.drawImage(pakkuman, posX, posY,block_size , block_size, this);
 	    	//graph.drawImage(ghost, 37+50, 37, 25, 25, this);
 	    	//graph.drawImage(candy, 37, 37+50, 25, 25, this);
 		    //int x1 = this.getWidth()/4;
@@ -46,8 +49,11 @@ public class Panel extends JPanel {
 		    //graph.fillRect(posX, posY, 50, 50);
 		    for(int i = 0; i < maze_.getMaze().length;i++){
 		    	for(int j = 0; j < maze_.getMaze()[0].length;j++){
-		    		// IDEA DRAW LINES INSTEAD
 		    		String value = maze_.OutputAnalyse(maze_.getMaze()[i][j],i/*+25*/,j/*+25*/);
+		    		
+		    		ArrayList<Integer> coord = new ArrayList<Integer>(2);
+		    		coord.add((i-1)/2);coord.add((j-1)/2);
+
 		    		//System.out.println("value: "+value);
 		    		/*if (value == "+") {
 		    			//dessine un point
@@ -57,9 +63,9 @@ public class Panel extends JPanel {
 						graph.drawLine((j-1)*block_size+25,i*block_size+25, (j+1)*block_size+25,i*block_size+25);
 		    		}else if (value == "|") {
 		    			graph.drawLine(j*block_size+25,(i-1)*block_size+25, j*block_size+25,(i+1)*block_size+25);
-		    		}else if (value == " B "){
+		    		}else if (value == " B " && !blackList.contains(coord)){
 		    			graph.drawImage(candy, (j-1)*block_size+(25+block_size/2), (i-1)*block_size+(25+block_size/2), block_size , block_size, this);//+37 à la base
-		    		}else if (value == " M ") {
+		    		}else if (value == " M " && !blackList.contains(coord)) {
 		    			graph.drawImage(ghost, (j-1)*block_size+(25+block_size/2), (i-1)*block_size+(25+block_size/2),block_size , block_size, this);
 		    		}else if (value == " P ") {
 		    			graph.drawImage(pakkuman, (j-1)*block_size+(25+block_size/2), (i-1)*block_size+(25+block_size/2),block_size , block_size, this);
@@ -93,13 +99,19 @@ public class Panel extends JPanel {
 
 	}
 
-	// public void setPosX1(int pos){
-	// 	this.posX1 = pos;
-	// }
+	/* public void setPosX1(int pos){
+		this.posX1 = pos;
+	}
 
-	// public void setPosY1(int pos){
-	// 	this.posY1 = pos;
-	// }
+	public void setPosY1(int pos){
+	 	this.posY1 = pos;
+	}*/
+
+
+	public ArrayList<ArrayList<Integer>> get_BlackList(){
+		return blackList;
+	}
+
 
 	public int getPosX() {
 	    return posX;
