@@ -10,28 +10,19 @@ public class Window extends JFrame{
   	// Fenêtre de base
   		try{
   			block_size = 27 - ((maze.getMaze().length > maze.getMaze()[0].length) ? ((maze.getMaze().length-1)/2)/3*2 : ((maze.getMaze()[0].length-1)/2)/3*2);
-	  		System.out.println(block_size);
 	  		if(block_size < 5){
 	  			block_size = 5;
-	  		} 
-	  		System.out.println("Size: "+(((maze.getMaze().length-1)/2)/3*2)+" rowSize: "+(((maze.getMaze()[0].length-1)/2)/3*2));
-	  		System.out.println("BLOCK: "+block_size);
+	  		}
 	  		panel = new Panel(maze,block_size);
 	    	this.setTitle("MazeSolver");
-	    	// 10*10 => 150*150 ce qui est enfait un 100*100 avec 25 px autours du laby
-	    	//System.out.println("i: "+(maze.getMaze().length)+" j: "+(maze.getMaze()[0].length));
 	    	this.setSize((maze.getMaze()[0].length-1)*block_size+50,(maze.getMaze().length-1)*block_size+75);
 		    this.setLocationRelativeTo(null); //centered
 		    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		    this.setResizable(false);
-
-		    // Panneau interne à la Fenêtre
-
 		    this.setContentPane(panel);
-
 		    this.setVisible(true);
 		    way(maze);
-
+		   	
 		    try {
 			  	Thread.sleep(5000);
 			} catch (InterruptedException e) {
@@ -89,16 +80,6 @@ public class Window extends JFrame{
 			     	}
 	      		}
 	      	}
-	      	//x = maze.get_completeWay().get(i).get(1)*2*block_size+45;
-	      	//y = maze.get_completeWay().get(i).get(0)*2*block_size+45;
-	      	//panel.setPosX(x);
-	      	//panel.setPosY(y);
-	      	//panel.repaint();  
-	      	/*try {
-	      	  	Thread.sleep();
-	      	} catch (InterruptedException e) {
-	     		System.err.println("Caught InterruptedException in Window(): " + e.getMessage());
-	     	}*/
 	    }
 	}
 
