@@ -61,7 +61,6 @@ public class Graph {
 	}
 
 	// creer une node et la place dans la list de stockage
-	// temps d'exe = 0
 	public Node create_node(int elem, int pos_crypt){
 		Node current_node = new Node(pos_crypt, elem);
 		ENS_NODE.put(pos_crypt,current_node);
@@ -99,10 +98,8 @@ public class Graph {
 	// test si la postion suivante est dans les bornes et autre qu'un mur.
 	//appel recursif de la fonction avec test_twoCase en valeur de controle car les murs se situent entre deux chemin, ils ne constituent pas de chemin en lui même. 
 	public int check_nextPosition(int[][] mat, int pos_crypt, int prePos_crypt, int line_add, int column_add, boolean test_twoCase){
-		//System.out.print(" actuLine: " );System.out.print(actuLine);System.out.print(" actuColumn: " );System.out.print(actuColumn);System.out.print(" preLine: " );System.out.print(preLine);System.out.print(" preColumn: " );System.out.print(preColumn);System.out.print(" line_add: " );System.out.print(line_add);System.out.print(" column_add: " );System.out.println(column_add);
 		int newPos_crypt = modif_posCrypt(pos_crypt,line_add,column_add);
 		int[] newPositions = pos_decryptage(newPos_crypt);
-
 		//si on est dans le cas ou l'element vaut la sortie il ne faut pas faire d'appel récursif puisque pour revenir dans les positions courrante et non les murs
 		if (valueMat(mat, pos_crypt) == 4) {test_twoCase = true;}
 		if (( (newPositions[0] >= 0) && (newPositions[0] < DIM_LINE) && (newPositions[1]>= 0) && (newPositions[1] < DIM_COLUMN) && (newPos_crypt != prePos_crypt)) || (pos_crypt == prePos_crypt)) {
@@ -188,7 +185,7 @@ public class Graph {
 		return position; 
 	}
 
-	// detect si la position actuelle est une node et renvois une liste d'entier contenant les directions possible suivante.
+	// detecte si la position actuelle est une node et renvois une liste d'entier contenant les directions possible suivante.
 	public int[] detect_isNode(int[][] mat, int pos_crypt, int prePos_crypt){
 		int j = DIRECTION_SIZE;
 		int[] data_direction = new int[5];// 4 premier entier -0,1- correspond au direction possible ou non le 5eme si il est >1 nous indiques que c'est une node.
@@ -206,7 +203,6 @@ public class Graph {
 
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
 	public void optimisation_graph(Node current_node){
-		//if (current_node.get_nodeValue() == 2 || current_node.get_nodeValue() == 0 || current_node.get_nodeValue() == 1 ){
 		//premiere optimisation permettant de supprimer les noeuds en fin de parcours étant un monstre ou un noeud quelconque 
 		if (current_node.isUnidirectionnel() && (current_node.isFreeSpace() || current_node.isMonster())) {
 			current_node.get_ensLink().get(0).supp_link(current_node);
@@ -259,11 +255,6 @@ public class Graph {
 
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
 	public void create_graph(int[][] mat, int pos_crypt, int prePos_crypt,boolean isNode,Arc current_arc){
-		//actuLine,j position actuel, preLine,preColumn position precedente
-		/*System.out.print("Controle_Create || prePos --> ");System.out.print(preLine);System.out.print(preColumn);
-		System.out.print(" || actuPos --> ");System.out.print(actuLine);System.out.print(actuColumn);
-		System.out.print(" || isNode --> ");System.out.println(isNode);
-		*/
 		Node current_node = null;
 		iterrator++;
 		int nb_testDirection = 0;
