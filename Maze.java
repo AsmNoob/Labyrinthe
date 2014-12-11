@@ -233,72 +233,74 @@ public class Maze{
 			int number_sweets = 0;
 			int index = 0;
 			String deplacement = "";
-			// parcours des nodes principales
-			for(int i = 1; i < way.size();i++){
-				index++;
-				coord = graph.pos_decryptage(way.get(i-1).get_posCrypt()); //coordonée décrypté. vérifié et correcte
-				coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
-				System.out.print( index+". ("+coord[0]+","+coord[1]+") " );
-				deplacement+="("+coord[0]+","+coord[1]+") ";
-				ArrayList<Integer> coor = new ArrayList<Integer>(2);
-				coor.add(coord[0]);coor.add(coord[1]);
-				complete_way.add(coor);
-				if (i == 1) { System.out.println("Départ");
-				}
-				else if (way.get(i-1).isMonster()) {
-					System.out.println(get_direction(pred,coord) + ", bonbon donné au petit monstre");
-					numbre_monsters+=1;
-				}
-				else if (way.get(i-1).isSweet()) {
-					System.out.println(get_direction(pred,coord) + ", bonbon récolté");
-					number_sweets+=1;
-				}
-				else{
-					// Comme la position n'est ni B, ni M => on peut écrire dessus
-					if(coord[0] != pukkaman_position[0] || coord[1] != pukkaman_position[1]){
-						matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
-					}
-					System.out.println(get_direction(pred,coord));}
-
-				pred = coord.clone();
-
-				ArrayList<Integer> arc = way.get(i-1).get_arc(way.get(i)).get_globalWay();
-				
-				if (arc.get(0) != way.get(i-1).get_posCrypt()) { Collections.reverse(arc);}
-				//System.out.println("TEST VALEURS: arc;get(i-1) = "+way.get(i-1).get_posCrypt()+" et graph.get_exitPos() = "+graph.get_exitPos());
-				for (int j = 1; j <arc.size()-1 ;j++ ) {
+			if(way.get(way.size()-1).isExit()){
+				for(int i = 1; i < way.size();i++){
 					index++;
-					coord = graph.pos_decryptage(arc.get(j)); //coordonée décrypté. vérifié et correcte
-					//System.out.println(" j = "+j+"arc size ="+ arc.size());
-					if (arc.get(j) == graph.get_exitPos()) {find_exit= true;}
+					coord = graph.pos_decryptage(way.get(i-1).get_posCrypt()); //coordonée décrypté. vérifié et correcte
 					coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
-					System.out.print( index+". ("+coord[0]+","+coord[1]+") ");
+					System.out.print( index+". ("+coord[0]+","+coord[1]+") " );
 					deplacement+="("+coord[0]+","+coord[1]+") ";
-					coor = new ArrayList<Integer>(2);
+					ArrayList<Integer> coor = new ArrayList<Integer>(2);
 					coor.add(coord[0]);coor.add(coord[1]);
 					complete_way.add(coor);
-					if(coord[0] != pukkaman_position[0] || coord[1] != pukkaman_position[1]){
-						matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
+					if (i == 1) { System.out.println("Départ");
 					}
-					// Pas très propre
-					if (way.get(i).get_posCrypt() == graph.get_exitPos() && j == (arc.size()-2)) {
+					else if (way.get(i-1).isMonster()) {
+						System.out.println(get_direction(pred,coord) + ", bonbon donné au petit monstre");
+						numbre_monsters+=1;
+					}
+					else if (way.get(i-1).isSweet()) {
+						System.out.println(get_direction(pred,coord) + ", bonbon récolté");
+						number_sweets+=1;
+					}
+					else{
+						// Comme la position n'est ni B, ni M => on peut écrire dessus
+						if(coord[0] != pukkaman_position[0] || coord[1] != pukkaman_position[1]){
+							matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
+						}
+						System.out.println(get_direction(pred,coord));}
+
+					pred = coord.clone();
+
+					ArrayList<Integer> arc = way.get(i-1).get_arc(way.get(i)).get_globalWay();
+					
+					if (arc.get(0) != way.get(i-1).get_posCrypt()) { Collections.reverse(arc);}
+					//System.out.println("TEST VALEURS: arc;get(i-1) = "+way.get(i-1).get_posCrypt()+" et graph.get_exitPos() = "+graph.get_exitPos());
+					for (int j = 1; j <arc.size()-1 ;j++ ) {
+						index++;
+						coord = graph.pos_decryptage(arc.get(j)); //coordonée décrypté. vérifié et correcte
+						//System.out.println(" j = "+j+"arc size ="+ arc.size());
+						if (arc.get(j) == graph.get_exitPos()) {find_exit= true;}
+						coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
+						System.out.print( index+". ("+coord[0]+","+coord[1]+") ");
+						deplacement+="("+coord[0]+","+coord[1]+") ";
+						coor = new ArrayList<Integer>(2);
+						coor.add(coord[0]);coor.add(coord[1]);
+						complete_way.add(coor);
+						if(coord[0] != pukkaman_position[0] || coord[1] != pukkaman_position[1]){
+							matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
+						}
+						// Pas très propre
+						if (way.get(i).get_posCrypt() == graph.get_exitPos() && j == (arc.size()-2)) {
+							System.out.println("Sortie!");
+							find_exit = true;
+						}
+						else {System.out.println(get_direction(pred,coord));}
+						pred = coord.clone();
+					}
+					if(way.get(i).get_posCrypt() == graph.get_exitPos() && !find_exit){
 						System.out.println("Sortie!");
 						find_exit = true;
 					}
-					else {System.out.println(get_direction(pred,coord));}
-					pred = coord.clone();
+					System.out.println();System.out.println("Trouvé un plus court chemin de longueur "+index+".");
+					System.out.println("M. Pakkuman a récolté "+number_sweets+" bonbon(s) et rencontré "+numbre_monsters+" monstre(s).");
 				}
-				if(way.get(i).get_posCrypt() == graph.get_exitPos() && !find_exit){
-					System.out.println("Sortie!");
-					find_exit = true;
-				}
-			}
-			if( !find_exit){
-				System.out.println("Il n'y a pas de sortie.");
 			}else{
-				System.out.println();System.out.println("Trouvé un plus court chemin de longueur "+index+".");
-				System.out.println("M. Pakkuman a récolté "+number_sweets+" bonbon(s) et rencontré "+numbre_monsters+" monstre(s).");
+				System.out.println("Il n'y a pas moyen de sortir vivant du labyrinthe.");
 			}
+			// parcours des nodes principales
+			
+				
 			PrintWriter writer = new PrintWriter ("FinalSituation.txt");
 			writer.println("Situation finale:");
 			matrix_Printer(writer);
