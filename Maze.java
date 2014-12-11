@@ -261,9 +261,6 @@ public class Maze{
 						System.out.println(get_direction(pred,coord));}
 
 					pred = coord.clone();
-					System.out.println("get i: "+way.get(i-1));
-					System.out.println("get ARC(i): "+way.get(i-1).get_arc(way.get(i)));
-					//System.out.println("get GLOBAL: "+way.get(i-1).get_arc(way.get(i)).get_globalWay());
 					if(way.get(i-1).get_arc(way.get(i)) != null){
 						ArrayList<Integer> arc = way.get(i-1).get_arc(way.get(i)).get_globalWay();
 						if (arc.get(0) != way.get(i-1).get_posCrypt()) { Collections.reverse(arc);}
