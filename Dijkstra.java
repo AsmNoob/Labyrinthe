@@ -37,7 +37,7 @@ public class Dijkstra {
 
 			createData_struc();
 			dijkstra(0,EXIT);
-			print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
+			//print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
 
 
 			ArrayList<Node> way = get_finalWay();
@@ -71,7 +71,7 @@ public class Dijkstra {
 			if (DISTANCE[INDEX_EXIT] == IN){
 				int max= 0;
 				for (int i = 0 ;i < NB_NODES ;i++ ) {
-					System.out.print(DISTANCE[i] +"|");
+					//System.out.print(DISTANCE[i] +"|");
 					if (max< DISTANCE[i] && DISTANCE[i]  != IN) {
 						j=indexOut=i;
 						max=DISTANCE[i];
