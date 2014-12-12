@@ -37,14 +37,14 @@ public class Dijkstra {
 
 			createData_struc();
 			dijkstra(0,EXIT);
-			//print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
+			print_way(DISTANCE,PREDECESSOR,INDEX_EXIT,0);
 
 
-			ArrayList<Node> way = get_finalWay();
+			/*ArrayList<Node> way = get_finalWay();
 			
-			for (int i = 0;i < way.size() ;i++ ) {
-				System.out.print(way.get(i).get_posCrypt() + "|");
-			}
+			for (Node node : way) {
+				System.out.print(node.get_posCrypt() + "|");
+			}*/
 		}catch(NullPointerException e){
 			System.err.println("Caught NullPointerException in Dijkstra algorithm: " + e.getMessage());
 		}
@@ -53,65 +53,81 @@ public class Dijkstra {
 //--------------------------------------------------------------------------------------------------------------//
 	
 	public int get_totalWeight(){
-		int weight = IN;
 		try{
-			weight = DISTANCE[INDEX_EXIT];
+			return DISTANCE[INDEX_EXIT];
 		}catch (NullPointerException e) {
 			System.err.println("Caught NullPointerException in get_totalWeight(): " + e.getMessage());
 		}
-		return weight;
-		
+		return IN;
 	}
+	public int find_monster(){
+		Node pakkuman = LIST_NODE.get(0);
+		for (int i = 1; i < NB_NODES; i++){
+			if (pakkuman.isLinkTo(LIST_NODE.get(i)) && LIST_NODE.get(i).isMonster()) {
+				return i;
+			}
+		}
+		return 0;
+	}
+	public int find_longestWay(){
+		int max= 0;
+		int indexOut= 0;
+			for (int i = 1 ;i < NB_NODES ;i++ ) {
+				//System.out.print(DISTANCE[i] +"|");
+				if (max< DISTANCE[i] && DISTANCE[i]  != IN) {
+					indexOut=i;
+					max=DISTANCE[i];
+				}
+			}
+		return indexOut;
+	}
+	public ArrayList<Node> get_regularWay(int indexOut, ArrayList<Node> finalWay ){
+		int j = indexOut;
+		do{
+			finalWay.add(0,LIST_NODE.get(j));
+			j=PREDECESSOR[j];		
+		}while(j!=0);
+		finalWay.add(0,LIST_NODE.get(j));
+		
+		int m;
+		for (int k = 0; k < SWEET_INDEX.size(); k++) {
+			if (MATRIX_SWEET[indexOut][k] != 0) {// difference entre afficher un chemin et devoir l'utiliser. L'actualisation du
+				m = SWEET_INDEX.get(k);
+				int dim1 = finalWay.size();
+				boolean notFind_link = true;
+				do{
+					if (notFind_link) {
+						if (finalWay.contains(LIST_NODE.get(m))) { notFind_link = false;}
+						finalWay.add(LIST_NODE.get(m));
+						m=WAY_SUPP[indexOut][m];
+					}
+					else {m=-1;}
+				}while(m>=0);
 
+				int dim2 = finalWay.size();
+				if (dim2-dim1 > 1) {
+					finalWay = sort_way(finalWay,dim2-dim1);	
+				}
+				else{finalWay.remove(finalWay.size()-1);}	
+			}
+		}
+		return finalWay;
+	}
 	public ArrayList<Node> get_finalWay(){
 		ArrayList<Node> finalWay = new ArrayList<Node>();
+		boolean call_monster = false;
 		try{
-			int indexOut =  INDEX_EXIT;
-			int j = INDEX_EXIT;
-			if (DISTANCE[INDEX_EXIT] == IN){
-				int max= 0;
-				for (int i = 0 ;i < NB_NODES ;i++ ) {
-					//System.out.print(DISTANCE[i] +"|");
-					if (max< DISTANCE[i] && DISTANCE[i]  != IN) {
-						j=indexOut=i;
-						max=DISTANCE[i];
-					}
-				}
+			int indexOut = INDEX_EXIT;
+			if (DISTANCE[INDEX_EXIT] == IN){ 
+				indexOut= find_longestWay();
+				if (indexOut == 0) {
+					call_monster = true;
+					indexOut = find_monster();
+				}	
 			}
-
-			do{
-				finalWay.add(0,LIST_NODE.get(j));
-				j=PREDECESSOR[j];
-				
-			}while(j!=0);
-			finalWay.add(0,LIST_NODE.get(j));
-			int m;
-			for (int k = 0; k < SWEET_INDEX.size(); k++) {
-
-				
-				if (MATRIX_SWEET[indexOut][k] != 0) {// difference entre afficher un chemin et devoir l'utiliser. L'actualisation du
-					m = SWEET_INDEX.get(k);
-					int dim1 = finalWay.size();
-					boolean notFind_link = true;
-					do{
-						if (notFind_link) {
-							if (finalWay.contains(LIST_NODE.get(m))) { notFind_link = false;}
-							finalWay.add(LIST_NODE.get(m));
-							m=WAY_SUPP[indexOut][m];
-						}
-						else {m=-1;}
-
-					}while(m>=0);
-
-					int dim2 = finalWay.size();
-					if (dim2-dim1 > 1) {
-						finalWay = sort_way(finalWay,dim2-dim1);	
-					}
-					else{finalWay.remove(finalWay.size()-1);}
-					
-				}
-
-			}
+			if(!call_monster){ finalWay=get_regularWay(indexOut,finalWay);}
+			else{ finalWay.add(LIST_NODE.get(0));finalWay.add(LIST_NODE.get(indexOut));}
+			
 		}catch(NullPointerException e){
 			System.err.println("Caught NullPointerException in Dijkstra.get_way() method: " + e.getMessage());
 		}
