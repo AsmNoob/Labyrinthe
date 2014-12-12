@@ -10,33 +10,35 @@ public class Graph {
 	private int DIM_COLUMN; //dimention de la matrice
 	private int LINE_SIZE; //dimention de la matrice 
 	private int COLUMN_SIZE; //dimention de la matrice
-	private HashMap<Integer,Node> ENS_NODE = new HashMap<Integer,Node>();
-	private	ArrayList<Node> LIST_NODE;
-	private int[] DIRECTION = new int[] {-1,1,0,0};
+	private HashMap<Integer,Node> ENS_NODE = new HashMap<Integer,Node>(); //dictionnaire permettant de retrouver rapidement les nodes par leur positions crypté
+	private	ArrayList<Node> LIST_NODE;// liste contenant les nodes crées
+	private int[] DIRECTION = new int[] {-1,1,0,0}; // liste permettant de contenir les differents modifications applicable a la matrice pour s'y deplacer
 	private int DIRECTION_SIZE = DIRECTION.length-1;
-	private int NB_NODES;
-	private int iterrator = 0;
-	private int optimisation = 0;
-	private int PAKKUMAN_CRYPT;
-	private int EXIT_CRYPT;
-	// #define
-	
-	private int IN = 9999; 
+	private int NB_NODES; // contient le nombre de nodes créées
+	private int iterrator = 0;// variable à titre informatif permetttant avec optimisation de savoir combien de node on a supprimé
+	private int optimisation = 0;// variable à titre informatif permetttant avec iterrator de savoir combien de node on a supprimé
+	private int PAKKUMAN_CRYPT; // position du pakkuman crypté
+	private int EXIT_CRYPT; // position de la sortie crypté
+	private int IN = 9999; //valeur par defaut de la distance séparant deux nodes non testées
 
-	// constructeur
+	//-----------------------------------Constructeur-------------------------------------//
 	public Graph(int[][] mat, int[] pakkumanCoord){
 		try{
-			DIM_LINE = mat.length;
-			DIM_COLUMN = mat[0].length;
-			LINE_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_LINE))+1);
-			COLUMN_SIZE = (int) Math.pow(10,Math.floor(Math.log10(DIM_COLUMN))+1);
-			PAKKUMAN_CRYPT = pos_cryptage(pakkumanCoord[0]*2+1,pakkumanCoord[1]*2+1);
-			create_graph(mat,PAKKUMAN_CRYPT,PAKKUMAN_CRYPT, true, null); 
+				    	System.out.println("HEy3");
+
+			build_struct(mat, pakkumanCoord);
+			create_graph(mat,PAKKUMAN_CRYPT,PAKKUMAN_CRYPT, true, null);
+
 			NB_NODES = ENS_NODE.size();
 			LIST_NODE = new ArrayList<Node>(ENS_NODE.values());
+	    	System.out.println("HEy4");
+
 			//fais un switch entre la node Pakkuman et la node en premiere position 
-			LIST_NODE.set(LIST_NODE.indexOf(ENS_NODE.get(PAKKUMAN_CRYPT)),LIST_NODE.set(0,ENS_NODE.get(PAKKUMAN_CRYPT)));
-	    	
+			LIST_NODE.remove(ENS_NODE.get(PAKKUMAN_CRYPT));
+				    	System.out.println("HEy4");
+
+			LIST_NODE.add(0,ENS_NODE.get(PAKKUMAN_CRYPT));
+	    	System.out.println("HEy4");
 			graph_converter();
 			
 			System.out.print("Optimisation || nb node : ");
@@ -48,18 +50,31 @@ public class Graph {
 		}
 
 	}
+	// fonction permettant de mettre en place les variables de classes dont on aura besoin
+	public void build_struct(int[][] mat, int[] pakkumanCoord){
 
-	//------------Getter/Setter----------//
+		DIM_LINE = mat.length;
+		DIM_COLUMN = mat[0].length;
+		LINE_SIZE = (int) Math.pow(10,Integer.toString(DIM_LINE).length());// (int) Math.pow(10,Math.floor(Math.log10(DIM_LINE))+1);// permet de savoir 
+		COLUMN_SIZE = (int) Math.pow(10,Integer.toString(DIM_COLUMN).length());//
+		PAKKUMAN_CRYPT = pos_cryptage(pakkumanCoord[0]*2+1,pakkumanCoord[1]*2+1);
+
+	}
+	//-----------------------------------Getter-------------------------------------//
+	// recupere la position crypté de la sortie
 	public int get_exitPos(){
 		return EXIT_CRYPT;
 	}
+	// recupere la liste des noeuds créés
 	public ArrayList<Node> get_listNode(){
 		return LIST_NODE;
 	}
+	//recupere le dictionnaire des noeuds créés avec leur position crypté en clé
 	public HashMap<Integer,Node> get_ensNode(){
 		return ENS_NODE;
 	}
 
+	//-----------------------------------Node-------------------------------------//
 	// creer une node et la place dans la list de stockage
 	public Node create_node(int elem, int pos_crypt){
 		Node current_node = new Node(pos_crypt, elem);
@@ -77,11 +92,13 @@ public class Graph {
 		}
 		return current_node;
 	}
-
+	// met a jour les noeuds présent dans l'arc courant pour que ceux ci possèdent le lien vers cet arc.
 	public void update_nodeLink(Arc current_arc){
 		current_arc.get_startNode().add_link(current_arc.get_endNode(),current_arc);
 		current_arc.get_endNode().add_link(current_arc.get_startNode(),current_arc);
 	}
+	//-----------------------------------Arc-------------------------------------//
+	// crée un arc 
 	public Arc start_Arc(int pos_crypt, Node start_node){
 		Arc current_arc = new Arc();
 		current_arc.add_way(pos_crypt);
@@ -89,29 +106,11 @@ public class Graph {
 		return current_arc;
 	}
 
+	// ferme l'arc
 	public void end_Arc(Arc current_arc, Node current_node, int pos_crypt){
 		current_arc.add_way(pos_crypt);
 		current_arc.set_endNode(current_node);
 		current_arc.set_stateArc(false);
-	}
-
-	// test si la postion suivante est dans les bornes et autre qu'un mur.
-	//appel recursif de la fonction avec test_twoCase en valeur de controle car les murs se situent entre deux chemin, ils ne constituent pas de chemin en lui même. 
-	public int check_nextPosition(int[][] mat, int pos_crypt, int prePos_crypt, int line_add, int column_add, boolean test_twoCase){
-		int newPos_crypt = modif_posCrypt(pos_crypt,line_add,column_add);
-		int[] newPositions = pos_decryptage(newPos_crypt);
-		//si on est dans le cas ou l'element vaut la sortie il ne faut pas faire d'appel récursif puisque pour revenir dans les positions courrante et non les murs
-		if (valueMat(mat, pos_crypt) == 4) {test_twoCase = true;}
-		if (( (newPositions[0] >= 0) && (newPositions[0] < DIM_LINE) && (newPositions[1]>= 0) && (newPositions[1] < DIM_COLUMN) && (newPos_crypt != prePos_crypt)) || (pos_crypt == prePos_crypt)) {
-			int elem = mat[newPositions[0]][newPositions[1]];
-			// mur = -1
-			if (elem == 4) {return 1;}
-			if (elem != -1) {
-				if (!test_twoCase){return check_nextPosition(mat,newPos_crypt,prePos_crypt, line_add,column_add,true);}
-				else {return 2;}
-			}
-		}
-		return 0;
 	}
 
 	//affichage des données récuperer après analyse du labyrinthe. 
@@ -171,14 +170,39 @@ public class Graph {
 		}
 		return 'F';
 	}
+
+	//-----------------------------------Mouvement-------------------------------------//
+	// test si la postion suivante est dans les bornes et autre qu'un mur.
+	//appel recursif de la fonction avec test_twoCase en valeur de controle car les murs se situent entre deux chemin, ils ne constituent pas de chemin en tant que tel. 
+	public int check_nextPosition(int[][] mat, int pos_crypt, int prePos_crypt, int line_add, int column_add, boolean test_twoCase){
+		int newPos_crypt = modif_posCrypt(pos_crypt,line_add,column_add);
+		int[] newPositions = pos_decryptage(newPos_crypt);
+		//si on est dans le cas ou l'element vaut la sortie il ne faut pas faire d'appel récursif puisque pour revenir dans les positions courrante et non les murs
+		if (valueMat(mat, pos_crypt) == 4) {test_twoCase = true;}
+		if (( (newPositions[0] >= 0) && (newPositions[0] < DIM_LINE) && (newPositions[1]>= 0) && (newPositions[1] < DIM_COLUMN) && (newPos_crypt != prePos_crypt)) || (pos_crypt == prePos_crypt)) {
+			int elem = mat[newPositions[0]][newPositions[1]];
+			// mur = -1
+			if (elem == 4) {return 1;}
+			if (elem != -1) {
+				if (!test_twoCase){return check_nextPosition(mat,newPos_crypt,prePos_crypt, line_add,column_add,true);}
+				else {return 2;}
+			}
+		}
+		return 0;
+	}
+	// renvois la valeur de la position crypté dans la matrice
+	public int valueMat( int[][] mat, int pos_crypt){
+		int[] positions = pos_decryptage(pos_crypt);
+		return mat[positions[0]][positions[1]];
+	}
 	// cryptage de la position i,j
 	public int pos_cryptage(int i, int j){
 		return ((LINE_SIZE*COLUMN_SIZE)+(i*COLUMN_SIZE)+j);
 	}
+	// modification de la position crypté
 	public int modif_posCrypt(int pos_crypt, int addLine, int addColumn){
 		return pos_cryptage(pos_decryptage(pos_crypt)[0]+addLine,pos_decryptage(pos_crypt)[1]+addColumn);
 	}
-
 	// decryptage de la position 
 	public int[] pos_decryptage( int pos_crypt){
 		int[] position= new int[] {(pos_crypt-LINE_SIZE*COLUMN_SIZE-(pos_crypt%COLUMN_SIZE))/COLUMN_SIZE,pos_crypt %COLUMN_SIZE};
@@ -228,14 +252,18 @@ public class Graph {
 				arc_toLink.set_globalWay(nodeLink2.get_arc(current_node).get_globalWay());
 				addTo_globalWay = nodeLink1.get_arc(current_node).get_globalWay();
 			}
+			// on inverse l'arc à ajouté si la premiere position n'est pas égale à la position courrent de la node
 			if (addTo_globalWay.get(0) != pos_current) {Collections.reverse(addTo_globalWay);}
+			// on determine l'ordre dans lequel on ajoutera les positions a l'arc en s'informant sur la position
+			//du dernier element de l'arc a qui on va ajouter d'autre position.
 			if (arc_toLink.get(arc_toLink.get_weight()-1) != pos_current) {right_order = false;}
-			
+			// permettant ainsi d'avoir un arc dont les positions se suivent de manière logique.
+			//on ajoute le plus petit arc au grand arc.
 			for (int i =0;i < addTo_globalWay.size() ;i++ ) {
 				if(!right_order) {arc_toLink.insert_way(0, addTo_globalWay.get(i));}
 				else{arc_toLink.add_way(addTo_globalWay.get(i));}
 			}
-
+			//on supprime le noeuds et on met a jour l'arc
 			nodeLink1.supp_link(current_node); nodeLink2.supp_link(current_node);
 			if (arc_toLink.get(0) == nodeLink1.get_posCrypt()){
 				arc_toLink.set_startNode(nodeLink1);arc_toLink.set_endNode(nodeLink2);}
@@ -246,11 +274,6 @@ public class Graph {
 			ENS_NODE.remove(current_node.get_posCrypt());
 			optimisation++;
 		}
-	}
-
-	public int valueMat( int[][] mat, int pos_crypt){
-		int[] positions = pos_decryptage(pos_crypt);
-		return mat[positions[0]][positions[1]];
 	}
 
 	// parcours en backtraking du labyrinthe créant a chaque intersection de chemin une node - un sommet-.  
