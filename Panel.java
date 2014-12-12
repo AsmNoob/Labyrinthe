@@ -16,11 +16,12 @@ public class Panel extends JPanel {
   	private int posY;
   	private int block_size;
   	ArrayList<ArrayList<Integer>> blackList = new ArrayList<ArrayList<Integer>>();
+  	private static final long serialVersionUID = 2; // get rid of wanings
 
 	public Panel(Maze maze,int block){
 		maze_ = maze;
-		posX = maze.getCoordPukkaman()[1]*block_size*2+45;
-		posY = maze.getCoordPukkaman()[0]*block_size*2+45;
+		//posX; // = maze.getCoordPukkaman()[1]*block_size*2+45;
+		//posY; //= maze.getCoordPukkaman()[0]*block_size*2+45;
 		block_size = block;
 	}
 
@@ -35,7 +36,9 @@ public class Panel extends JPanel {
 	    	Image candy = ImageIO.read(new File("candy3.png"));
 	    	graph.setColor(Color.BLACK);
 	    	// Rond noir qui rprésente pakkuman
-	    	graph.fillOval(posX, posY, block_size/**3/5*/,block_size/**3/5*/);
+	    	if(posX != 0 || posY != 0){
+	    		graph.fillOval(posX, posY, block_size/**3/5*/,block_size/**3/5*/);
+	    	}
 	    	//graph.drawImage(pakkuman, posX, posY,block_size , block_size, this);
 		    for(int i = 0; i < maze_.getMaze().length;i++){
 		    	for(int j = 0; j < maze_.getMaze()[0].length;j++){

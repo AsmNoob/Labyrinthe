@@ -5,6 +5,7 @@ import java.util.*;
 public class Window extends JFrame{
 	private Panel panel;
 	private int block_size;
+	private static final long serialVersionUID = 1; // get rid of wanings
 
   	public Window(Maze maze){
   	// Fenêtre de base
