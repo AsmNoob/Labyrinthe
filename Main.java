@@ -1,13 +1,16 @@
 public class Main{
 	public static void main(String[] args) {
 		//Main
-		try{
+		//try{
 			// System.out.println("Controle_MainStart");
 			// System.out.println();
 			// System.out.println("Controle_MazeStart");
 			// System.out.println();
 			long begin = System.currentTimeMillis();
+			System.out.print("HEy");
 			Maze maze = new Maze(args[0]);
+				    	System.out.println("HEy2");
+
 	    	long step1 = System.currentTimeMillis();
 	  //   	System.out.println();
 			// System.out.println("Controle_MazeEnd");
@@ -55,9 +58,9 @@ public class Main{
 			System.out.print(time4);
 			System.out.print("Total Time execution: ");	
 			System.out.println(time1+time2+time3+time4);
-		}catch(ArrayIndexOutOfBoundsException e){
+		/*}catch(ArrayIndexOutOfBoundsException e){
 			System.err.println("Caught ArrayIndexOutOfBoundsException in Main: " + e.getMessage());
 			System.out.println("InputError: No maze given in input('java Main labyXX.txt').");
-		}
+		}*/
 	}
 }
