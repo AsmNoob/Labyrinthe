@@ -183,6 +183,8 @@ public class Graph {
 			int elem = mat[newPositions[0]][newPositions[1]];
 			// mur = -1
 			if (elem == 4) {return 1;}
+			//petite astuce ici si c'est egale a la sortie on ne retourne que 1 au lieu de deux car mis a part 
+			//la sortie tout les elements de la matrice se récupere par saut de deux cases.
 			if (elem != -1) {
 				if (!test_twoCase){return check_nextPosition(mat,newPos_crypt,prePos_crypt, line_add,column_add,true);}
 				else {return 2;}
@@ -282,13 +284,17 @@ public class Graph {
 		iterrator++;
 		int nb_testDirection = 0;
 		if (!ENS_NODE.containsKey(pos_crypt)){
+			//on recupere les données nous permettant de savoir dans quel direction on peut aller
 			int[] data_direction = detect_isNode(mat, pos_crypt, prePos_crypt);
 
+			//opération effectuer si la position actuelle est une node.
 			if (data_direction[DIRECTION_SIZE+1]>1 || valueMat(mat, pos_crypt)>0)  { 
 
+				//on crée ou selectionne une node.
 				current_node = select_currentNode(valueMat(mat, pos_crypt),pos_crypt);
 				if (current_node.isExit()) {EXIT_CRYPT=pos_crypt;}
 
+				//on termine l'arc actuelle si il existe.
 				if (current_arc != null) {
 					end_Arc(current_arc,current_node,pos_crypt);
 					update_nodeLink(current_arc); 
@@ -297,10 +303,12 @@ public class Graph {
 			}
 			else {isNode = false;}
 
+			//si ce n'est pas une node on doit simplement ajouter la nouvelle position a l'arc courant
 			if (!isNode) {current_arc.add_way(pos_crypt);}
-			int i = 0;int newPos_crypt;
+			int i = 0; int newPos_crypt;
 			do{
-				if (data_direction[i] >= 1) {
+				if (data_direction[i] >= 1) {// si c'est un direction possible
+					//on crée un nouvelle arc si c'est une nouvelle node
 					if (isNode) { current_arc = start_Arc(pos_crypt,current_node);}
 					
 					newPos_crypt = modif_posCrypt(pos_crypt,(DIRECTION[i]*data_direction[i]),(DIRECTION[DIRECTION_SIZE-i]*data_direction[i]));
@@ -309,6 +317,8 @@ public class Graph {
 				}
 				i++;
 			}while(nb_testDirection<data_direction[DIRECTION_SIZE+1]);
+			// le dernier element de cette liste contient le nombre de direction possible pour la position courante
+			// si c'est une node on esaye de l'optimisé
 			if(isNode){optimisation_graph(current_node);}
 		
 		}
