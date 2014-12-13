@@ -24,21 +24,17 @@ public class Graph {
 	//-----------------------------------Constructeur-------------------------------------//
 	public Graph(int[][] mat, int[] pakkumanCoord){
 		try{
-				    	System.out.println("HEy3");
 
 			build_struct(mat, pakkumanCoord);
 			create_graph(mat,PAKKUMAN_CRYPT,PAKKUMAN_CRYPT, true, null);
 
 			NB_NODES = ENS_NODE.size();
 			LIST_NODE = new ArrayList<Node>(ENS_NODE.values());
-	    	System.out.println("HEy4");
 
 			//fais un switch entre la node Pakkuman et la node en premiere position 
 			LIST_NODE.remove(ENS_NODE.get(PAKKUMAN_CRYPT));
-				    	System.out.println("HEy4");
 
 			LIST_NODE.add(0,ENS_NODE.get(PAKKUMAN_CRYPT));
-	    	System.out.println("HEy4");
 			graph_converter();
 			
 			System.out.print("Optimisation || nb node : ");
