@@ -24,21 +24,17 @@ public class Graph {
 	//-----------------------------------Constructeur-------------------------------------//
 	public Graph(int[][] mat, int[] pakkumanCoord){
 		try{
-				    	System.out.println("HEy3");
 
 			build_struct(mat, pakkumanCoord);
 			create_graph(mat,PAKKUMAN_CRYPT,PAKKUMAN_CRYPT, true, null);
 
 			NB_NODES = ENS_NODE.size();
 			LIST_NODE = new ArrayList<Node>(ENS_NODE.values());
-	    	System.out.println("HEy4");
 
 			//fais un switch entre la node Pakkuman et la node en premiere position 
 			LIST_NODE.remove(ENS_NODE.get(PAKKUMAN_CRYPT));
-				    	System.out.println("HEy4");
 
 			LIST_NODE.add(0,ENS_NODE.get(PAKKUMAN_CRYPT));
-	    	System.out.println("HEy4");
 			graph_converter();
 			
 			System.out.print("Optimisation || nb node : ");
@@ -88,6 +84,7 @@ public class Graph {
 			current_node = create_node(elem, pos_crypt);
 		}
 		else{
+			System.out.println(pos_crypt);
 			current_node = ENS_NODE.get(pos_crypt);
 		}
 		return current_node;
@@ -183,6 +180,8 @@ public class Graph {
 			int elem = mat[newPositions[0]][newPositions[1]];
 			// mur = -1
 			if (elem == 4) {return 1;}
+			//petite astuce ici si c'est egale a la sortie on ne retourne que 1 au lieu de deux car mis a part 
+			//la sortie tout les elements de la matrice se récupere par saut de deux cases.
 			if (elem != -1) {
 				if (!test_twoCase){return check_nextPosition(mat,newPos_crypt,prePos_crypt, line_add,column_add,true);}
 				else {return 2;}
@@ -210,7 +209,7 @@ public class Graph {
 	}
 
 	// detecte si la position actuelle est une node et renvois une liste d'entier contenant les directions possible suivante.
-	public int[] detect_isNode(int[][] mat, int pos_crypt, int prePos_crypt){
+	public int[] data_ofPosition(int[][] mat, int pos_crypt, int prePos_crypt){
 		int j = DIRECTION_SIZE;
 		int[] data_direction = new int[5];// 4 premier entier -0,1- correspond au direction possible ou non le 5eme si il est >1 nous indiques que c'est une node.
 		int test;
@@ -228,41 +227,30 @@ public class Graph {
 	// supprime les noeuds ne menant a rien autre qu'un vide ou un monstre O(4N)
 	public void optimisation_graph(Node current_node){
 		//premiere optimisation permettant de supprimer les noeuds en fin de parcours étant un monstre ou un noeud quelconque 
-		if (current_node.isUnidirectionnel() && (current_node.isFreeSpace() || current_node.isMonster())) {
-			current_node.get_ensLink().get(0).supp_link(current_node);
-			ENS_NODE.remove(current_node.get_posCrypt());
-			optimisation++;
+		if (current_node.isUnidirectionnel()) {
+			Node nodeLink =  current_node.get_ensLink().get(0);
+			if (current_node.isFreeSpace() || current_node.isMonster() || (!current_node.isExit() && !current_node.isPakkuman() && nodeLink.isMonster())) {
+				current_node.get_ensLink().get(0).supp_link(current_node);
+				ENS_NODE.remove(current_node.get_posCrypt());
+				optimisation++;
+			}	
 		}
-		// cette deuxieme optimisation permet de rassembler deux nodes ensemble qui serait quelconque et tout deux bidirectionnel
-		// la node actuelle pourrait etre fusionné avec un bonbon ou un monstre.
+		// cette deuxieme optimisation permet de rassembler deux nodes ensemble qui serait relié par un noeuds quelconque.
 		else if (current_node.isBidirectionnel() && current_node.isFreeSpace()) {
 			int pos_current = current_node.get_posCrypt();
 			Node nodeLink1 = current_node.get_ensLink().get(0);
 			Node nodeLink2 = current_node.get_ensLink().get(1);
 			Arc arc_toLink = new Arc();
-			ArrayList<Integer> addTo_globalWay;
-			boolean right_order = true;
-			// On test pour savoir lequel des deux arc est le plus cours pour ajouter au plus long le plus court arc
-			if (nodeLink1.get_arc(current_node).get_weight() <= nodeLink2.get_arc(current_node).get_weight() ) {
-				arc_toLink.set_startNode(nodeLink1);arc_toLink.set_endNode(nodeLink2);
-				arc_toLink.set_globalWay(nodeLink1.get_arc(current_node).get_globalWay());
-				addTo_globalWay = nodeLink2.get_arc(current_node).get_globalWay();
-			}
-			else{
-				arc_toLink.set_globalWay(nodeLink2.get_arc(current_node).get_globalWay());
-				addTo_globalWay = nodeLink1.get_arc(current_node).get_globalWay();
-			}
-			// on inverse l'arc à ajouté si la premiere position n'est pas égale à la position courrent de la node
-			if (addTo_globalWay.get(0) != pos_current) {Collections.reverse(addTo_globalWay);}
-			// on determine l'ordre dans lequel on ajoutera les positions a l'arc en s'informant sur la position
-			//du dernier element de l'arc a qui on va ajouter d'autre position.
-			if (arc_toLink.get(arc_toLink.get_weight()-1) != pos_current) {right_order = false;}
+			ArrayList<Integer> way_arc1 = nodeLink1.get_arc(current_node).get_globalWay();
+			ArrayList<Integer> way_arc2 = nodeLink2.get_arc(current_node).get_globalWay();
+
+			// on inverse les arc pour que le dernier element de way_arc2 egale celui de way_arc1
+			if (way_arc1.get(0) != pos_current) {Collections.reverse(way_arc1);}
+			if (way_arc2.get(0) == pos_current) {Collections.reverse(way_arc2);}
 			// permettant ainsi d'avoir un arc dont les positions se suivent de manière logique.
-			//on ajoute le plus petit arc au grand arc.
-			for (int i =0;i < addTo_globalWay.size() ;i++ ) {
-				if(!right_order) {arc_toLink.insert_way(0, addTo_globalWay.get(i));}
-				else{arc_toLink.add_way(addTo_globalWay.get(i));}
-			}
+			way_arc1.remove(0); //premier element commun au deux arc puisque égale a la node de suppréssion
+			way_arc2.addAll(way_arc1);
+			arc_toLink.set_globalWay(way_arc2);
 			//on supprime le noeuds et on met a jour l'arc
 			nodeLink1.supp_link(current_node); nodeLink2.supp_link(current_node);
 			if (arc_toLink.get(0) == nodeLink1.get_posCrypt()){
@@ -280,27 +268,36 @@ public class Graph {
 	public void create_graph(int[][] mat, int pos_crypt, int prePos_crypt,boolean isNode,Arc current_arc){
 		Node current_node = null;
 		iterrator++;
-		int nb_testDirection = 0;
 		if (!ENS_NODE.containsKey(pos_crypt)){
-			int[] data_direction = detect_isNode(mat, pos_crypt, prePos_crypt);
+			//on recupere les données nous permettant de savoir dans quel direction on peut aller
+			int[] data_direction = data_ofPosition(mat, pos_crypt, prePos_crypt);
 
+			//opération effectuer si la position actuelle est une node.
 			if (data_direction[DIRECTION_SIZE+1]>1 || valueMat(mat, pos_crypt)>0)  { 
 
-				current_node = select_currentNode(valueMat(mat, pos_crypt),pos_crypt);
+				//on crée ou selectionne une node.
+				current_node = create_node(valueMat(mat, pos_crypt), pos_crypt);//select_currentNode(valueMat(mat, pos_crypt),pos_crypt);
 				if (current_node.isExit()) {EXIT_CRYPT=pos_crypt;}
 
+				//on termine l'arc actuelle si il existe.
 				if (current_arc != null) {
 					end_Arc(current_arc,current_node,pos_crypt);
 					update_nodeLink(current_arc); 
 				}
 				isNode = true;
 			}
-			else {isNode = false;}
+			//si ce n'est pas une node on doit simplement ajouter la nouvelle position a l'arc courant
+			else {
+				current_arc.add_way(pos_crypt);
+				isNode = false;
+			}
 
-			if (!isNode) {current_arc.add_way(pos_crypt);}
-			int i = 0;int newPos_crypt;
-			do{
-				if (data_direction[i] >= 1) {
+			int i = 0; int newPos_crypt;
+			int nb_testDirection = 0;
+
+			while(nb_testDirection<data_direction[DIRECTION_SIZE+1]){
+				if (data_direction[i] >= 1) {// si c'est un direction possible
+					//on crée un nouvelle arc si c'est une nouvelle node
 					if (isNode) { current_arc = start_Arc(pos_crypt,current_node);}
 					
 					newPos_crypt = modif_posCrypt(pos_crypt,(DIRECTION[i]*data_direction[i]),(DIRECTION[DIRECTION_SIZE-i]*data_direction[i]));
@@ -308,7 +305,9 @@ public class Graph {
 					nb_testDirection++;
 				}
 				i++;
-			}while(nb_testDirection<data_direction[DIRECTION_SIZE+1]);
+			}
+			// le dernier element de cette liste contient le nombre de direction possible pour la position courante
+			// si c'est une node on esaye de l'optimisé
 			if(isNode){optimisation_graph(current_node);}
 		
 		}
