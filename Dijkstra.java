@@ -8,7 +8,8 @@ public class Dijkstra {
 	private int INDEX_EXIT;
 	private int[][] MATRIX_SWEET; // contient les bonbons ne faisant pas partie du parcours d'origine et utilisé pour un monstre dans celui ci
 	private int[][] WAY_SUPP; //contient les predecesseur de chaque node potentiellement ajoutable a leur parcours pour trouver un bonbon
-	private int[][][] DATA_SWEET;// Matrix reprenant pour chaque noeud multidirectionnel les listes predecessor/distance/nb_sweet
+	private int[][][] DATA_SWEET;// Matrix reprenant pour chaque noeud multidirectionnel les listes predecessor/distance
+	private int[] INDEX_SWEET; // Liste connecté a DATA_SWEET enregistrant l'indice du bonbon trouvé pour la node multidirectionnel testé
 	private int NB_NODES; // nombre de noeuds actif
 	private int IN = 99999; // valeur permettant de savoir qu'un chemin est soit non parcouru soit impossible
 	private int[] VISITED;// permet de savoir les noeuds déjà visités
@@ -92,7 +93,8 @@ public class Dijkstra {
 			}
 			else {j= -1;}
 		}while(j>=0); //0 est l'indice zero dans LIST_NODE qui correspond au pakkuman
-		DATA_SWEET = new int[MULTI_NODE.size()][3][NB_NODES];
+		DATA_SWEET = new int[MULTI_NODE.size()][2][NB_NODES];
+		INDEX_SWEET = new int[MULTI_NODE.size()];
 	}
 
 	//fonction appelé pour trouvé un bonbon dans son parcourt et de lui renvoyer la distance a ajouté
@@ -117,13 +119,12 @@ public class Dijkstra {
 		int sweet = 0;
 		int multi_node= 0;
 		for (int i = 0; i< MULTI_NODE.size() ;i++) {
-			for (int j=0; j< NB_NODES ;j++ ) {
-				if (DATA_SWEET[i][0][j] >= 1 && DATA_SWEET[i][1][j] < min) {
-					min = DATA_SWEET[i][1][j]; 
-					sweet = j;
-					multi_node=i;
-				}
+			if (SWEET_INDEX.contains(INDEX_SWEET[i]) && DATA_SWEET[i][0][INDEX_SWEET[i]] < min) {
+				min = DATA_SWEET[i][0][INDEX_SWEET[i]]; 
+				sweet = INDEX_SWEET[i];
+				multi_node=i;
 			}
+			
 		}
 		// si un chemin est trouvé on appel la methode suivante
 		if (min != IN) { updateData_newSweet(monster, multi_node, sweet);}
@@ -140,7 +141,7 @@ public class Dijkstra {
 			if (k != -1 && WAY_SUPP[monster][k] == -1 ) {WAY_SUPP[monster][k] = l;}
 			k = l;
 			//System.out.print(l + "<--");
-			l=DATA_SWEET[multi_node][2][l];
+			l=DATA_SWEET[multi_node][1][l];
 			if (k == l) {break;}
 		}while(l>=0);
 		//on indique quel monstre est associé a quel bonbon
@@ -164,11 +165,12 @@ public class Dijkstra {
 		int[] lightWay = new int[2];
 		int actu_node = start_node;
 		int next_node;
-
+		boolean find_sweet = false;
 		distance = LIST_IN.clone(); // distance de node0 aux autres nodes initilisé a IN partout
 		VISITED_REAL[actu_node] = 1; // on considère le premier node comme visité
 		distance[actu_node] = 0; // car c'est le noeud de départ
-		while(nb_sweet[actu_node] <=0 ){ // On s'arrete si la valeur de la node actuelle traité est celle qu'on cherche			
+		
+		while(!find_sweet){ // On s'arrete si on trouve un bonbon encore inutilisé par ce parcours			
 			VISITED_REAL[actu_node] = 1;// On indique que le noeud a été visité
 
 			ensLink = LIST_NODE.get(actu_node).get_ensLink();
@@ -179,7 +181,7 @@ public class Dijkstra {
 				// test si le chemin tester n'est pas déjà utilisé pour une précedente recherche de bonbon si oui il n'y a aucune distance supplémentaire a ajouter
 				if (WAY_SUPP[monster][link_node] != -1) {min_real = min;} 
 					
-				if( VISITED_REAL[link_node]!=1 && (min_real < distance[link_node])){// && LIST_NODE.get(actu_node).isLinkTo(LIST_NODE.get(link_node))){
+				if( VISITED_REAL[link_node]!=1 && (min_real < distance[link_node])){
 					// si c'est le cas on indique la nouvelle distance entre le noeud de départ et le noeud 'link_node'
 					if( !LIST_NODE.get(link_node).isMonster() || nb_sweet[actu_node] >0) {
 						distance[link_node] = min_real;
@@ -196,12 +198,15 @@ public class Dijkstra {
 			// si c'est le cas c'est qu'on a pas trouvé distance plus courte on est donc au bout du chemin
 			if (actu_node == next_node) {break;}
 			if (LIST_NODE.get(next_node).isMonster()) {nb_sweet[next_node] -=1;}
-			if (LIST_NODE.get(next_node).isSweet() && sweet_notUse(monster,next_node)) {nb_sweet[next_node] +=1;}
+			if (LIST_NODE.get(next_node).isSweet()){
+				nb_sweet[next_node] +=1;
+				if (sweet_notUse(monster,next_node)) { find_sweet= true;}
+			}
 			actu_node = next_node;
 		}
-		DATA_SWEET[index][0] = nb_sweet;
-		DATA_SWEET[index][1] = distance;
-		DATA_SWEET[index][2] = predecessor;
+		INDEX_SWEET[index]=  actu_node;
+		DATA_SWEET[index][0] = distance;
+		DATA_SWEET[index][1] = predecessor;
 	}
 
 	//-----------------------------------Dijkstra-------------------------------------//

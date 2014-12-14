@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Arc {
 	//attribut
-	private boolean openArc;
+	private boolean openArc;// boolean vérifiant que l'arc est ouvert et modifiable
 	private Node firstNode; // premiere node de l'arc
 	private Node lastNode; // fin de l'arc avec la node de fin
 	private ArrayList<Integer> global_way = new ArrayList<Integer>();
