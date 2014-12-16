@@ -56,7 +56,7 @@ public class Arc {
 	}
 	// renvois le poids de l'arc
 	public int get_weight(){
-		return global_way.size();
+		return global_way.size()-1;// l'arc va d'une node a l'autre comprenant les coordonées des deux nodes
 	}
 	// renvois la node de debut
 	public Node get_startNode(){

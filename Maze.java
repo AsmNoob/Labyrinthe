@@ -36,21 +36,8 @@ public class Maze{
 
 	//Constructeurs
 	public Maze(String file_name){
-		long begin = System.currentTimeMillis();
 		Parsing(file_name);
-		long step1 = System.currentTimeMillis();
 		Initial_Situation();
-		long step2 = System.currentTimeMillis();
-		System.out.println();
-		float time1 = ((float) (step1-begin)) / 1000f;
-		float time2 = ((float) (step2-step1)) / 1000f;
-
-		System.out.print("Time exe || Parsing : ");
-		System.out.print(time1);
-		System.out.print(" || Initial_Situation : ");
-		System.out.println(time2);
-		System.out.print(" Total Time execution: ");
-		System.out.println(time1+time2);
 
 	}
 
