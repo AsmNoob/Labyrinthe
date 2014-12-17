@@ -21,6 +21,24 @@ Après avoir créé une structure représentant ce labyrinthe, il nous est deman
 \section{Parsage, optimisation de la création de graphe, algorithme du plus court chemin et affichage des différentes situations}
 On a divisé le projet en 5 étapes: le parsage du fichier, la création du graph, son affichage initial/final, son optimisation et finalement l'algorithme du plus court chemin.
 \subsection{Parsage}
+Cette section consiste en l'analyse du fichier contenant toute l'information nécéssaire pour lancer le projet. Cette annalyse va se diviser en 2 grosses parties: Le parsing de la structure du labyrinthe et du parsing des éléments contenus dans le labyrinthe. Avant de lancer ces deux parties on initialise une matrice qui va contenir les cases du labyrinthe  ainsi que ses murs d'où sa taille qui vaut matrice[2*lines+1][2*columns+1], \emph{lines} et \emph{columns} étant parsés sur la première ligne du fichier. 
+ 
+\subsubsection{Structure du labyrinthe}
+La fonction qui va s'occuper de remplir la matrice initialisée au début est maze\textunderscore parser(), cette fonction va lire caractère par caractère pour chaque ligne et chaque caractère va être analysé avec la fonction Analyse\textunderscore Case qui va renvoyer un entier qu'on va introduire dans notre matrice.
+
+\subsubsection{Les éléments contenus}
+Après le parsage du labyrinthe, on s'attaque au parsage de Pakkuman, des monstres et des bonbons.
+On parse tout d'abord le nombre de de monstres et de bonbons contenus, on lit la ligne contenant cette information, on splitte la ligne par l'espace qui se trouve après les \emph{:} et on garde le 2ème element qui contient le nombre désiré.
+Ensuite on attaque les coordonnées:
+
+\begin{itemize}
+\item 
+Coordonnées Pakkuman: On commencer par split la ligne par l'espace qui se trouve après les \emph{:}, ce qui nous laisse avec \emph{(x,y)} ensuite on remplace les parenthèses par rien ( équivaut à les supprime) et on split ce qu'il reste par \emph{,} et on obtient les coordonnées désirées.
+\item
+Coordonnées Monstres:
+\item
+Coordonnées Bonbons:
+\end{itemize}
 
 \subsection{Optimisation et création du graph}
 \subsubsection{Graph}

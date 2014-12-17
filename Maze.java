@@ -69,7 +69,7 @@ public class Maze{
 	}
 
 
-	public void parsage_elements(String[] splitted_line, String line, BufferedReader br,boolean monsters){
+	public void parsage_elements(String[] splitted_line, String line, BufferedReader br,boolean isMonsters){
 		try{
 			line = br.readLine();
 			line = line.replaceAll( "\\(" , "" );
@@ -79,7 +79,7 @@ public class Maze{
 				ArrayList<Integer> coord = new ArrayList<Integer>(2);
 				coord.add(Integer.parseInt(splitted_line[j].split(",")[0]));
 				coord.add(Integer.parseInt(splitted_line[j].split(",")[1]));
-				if(monsters){
+				if(isMonsters){
 					monsters_list.add(coord);
 					matrix[coord.get(0)*2+1][coord.get(1)*2+1] = MONSTER;
 				}else{
