@@ -376,7 +376,6 @@ public class Maze{
 		}else{
 			System.out.println("Il n'y a pas moyen de sortir vivant du labyrinthe.");
 		}
-		// parcours des nodes principales
 		
 		Outro_SituationFinale(way,index);
 	}
