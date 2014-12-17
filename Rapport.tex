@@ -6,80 +6,108 @@
 \usepackage{amssymb}
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
-\usepackage{fullpage}
+%\usepackage{fullpage}
+
 \title{{\normalsize{INFO-F-203 -- Algorithmique 2}}\\Manipulation de graphes\\ Pakkuman}
 \author{Gérard \textsc{Tio Nogueras} \and Alexis \textsc{Defontaine}}
-date{18/12/14}
+
 \begin{document}
 \maketitle
+
 \section{Introduction}
-Ce projet d'algorithmique de deuxième année porte sur les graphes et sur la recherche du plus court chemin.
-Le problème est posé aux étudiants comme ceci : il faut écrire un programme qui reçoit la structure d'un labyrinthe ainsi que la position des éléments importants se trouvant dans celui-ci. 
-Après avoir créé une structure représentant ce labyrinthe, il nous est demandé de trouver le plus court chemin entre l'élément "Pakkuman" et la sortie, en sachant qu'il existe des monstres qui nous bloquent le passage et des bonbons qui nous permettent de passer par les cases monstres.
-\section{Parsage, optimisation de la création de graphe et algorithme du plus court chemin}
-On a divisé le projet en 3 étapes: le parsage du fichier, la création du graph, son affichage et son optimisation et finalement l'algorithme du plus court chemin.
+Ce projet d'algorithmique de deuxième année porte sur les graphs et sur la recherche du plus court chemin.
+Le problème est posé aux étudiants comme ceci: il faut écrire un programme qui reçoit la structure d'un labyrinthe ainsi que la position des éléments importants se trouvant dans celui-ci. 
+Après avoir créé une structure représentant ce labyrinthe, il nous est demandé de trouver le plus court chemin entre l'élément \emph{Pakkuman} et la sortie, en sachant qu'il existe des monstres qui nous bloquent le passage et des bonbons qui nous permettent de passer par les cases monstres.
+\section{Parsage, optimisation de la création de graphe, algorithme du plus court chemin et affichage des différentes situations}
+On a divisé le projet en 5 étapes: le parsage du fichier, la création du graph, son affichage initial/final, son optimisation et finalement l'algorithme du plus court chemin.
 \subsection{Parsage}
-\label{detect}
-L'approche retenue a été de parcourir le graphe en profondeur depuis un noeud quelconque en marquant les noeuds sur notre passage tout en empilant sur une stack\footnote{Cette stack (ou pile) n'en est pas une au vrai sens du terme. En effet, en plus des opérations \texttt{push} et \texttt{pop}, elle supporte aussi les \texttt{get} à un index arbitraire} les arrêtes par lesquelles nous passons. Juste avant d'empiler une arrête, nous vérifions que le noeud de départ de l'arrête n'a pas été déjà empilé en tant que noeud de départ d'une arête de cette même pile.
-Si c'est le cas, nous retenons l'index de cette arrête dans la pile (nommons le $i$) et c'est que nous avons détecté un cycle et nous le supprimons donc avec l'algorithme décrit au point \ref{del} puis revenons à celui-ci.
-Quand nous arrivons à une feuille, nous repartons en arrière jusqu'à l'embranchement précédent jusqu'à finir le parcours.
-A la fin de ce premier parcours, nous vérifions que tous les noeuds ont été parcourus (c'est à dire marqués) et si un noeud ne l'est pas, nous recommençons le même algorithme à partir de celui-ci.\\
-Lors de le recherche de cycle, nous passons par les noeuds déjà marqués car il est possible qu'il faille passer par un noeud déjà marqué pour supprimer un cycle supplémentaire (voir figure \ref{whyTag} et \ref{whyTagSimpl})
-\begin{figure}[h]
-\caption{\label{whyTag} Passage multiple par un noeud : situation initiale}
-\center
-\includegraphics[height=150pt]{whyTag.pdf}
-\end{figure}
-La figure \ref{whyTag} est transformée en la figure \ref{whyTagSimpl} après un premier passage
-(ou l'on supprime l'arrête $A \rightarrow D$ du cycle $[A \rightarrow D \rightarrow E \rightarrow F]$)
-\begin{figure}[h]
-\caption{\label{whyTagSimpl} Passage multiple par un noeud : situation après suppression d'un cycle}
-\center
-\includegraphics[height=150pt]{whyTagSimpl.pdf}
-\end{figure}
-Dans la figure \ref{whyTagSimpl}, lorsqu'on arrive au noeud $C$, on regarde si on peut passer au noeud $D$ qui est déjà marqué. Si nous avions décidé de l'ignorer et que nous revenons en arrière nous n'aurions pas détecté le cycle $[A \rightarrow B \rightarrow C \rightarrow D \rightarrow E \rightarrow F]$.
-\subsection{Optimisation}
-\label{del}
-Quand un cycle est détecté (avec le méthode décrite en \ref{detect}) nous devons le supprimer. Pour cela, nous devons le parcourir -- c'est à dire en parcourant la pile des arrêtes du bas vers le haut en commençant à l'index $i$ -- en cherchant l'arrête de poids le plus faible. Une fois ce poids déterminé, nous re-parcourons le cycle en soustrayant ce poids à chaque arrête (et en supprimant celles dont le poids atteint 0).
+
+\subsection{Optimisation et création du graph}
+\subsubsection{Graph}
+Cette section constitue l’analyse du labyrinthe représenter sous forme de matrice et la mise en place de nœuds et arrêtes formant le dit graphe.
+Le principe développé ici est celui du \emph{backtraking}  servant de base pour un parcours complet de la matrice. Les nœuds représentent ici les monstres et bonbons, le pakkuman, la sortie et les intersections présentes dans le labyrinthe. Ces nœuds sont enregistrés dans un dictionnaire dont les clés représentent leur position dans la matrice.
+
+Chaque nœud est un objet qui comme arc contient ses propres méthodes et attributs. Les arcs sont enregistrés dans une liste appartenant aux deux nœuds concernés. 
+Afin de ne traiter qu’une seule donnée au lieu de deux correspondant aux coordonnées de la matrice nous avons créé une position dite \emph{cryptée} permettant de ne gérer et stocké qu’une donnée pour chaque position tésté.
+\subsubsection{Création du graph}
+Une multitude de méthodes interviennent pour la création du graphe. Hormis certain détails nécessaire à la compréhension  du code, seul create\textunderscore graph() et optimisation\textunderscore graph(), constituant le cœur même de la class, seront détaillés.
+\paragraph{Etape initiale:}
+Comme cité plus tôt, nous appliquons un \emph{backtracking} sur la matrice contenant l’ensemble du labyrinthe. Nous effectuerons create\textunderscore graph() uniquement si la position actuellement reçu en paramètre n’est pas un nœud ayant déjà été traité. Cette condition est importante, elle évite que le traitement d’un nœud se fasse plus d’une fois, dans le cas par exemple d’un chemin effectuant un retour sur lui même.
+Une fois cette condition passée, une première méthode sera appelée data\textunderscore ofPosition(). Cette fonction va récolter les informations propres à la position actuellement traité en rapport avec les quatre direction (Nord, Sud, Est, Ouest) vers lequel on pourrait se diriger. Il est important ici de préciser que la matrice contient aussi les murs présents dans le labyrinthe,  les positions testées ici se font par saut de deux cases évitant ainsi les lignes et colonnes dédiées uniquement à la présence ou non de mur.
+On récupère donc une liste contenant 1 ou 0 pour chaque direction possible ou non, le dernier élément nous permet de savoir si plusieurs directions sont possibles indiquant immédiatement si c’est un nœud. 
+Cette première étape est commune à toute position testée.
+
+\paragraph{Nouveau noeud:}
+On sait donc savoir si la position possède plusieurs directions possibles via la liste qu’on vient de récupérer. Un deuxième teste sera effectué au cas ou la position n’est pas multidirectionnel afin de récupérer l’élément présent dans la matrice, un monstre ou un bonbon par exemple.
+
+\begin{itemize}
+\item 
+Si cette condition est remplie par l’un ou l’autre teste, on fait appel au constructeur de \emph{Node} et on clôture l’arc courant pour le connecter au nouveau nœud créé. Ce dernier élément ne se fait que si on ne situe pas dans le premier appel à create\textunderscore graph() qui n’a nullement besoin de clôturé un arc inexistant.
+\item
+Sinon on doit simplement ajouter la position actuelle à l’arc courant.
+\end{itemize}
+
+\paragraph{Traitement des directions possibles :}
+On retourne dans le tronc commun ou l’on traitera les différentes directions vers lequel on peut se diriger à partir de la position actuelle. On tombe alors sur une boucle while dont la condition d’entré est celle que le nombre de direction possible et testée, initialement égale à zéro, est strictement inférieur au nombre maximal de direction possible vers lequel on peut se diriger, variable contenue à la fin de la liste créée par data\textunderscore ofPosition(). Cette condition permet de ne relancer la boucle que quatre fois dans le pire des cas. 
+A l’intérieur de cette boucle on retrouve une condition créant un nouvelle objet \emph{Arc}, on modifie la position actuellement traité et on effectue l’appel récursif à create\textunderscore graph(). Ces étapes ne sont bien entendu effectuées que lorsque la direction choisit nous le permet. 
+Enfin si nous sommes en présence d’un nouveau nœud nous allons faire appel à optimisation\textunderscore graph()  appeler après le traitement de toutes les directions possible nous permettant d’assurer que ce nœud est complet et contient toutes les connexions qu’il aurait pu avoir.
+
+\subsubsection{Optimisation du graph}
+L’optimisation du graphe est une étape importante permettant de ne compter que sur les nœuds utiles à \emph{la recherche du plus court chemin}. Plusieurs méthodes ont été pensés pour réalisé cette optimisation, bien que pas parfaite elle est permet de supprimer et fusionné une multitude de nœuds sans effectuer de boucle ou de parcours supplémentaire au graphe. Afin d’obtenir un graph dont les nœuds sont tous utiles à la prochaine étape, il aurait fallut effectuer des étapes supplémentaires qui couterai plus cher en complexité que l’algorithme qui cherche le plus court chemin. 
+Nous avons donc opté pour une optimisation se faisant dans le même cycle d’appel que la création du nœud concerné. 
+
+\paragraph{Nœud unidirectionnel :}
+Lorsqu’on se situe dans le cas d’un nœud en bout de chemin, il ne possède qu’une seule direction. L’unique cas qui permet au nœud de resté dans le graphe, à l’exception du pakkuman et de la sortie, est un bonbon qui n’aurait pas comme lien direct un monstre. Si un monstre était sa seule connexion, cela signifierait qu’on aurait sacrifié un bonbon pour en récupérer un autre, c’est inutile. Tout les autres cas d’impasse sont donc à supprimer.
+
+\paragraph{Nœud bidirectionnel :}
+Ce deuxième cas est plus complexe, il permet de fusionner deux nœuds qui seraient connecté par un nœud libre (possédant comme attribut ni un monstre, ni un bonbon, ni le pakkuman, ni la sortie). 
+On va alors récupérer les deux arcs sous forme de liste et les traités pour qu’ils puissent s’ajouter l’un à l’autre. Ce traitement vise à garder la structure de l’arc permettant d’arriver d’un nœud à l’autre en itérant dans l’ordre chaque élément présent dans celui-ci.
+Il suffit ensuite de clôturer l’arc et de mettre à jour les nœuds ayant été modifié.
+
+Une information sur le nombre de nœuds supprimé lors de l’optimisation est affichée dans le terminal afin de voir l’importance de celui ci.
+
 \subsection{Algorithme du plus court chemin}
-\label{others}
-Dans la section \ref{detect} nous évoquions les autres possibilités auxquelles nous avons pensé mais que nous n'avons pas retenues.
-Une de celles ci -- la plus évidente surement -- était d'utiliser un simple algorithme de détection de cycles et donc de parcourir l'entièreté du graphe pour ensuite supprimer les cycles uns à uns.
-Cependant, nous n'avons pas retenu cette méthode pour une raison simple : si une arrête appartient à plusieurs cycles (comme l'arrête $B \rightarrow C$ dans la figure \ref{multiCycle}) et que le poids de celle-ci est le plus faible d'un des cycles, celle-ci sera supprimée et la recherche des autres cycles la contenant aura donc été inutile. Dans le pire des cas, l'arrête peut appartenir à tous les cycles d'un graphe et être la plus faible du premier des cycles examiné et donc la totalité des autres cycles auront été calculés en inutilement. (Les cycles $[B \rightarrow C \rightarrow D]$, $[B \rightarrow C \rightarrow E]$, $[B \rightarrow C \rightarrow E \rightarrow F \rightarrow A]$ n'existent plus après la suppression de $B \rightarrow C$)
-\begin{figure}[h]
-\caption{\label{multiCycle} Suppression d'une arrête ($B \rightarrow C$) appartenant à plusieurs cycles}
-\center
-\includegraphics[height=150pt]{multiCycle.pdf}
-\end{figure}
-\subsubsection{Complexité}
-Considérons $N$ comme le nombre de noeuds du graphe; A comme le nombre de d'arêtes du graphe $g_{i}$, le sous-graphe accessible depuis le noeud $i$; $a_{i}$ le nombre d'arrêtes de $g_{i}$ et $k_{i}$ le nombre de cycles dans $g_{i}$
-Un parcours depuis un noeud $i$ contient $1 + a_{i} + 2\cdot k_{i} \cdot a_{i}$ opérations. En effet, il faut premièrement accéder à ce noeud (une opération), ensuite parcourir chaque arrête ($a_{i}$ opérations) et pour finir, pour chaque cycle dans $g_{i}$, il faut parcourir le cycle 2 fois, une pour trouver l'arrête de plus faible poids et une pour diminuer le poids des arrêtes (donc $2 \cdot a_{i} $, effectué pour chaque cycle donc $2\cdot k_{i} \cdot a_{i}$)
-Ce parcours est a effectuer tant qu'il reste des noeuds non marqués. Appelons $z_{i}$ le nombre de noeuds non marqués, calculé comme suit : $N-\#(\cup_{j=0}^{i-1} g_{j})$.
-Le nombre total d'opérations sera donc $\sum_{i=0}^{z_{i}+i}(1 + a_{i} \cdot(2\cdot k_{i} +1))$.\\
-$k$ n'étant jamais supérieur à $\frac{A}{2}$ et $i$ ne pouvant pas dépasser $N$, la complexité maximale est donc en $\mathcal{O}(N\cdot (A + 2\cdot A)) = \mathcal{O}(N\cdot A)$
-%\section{Résolution de dettes}
-%Pour résoudre les dettes, nous avons commencé par sélectionner une tête (c'est à dire un cercle qui n'a pas de créances ou dit autrement un noeud n'ayant pas de père) de laquelle nous transférons son argent à ses créanciers jusqu'à épuisement de son compte ou remboursement de ses dettes.
-%Ensuite, nous appliquons la même méthode sur chacun des fils du noeud qui vient de rembourser ses dettes.
-%Quand cette opération est finie, nous recommençons pour la tête suivante.
-%Le fait d'effectuer cette opération sur chaque tête est bien entendu obligatoire car tous les noeuds ne sont pas accessibles depuis n'importe quelle tête (et le graphe pourrait en plus ne pas être connecté). Cependant, on pourrait penser que repasser sur un noeud quelconque si il a déjà été parcouru est inutile et qu'il faudrait donc les marquer pour éviter cela. Or nous devons parcourir à chaque fois tout le sous-graphe accessible depuis la tête courante puisqu'on peut débloquer une situation du type $C \rightarrow D$ ou $C$ n'a pas assez d'argent après le versement de $A$ vers $C$ mais en aura assez après celui de $B$ (voir figure \ref{resolve}).
-\begin{figure}[h]
-\caption{\label{resolve} Remboursement en plusieurs étapes}
-\center
-\includegraphics[height=150pt]{resolve.pdf}
-\end{figure}
-\subsubsection{Complexité}
-\paragraph{}
-Considérons $c$ comme le nombre de têtes du graphe; $g_{i}$, le sous-graphe accessible depuis le noeud de tête $i$ et $a_{i}$ le nombre d'arrêtes de $g_{i}$.
-La complexité de cet algorithme de remboursement est de $\sum_{i=0}^{c}a_{i}$ vu que pour chaque $i$, nous ne parcourrons qu'une seule fois toutes les arrêtes de $g_{i}$
-\paragraph{}
-Si l'on considère $A$ comme le nombre d'arrêtes du graphe, la complexité maximale est de $ \mathcal{O}(c\cdot(A-c)+c)$ car il se peut que depuis chaque tête, l'entièreté du graphe soit re-parcouru (ce qui donnerait $c\cdot A$) à l'exception de la première arrête depuis la tête qui ne sera parcourue qu'une fois (que l'on doit donc soustraire à $A$ et ne rajouter qu'une seule fois (le $+c$))
-\section{Implémentation et structures de données}
-Comme demandé dans les consignes, notre algorithme a été implémenté en \texttt{Java}. Notre code est architecturé en 3 classes principales \texttt{Graph}, \texttt{Node} et \texttt{Debt} et deux autres \texttt{Main} ainsi que \texttt{DebtStack}.
-\begin{description}
-\item[\texttt{Graph}] contient un vecteur de références vers les noeuds (\texttt{Node}). Il s'occupe de se remplir lui même en parsant un fichier texte passé en paramètre. C'est aussi lui qui est responsable de la résolution des cycles et des dettes ainsi que de s'afficher en \texttt{dot} (en déléguant une partie aux noeuds).
-\item[\texttt{Node}] est un objet qui représente un cercle et qui contient son nom, son cash disponible ainsi qu'un vecteur de références vers les différentes dettes
-(\texttt{Debt}) qu'il a contracté.
-\item[\texttt{Debt}] représente une dette entre deux cercles (c'est à dire une arête entre deux \texttt{Node}). Celle-ci contient une référence vers ces deux noeuds ainsi que le poids de l'arrête (le montant de la dette)
-\end{description}
-Les deux autres classes \texttt{Main} et \texttt{DebtStack} s'occupent respectivement de l'initialisation du programme et de fournir une interface propre à un vecteur de dettes en le faisant passer pour une stack tout en pouvant aller y chercher du contenu à une index arbitraire.
+Cette section porte sur l’algorithme mit en place pour trouver le plus court chemin dans le graphe créer à la section précédente. Nous nous sommes basés sur l’algorithme connu sous le nom de dijkstra qui très facilement trouvera le chemin le plus court vers la sortie, le souci ici est le paramètre bonbon. De nombreuse manière de faire ont été pensé de l’enregistrement de chaque élément parcouru pour chaque nœud testé jusqu’à un parcours effectué uniquement pour les bonbons avant l’appel à dijkstra ou après… La solution ici est la meilleure qu’on est trouvée. Nous l’avons testé sur une 50 de labyrinthe différent, tous ont été concluant.
+Ici aussi de nombreuse méthodes ont été développé seul dijkstra() et dijkstra\textunderscore sweet() verrons le fonctionnement détaillé ici. 
+
+\subsubsection{Dijkstra}
+Notre algorithme suivant le principe de dijkstra a été ajusté pour correspondre à nos besoin. On y retrouve une boucle while ne s’arrêtant que lorsque le nœud choisit correspond à la sortie ou que le nœud actuel est le même que le précédent. 
+Plusieurs listes sont essentielles à la réalisation de cette recherche:
+Distance : contient les distances minimales séparant le nœud de départ avec chaque nœud présent dans le graph en fonction du chemin qu’on a parcouru jusqu’ici.
+Predecessor : chaque nœud à une liaison avec le nœud qui le précède.
+Visited : contient chaque nœud ayant été testé au fur et à mesure du parcours.
+Nb\textunderscore sweet : contient pour chaque nœud le nombre de bonbon actuellement encore utilisable jusqu’à ce nœud.
+Nous entrons ensuite dans deux parties différentes : 
+\begin{itemize}
+\item 
+L’actualisation des distances possible en rapport avec les connexions directes avec le nœud actuel.
+\item
+La sélection de la distance la plus courte présente dans la liste de sauvegarde.
+\end{itemize}
+
+\paragraph{Connexions directes :}
+Nous allons parcourir l’ensemble des nœuds connectés à celui qu’on a actuellement choisit (O(4) au pire des cas). Pour chaque nœud nous testerons si la distance qu’on a actuellement dans distance est la bonne si ce n’est pas le cas et que le nœud est un monstre on vérifiera dans Nb\textunderscore sweet si le chemin contient un bonbon sinon, on devra faire appel à dijkstra\textunderscore sweet() qui trouvera un bonbon plus haut dans le chemin. Cette distance trouvée pour le bonbon sera ajoutée à la distance d’origine et si elle est toujours plus petite que ce qui se trouve dans distance, alors Predecessor, Nb\textunderscore sweet et Distance seront mis à jour.
+
+\paragraph{Sélection:}
+Un simple appel a find\textunderscore lightWay() nous permettra de récupéré le nœud suivant qui possède la valeur la plus petite dans Distance. On parle bien ici de la plus petite distance actuellement dans Distance, non pas de la distance la plus courte avec le nœud suivant.
+Cette technique permet d’avoir pour tous les nœuds du graphe le chemin le plus court pour accéder à celui ci, testant ainsi toute les possibilité. Si celui ci est un bon ou un monstre nous devrons modifier la dans Nb\textunderscore sweet.
+
+\subsubsection{Dijkstra sweet}
+Cet algorithme est très proche de celui précédemment détaillé. Il possède les mêmes parties et ne s’arrête que lorsqu’on trouve un bonbon qui n’a pas encore été utilisé dans le parcours actuel. A la fin de chaque recherche, dijkstra\textunderscore sweet() stockera dans Index\textunderscore sweet l’indice du bonbon trouvé, Data\textunderscore sweet stockera pour chaque nœuds testés la liste predecessor et distance déjà rencontré plus haut mais propre l’appel de dijkstra\textunderscore sweet() pour le nœud choisi.
+Le grand changement se fait principalement avant l’appel à dijkstra\textunderscore sweet().
+\paragraph{Préparation à Dijkstra sweet :}
+L’astuce ici est de réalisé une sélection intelligente des nœuds qu’on va testé pour aller chercher des connexions avec d’éventuelles bonbons.
+Pour ca nous allons faire appel à state\textunderscore actuWay() qui va se charger de parcourir le chemin que nous avons pour l’instant choisit et qui se trouve dans predecessor qui est cette fois ci global à la class. Nous allons parcourir et sélectionné uniquement les nœuds multidirectionnels et copié dans visited\textunderscore real les nœuds qu’on parcourt réellement pour l’instant. Une fois cela fais nous allons faire autant d’appel à dijkstra\textunderscore sweet() qu’il y a de nœuds multidirectionnels.
+
+\paragraph{Sélection du bonbon :}
+Une fois les appels finis nous allons parcourir data\textunderscore sweet contenant toutes les informations dont nous avons besoin pour savoir quel bonbon est le plus proche du chemin initial. On renvoi ensuite cette distance multiplié par deux pour correspondre à un aller retour, celle ci sera ajouté à la distance qu’il existe entre le nœud actuel et le monstre avec lequel il est connecté dans dijkstra().
+Si un bonbon a été trouvé nous faisons aussi appel à updateData\textunderscore newSweet() qui mettra à jour way\textunderscore supp contenant pour chaque chemin une liste semblable à predecessor contenant donc les nœuds supplémentaire permettant de trouver un bonbon. On ajoutera aussi à matrix\textunderscore sweet une information permettant de savoir quel bonbon a été utilisé pour le parcours actuelle. Ces dernières liste se transmettrons de nœuds en nœuds au fur et a mesure qu’on parcours les connectivités de celle ci dans la première étape de dijkstra().
+
+\subsubsection{Conclusion algorithme plus court chemin}
+On se retrouve avec un dijkstra faisant appel à une méthode similaire qui reste en N.O(logN) , on doit déplorer le fait que dijkstra\textunderscore sweet() sera appelé plusieurs fois à chaque monstre trouvé pouvant ainsi alourdir le traitement. Tout ceci a été pensé pour réduire au maximum les appels inutiles, ou les parcours supplémentaires qui n’auraient plus de sens d’être recherché. N’oublions pas qu’on travail avec un graphe qui a été aussi optimisé contenant un minimum de nœuds sans intérêt. Beaucoup de conteneur sont présent dans cette classe afin de réduire un maximum le temps d’accès au données et de stocké les nœuds déjà visités. 
+
+Dans l’énoncé du projet il est affiché un chemin impossible s’arrêtant sur un monstre, il est malheureusement impossible de reproduire cela dans tout les cas pour notre version car un chemin qui va jusqu’à un monstre sans bonbon est un chemin dit impossible et possède donc une distance maximal qui n’est pas traitée. Ce détail permet de ne prendre en compte que les chemins faisables, plusieurs méthodes ont été développé pour récupérer un nœud de emph{fin} permettant l’affichage d’un chemin vers un monstre ou vers le parcours le plus long faisable. Ces étapes ne sont pas utilisées si le chemin existe, elles ne sont la que pour obtenir un affichage quand bien même le labyrinthe est impossible. 
+\subsection{Affichage des différentes situations}
+\label{situation}
+
 \end{document}
