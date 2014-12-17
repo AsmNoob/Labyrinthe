@@ -36,7 +36,6 @@ public class Main{
 			// System.out.println();
 			// System.out.println("Controle_WindowStart");
 			// System.out.println();
-			Window window = new Window(maze);
 			// System.out.println();			
 			// System.out.println("Controle_WindowEnd");
 			// System.out.println();
@@ -46,16 +45,14 @@ public class Main{
 			float time2 = ((float) (step2-step1)) / 1000f;
 			float time3 = ((float) (step3-step2)) / 1000f;
 			float time4 = ((float) (step4-step3)) / 1000f;
-			System.out.print("Time exe || Maze : ");
-			System.out.print(time1);
-			System.out.print(" || Graph : ");
-			System.out.print(time2);
-			System.out.print(" || Dijkstra : ");
-			System.out.print(time3);
-			System.out.print(" || Final_Situation : ");
-			System.out.print(time4);
-			System.out.print("Total Time execution: ");	
-			System.out.println(time1+time2+time3+time4);
+			System.out.print("Time exe || Maze : " + time1);
+			System.out.print(" || Graph : " +time2);
+			System.out.print(" || Dijkstra : "+time3);
+			System.out.println(" || Final_Situation : " + time4);
+			System.out.println("Total Time execution (printLess): "+ (time1+time2+time3));	
+			System.out.println("Total Time execution: " + (time1+time2+time3+time4));	
+	
+			Window window = new Window(maze);
 		}catch(ArrayIndexOutOfBoundsException e){
 			System.err.println("Caught ArrayIndexOutOfBoundsException in Main: " + e.getMessage());
 			System.out.println("InputError: No maze given in input('java Main labyXX.txt').");

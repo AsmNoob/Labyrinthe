@@ -11,6 +11,9 @@ public class Maze{
 	private int columns; // longueur
 	private int number_monsters;
 	private int number_sweets;
+	private int number_monstersPassed = 0;
+	private int number_sweetsTaken = 0;
+	private String journey = "";
 	private int[] pukkaman_position = new int[2];
 	private ArrayList<ArrayList<Integer>> monsters_list = new ArrayList<ArrayList<Integer>>();
 	private ArrayList<ArrayList<Integer>> sweets_list = new ArrayList<ArrayList<Integer>>();
@@ -36,21 +39,8 @@ public class Maze{
 
 	//Constructeurs
 	public Maze(String file_name){
-		long begin = System.currentTimeMillis();
 		Parsing(file_name);
-		long step1 = System.currentTimeMillis();
 		Initial_Situation();
-		long step2 = System.currentTimeMillis();
-		System.out.println();
-		float time1 = ((float) (step1-begin)) / 1000f;
-		float time2 = ((float) (step2-step1)) / 1000f;
-
-		System.out.print("Time exe || Parsing : ");
-		System.out.print(time1);
-		System.out.print(" || Initial_Situation : ");
-		System.out.println(time2);
-		System.out.print(" Total Time execution: ");
-		System.out.println(time1+time2);
 
 	}
 
@@ -240,113 +230,172 @@ public class Maze{
 	}
 	//---------- Output en terminal et écriture sur fichier ----------//
 
-	public void Final_Situation(ArrayList<Node> way, Graph graph,int length){
+	public boolean maze_isPossible(ArrayList<Node> way){
+		return way.get(way.size()-1).isExit();
+	}
+
+	public void Intro_SituationFinale(){
 		System.out.println();
-		System.out.print("Le labyrinthe a une dimension de ");System.out.print(lines);System.out.print(" fois ");System.out.print(columns);System.out.println(".");
-		System.out.print("Il contient ");System.out.print(number_monsters);System.out.print(" monstres et ");System.out.print(number_sweets);System.out.println(" bonbons.");
-		System.out.print("M.Pakkuman se trouve en position: (");System.out.print(pukkaman_position[0]);System.out.print(",");System.out.print(pukkaman_position[1]);System.out.println(")");
+		System.out.println("Le labyrinthe a une dimension de "+lines+" fois "+columns+".");
+		System.out.println("Il contient "+number_monsters+" monstres et "+number_sweets+" bonbons.");
+		System.out.println("M.Pakkuman se trouve en position: ("+pukkaman_position[0]+","+pukkaman_position[1]+")");
 		System.out.print("Le(s) monstre(s) se trouve(nt) en position:");
 		for(int i = 0; i < number_monsters; i++){
-			System.out.print(" (");System.out.print(monsters_list.get(i).get(0));System.out.print(",");System.out.print(monsters_list.get(i).get(1));System.out.print(")");
+			System.out.print(" ("+monsters_list.get(i).get(0)+","+monsters_list.get(i).get(1)+")");
 		}
 		System.out.println();
 		System.out.print("Le(s) bonbon(s) se trouve(nt) en position:");
 		for(int i = 0; i < number_sweets; i++){
-			System.out.print(" (");System.out.print(sweets_list.get(i).get(0));System.out.print(",");System.out.print(sweets_list.get(i).get(1));System.out.print(")");
+			System.out.print(" ("+sweets_list.get(i).get(0)+","+sweets_list.get(i).get(1)+")");
 		}
 		System.out.println();
 		System.out.println();
+	}
 
+	public void print_way(ArrayList<Node> way, int index,int[] pred,int[] coord){
+		if(maze_isPossible(way)){
+			if (index == 1) { 
+				System.out.println("Départ");
+			}
+			else if (way.get(index-1).isMonster()) {
+				System.out.println(get_direction(pred,coord) + ", bonbon donné au petit monstre");
+				number_monstersPassed+=1;
+			}
+			else if (way.get(index-1).isSweet()) {
+				System.out.println(get_direction(pred,coord) + ", bonbon récolté");
+				number_sweetsTaken+=1;
+			}
+			else{
+				// Comme la position n'est ni B, ni M => on peut écrire dessus
+				if(coord[0] != pukkaman_position[0] || coord[1] != pukkaman_position[1]){
+					matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
+				}
+				System.out.println(get_direction(pred,coord));
+			}
+		}
+	}
+
+	public int[] Printing_journey(Graph graph, ArrayList<Node> way, int i,int index,int[] pred){
+		int[] coord;
+		coord = graph.pos_decryptage(way.get(i-1).get_posCrypt()); //coordonée décrypté. vérifié et correcte
+		coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
+		if(maze_isPossible(way)){
+			System.out.print( index+". ("+coord[0]+","+coord[1]+") " );
+		}
+		journey+="("+coord[0]+","+coord[1]+") ";
+		// because coord = int[2]
+		ArrayList<Integer> coor = new ArrayList<Integer>(2);
+		coor.add(coord[0]);coor.add(coord[1]);
+		complete_way.add(coor);
+
+		print_way(way,i,pred,coord);
+
+		return coord.clone();
+	}
+
+	public int[] Printing_way(Graph graph, ArrayList<Node> way, ArrayList<Integer> arc, int i, int j,int index, int[] pred ){
+		int[] coord;
+		coord = graph.pos_decryptage(arc.get(j)); //coordonée décrypté. vérifié et correcte
+		// if (arc.get(j) == graph.get_exitPos()) {find_exit= true;}
+		coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
+		if(way.get(way.size()-1).isExit()){
+			System.out.print( index+". ("+coord[0]+","+coord[1]+") ");
+		}
+		journey+="("+coord[0]+","+coord[1]+") ";
+		ArrayList<Integer> coor = new ArrayList<Integer>(2);
+		//coor = new ArrayList<Integer>(2);
+		coor.add(coord[0]);coor.add(coord[1]);
+		complete_way.add(coor);
+		if(coord[0] != pukkaman_position[0] || coord[1] != pukkaman_position[1]){
+			matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
+		}
+		// Pas très propre
+		if (way.get(i).get_posCrypt() == graph.get_exitPos() && j == (arc.size()-2)) {
+			System.out.println("Sortie!");
+		}else {
+			if(maze_isPossible(way)){
+				System.out.println(get_direction(pred,coord));
+			}
+		}
+		return coord.clone();
+	}
+
+
+	public void Final_Situation(ArrayList<Node> way, Graph graph,int length){
+		
+		Intro_SituationFinale();
 		// Chemin parcouru
 
 		try {
 			int[] pred = new int[2];
-			int[] coord;
 			boolean find_exit = false;
-			int numbre_monsters = 0;
-			int number_sweets = 0;
 			int index = 0;
-			String deplacement = "";
 
 			// Test si l'on a trouvé la sortie
 
-				if(way.get(way.size()-1).isExit()){
-					System.out.println("Déplacements de M.Pakkuman:");
-				}
-				for(int i = 1; i < way.size();i++){
-					index++;
-					coord = graph.pos_decryptage(way.get(i-1).get_posCrypt()); //coordonée décrypté. vérifié et correcte
-					coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
-					if(way.get(way.size()-1).isExit()){
-						System.out.print( index+". ("+coord[0]+","+coord[1]+") " );
-					}
-					deplacement+="("+coord[0]+","+coord[1]+") ";
-					ArrayList<Integer> coor = new ArrayList<Integer>(2);
-					coor.add(coord[0]);coor.add(coord[1]);
-					complete_way.add(coor);
-					if(way.get(way.size()-1).isExit()){
-						if (i == 1) { 
-							System.out.println("Départ");
-						}
-						else if (way.get(i-1).isMonster()) {
-							System.out.println(get_direction(pred,coord) + ", bonbon donné au petit monstre");
-							numbre_monsters+=1;
-						}
-						else if (way.get(i-1).isSweet()) {
-							System.out.println(get_direction(pred,coord) + ", bonbon récolté");
-							number_sweets+=1;
-						}
-						else{
-							// Comme la position n'est ni B, ni M => on peut écrire dessus
-							if(coord[0] != pukkaman_position[0] || coord[1] != pukkaman_position[1]){
-								matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
-							}
-							System.out.println(get_direction(pred,coord));
-						}
-					}
+			if(maze_isPossible(way)){
+				System.out.println("Déplacements de M.Pakkuman:");
+			}
+			for(int i = 1; i < way.size();i++){
+				index++;
+				pred = Printing_journey(graph,way,i,index,pred);
 
-					pred = coord.clone();
-					if(way.get(i-1).get_arc(way.get(i)) != null){
-						ArrayList<Integer> arc = way.get(i-1).get_arc(way.get(i)).get_globalWay();
-						if (arc.get(0) != way.get(i-1).get_posCrypt()) { Collections.reverse(arc);}
-						for (int j = 1; j <arc.size()-1 ;j++ ) {
-							index++;
-							coord = graph.pos_decryptage(arc.get(j)); //coordonée décrypté. vérifié et correcte
-							if (arc.get(j) == graph.get_exitPos()) {find_exit= true;}
-							coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
-							if(way.get(way.size()-1).isExit()){
-								System.out.print( index+". ("+coord[0]+","+coord[1]+") ");
-							}
-							deplacement+="("+coord[0]+","+coord[1]+") ";
-							coor = new ArrayList<Integer>(2);
-							coor.add(coord[0]);coor.add(coord[1]);
-							complete_way.add(coor);
-							if(coord[0] != pukkaman_position[0] || coord[1] != pukkaman_position[1]){
-								matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
-							}
-							// Pas très propre
-							if (way.get(i).get_posCrypt() == graph.get_exitPos() && j == (arc.size()-2)) {
-								System.out.println("Sortie!");
-								find_exit = true;
-							}
-							else {
-								if(way.get(way.size()-1).isExit()){
-									System.out.println(get_direction(pred,coord));
-								}
-							}
-							pred = coord.clone();
+				//System.out.println("i: "+i+" way.size()-1 (avant dernier noeud): "+(way.size()-1));
+
+				if(way.get(i-1).get_arc(way.get(i)) != null){
+					ArrayList<Integer> arc = way.get(i-1).get_arc(way.get(i)).get_globalWay();
+					if (arc.get(0) != way.get(i-1).get_posCrypt()) { Collections.reverse(arc);}
+					//System.out.println("ARC: "+arc.size());
+					for (int j = 1; j <arc.size()-1 ;j++ ) {
+						//System.out.println("POP");
+						index++;
+						pred = Printing_way(graph,way, arc,i,j,index,pred);
+					}
+					// Dans le cas où le dernier déplacement est un noeud se trouvant dans way()
+					//System.out.println("size: "+arc.size()+" i: "+i+" way.size()-1 (avant dernier noeud): "+(way.size()-1));
+					if(arc.size() == 2 && (i == way.size()-1) && maze_isPossible(way)){ // == ne possède pas
+						System.out.println("Sortie!");
+					}
+						/*coord = graph.pos_decryptage(arc.get(j)); //coordonée décrypté. vérifié et correcte
+						if (arc.get(j) == graph.get_exitPos()) {find_exit= true;}
+						coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
+						if(way.get(way.size()-1).isExit()){
+							System.out.print( index+". ("+coord[0]+","+coord[1]+") ");
 						}
-						if(way.get(i).get_posCrypt() == graph.get_exitPos() && !find_exit){
+						journey+="("+coord[0]+","+coord[1]+") ";
+						ArrayList<Integer> coor = new ArrayList<Integer>(2);
+						//coor = new ArrayList<Integer>(2);
+						coor.add(coord[0]);coor.add(coord[1]);
+						complete_way.add(coor);
+						if(coord[0] != pukkaman_position[0] || coord[1] != pukkaman_position[1]){
+							matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
+						}
+						// Pas très propre
+						if (way.get(i).get_posCrypt() == graph.get_exitPos() && j == (arc.size()-2)) {
 							System.out.println("Sortie!");
 							find_exit = true;
 						}
-					}
-				}
-				if(way.get(way.size()-1).isExit()){
-					System.out.println();System.out.println("Trouvé un plus court chemin de longueur "+index+".");
-					System.out.println("M. Pakkuman a récolté "+number_sweets+" bonbon(s) et rencontré "+numbre_monsters+" monstre(s).");
-				}
-			if(!way.get(way.size()-1).isExit()){
+						else {
+							if(maze_isPossible(way)){
+								System.out.println(get_direction(pred,coord));
+							}
+						}*/
+						//pred = coord.clone();
+					/*if(way.get(i).get_posCrypt() == graph.get_exitPos() && !find_exit){
+						System.out.println("Sortie!");
+						find_exit = true;
+					}*/
+				}/*else if(way.get(i-1).get_arc(way.get(i)) != null && i == way.size()-1 && arc.size() == 2){
+					System.out.println("Sortie!");
+				}*/
+				/*if(way.get(i-1).get_arc(way.get(i)) == null && maze_isPossible(way)){
+					System.out.println("Sortie!");
+				}*/
+			}
+			if(maze_isPossible(way)){
+				System.out.println();System.out.println("Trouvé un plus court chemin de longueur "+index+".");
+				System.out.println("M. Pakkuman a récolté "+number_sweetsTaken+" bonbon(s) et rencontré "+number_monstersPassed+" monstre(s).");
+			}else{
 				System.out.println("Il n'y a pas moyen de sortir vivant du labyrinthe.");
 			}
 			// parcours des nodes principales
@@ -362,7 +411,7 @@ public class Maze{
 			}
 			
 			writer.println("M. Pakkuman a pris "+number_sweets+" Bonbons !");
-			writer.println("Déplacements de M.Pakkuman: "+deplacement);
+			writer.println("Déplacements de M.Pakkuman: "+journey);
 			writer.close();
 		/*}catch(NullPointerException e){
 			System.err.println("Caught NullPointerException in Maze Final_Situation: " + e.getMessage());*/
