@@ -320,104 +320,80 @@ public class Maze{
 		return coord.clone();
 	}
 
+	public void Outro_SituationFinale(ArrayList<Node> way,int index){
+		try{
+			PrintWriter writer = new PrintWriter ("FinalSituation.txt");
+			writer.println("Situation finale:");
+			matrix_Printer(writer);
+			if(maze_isPossible(way)){
+				writer.println("Trouvé un plus court chemin de longueur "+index+".");
+			}else{
+				writer.println("Il n'y a pas moyen de sortir.");
+			}
+			
+			writer.println("M. Pakkuman a pris "+number_sweetsTaken+" Bonbons !");
+			writer.println("Déplacements de M.Pakkuman: "+journey);
+			writer.close();
+		}catch(FileNotFoundException e){
+			System.err.println("Caught FileNotFoundException in Final_Situation: " + e.getMessage());
+		}
+	}
+
 
 	public void Final_Situation(ArrayList<Node> way, Graph graph,int length){
 		
 		Intro_SituationFinale();
 		// Chemin parcouru
 
-		try {
-			int[] pred = new int[2];
-			boolean find_exit = false;
-			int index = 0;
+		int[] pred = new int[2];
+		int index = 0;
 
-			// Test si l'on a trouvé la sortie
+		// Test si l'on a trouvé la sortie
 
-			if(maze_isPossible(way)){
-				System.out.println("Déplacements de M.Pakkuman:");
-			}
-			for(int i = 1; i < way.size();i++){
-				index++;
-				pred = Printing_journey(graph,way,i,index,pred);
+		if(maze_isPossible(way)){
+			System.out.println("Déplacements de M.Pakkuman:");
+		}
+		for(int i = 1; i < way.size();i++){
+			index++;
+			pred = Printing_journey(graph,way,i,index,pred);
 
-				//System.out.println("i: "+i+" way.size()-1 (avant dernier noeud): "+(way.size()-1));
-
-				if(way.get(i-1).get_arc(way.get(i)) != null){
-					ArrayList<Integer> arc = way.get(i-1).get_arc(way.get(i)).get_globalWay();
-					if (arc.get(0) != way.get(i-1).get_posCrypt()) { Collections.reverse(arc);}
-					//System.out.println("ARC: "+arc.size());
-					for (int j = 1; j <arc.size()-1 ;j++ ) {
-						//System.out.println("POP");
-						index++;
-						pred = Printing_way(graph,way, arc,i,j,index,pred);
-					}
-					// Dans le cas où le dernier déplacement est un noeud se trouvant dans way()
-					//System.out.println("size: "+arc.size()+" i: "+i+" way.size()-1 (avant dernier noeud): "+(way.size()-1));
-					if(arc.size() == 2 && (i == way.size()-1) && maze_isPossible(way)){ // == ne possède pas
-						System.out.println("Sortie!");
-					}
-						/*coord = graph.pos_decryptage(arc.get(j)); //coordonée décrypté. vérifié et correcte
-						if (arc.get(j) == graph.get_exitPos()) {find_exit= true;}
-						coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
-						if(way.get(way.size()-1).isExit()){
-							System.out.print( index+". ("+coord[0]+","+coord[1]+") ");
-						}
-						journey+="("+coord[0]+","+coord[1]+") ";
-						ArrayList<Integer> coor = new ArrayList<Integer>(2);
-						//coor = new ArrayList<Integer>(2);
-						coor.add(coord[0]);coor.add(coord[1]);
-						complete_way.add(coor);
-						if(coord[0] != pukkaman_position[0] || coord[1] != pukkaman_position[1]){
-							matrix[coord[0]*2+1][coord[1]*2+1] = WAY;
-						}
-						// Pas très propre
-						if (way.get(i).get_posCrypt() == graph.get_exitPos() && j == (arc.size()-2)) {
-							System.out.println("Sortie!");
-							find_exit = true;
-						}
-						else {
-							if(maze_isPossible(way)){
-								System.out.println(get_direction(pred,coord));
-							}
-						}*/
-						//pred = coord.clone();
-					/*if(way.get(i).get_posCrypt() == graph.get_exitPos() && !find_exit){
-						System.out.println("Sortie!");
-						find_exit = true;
-					}*/
-				}/*else if(way.get(i-1).get_arc(way.get(i)) != null && i == way.size()-1 && arc.size() == 2){
+			if(way.get(i-1).get_arc(way.get(i)) != null){
+				ArrayList<Integer> arc = way.get(i-1).get_arc(way.get(i)).get_globalWay();
+				if (arc.get(0) != way.get(i-1).get_posCrypt()) { Collections.reverse(arc);}
+				for (int j = 1; j <arc.size()-1 ;j++ ) {
+					index++;
+					pred = Printing_way(graph,way, arc,i,j,index,pred);
+				}
+				// Dans le cas où le dernier déplacement est un noeud se trouvant dans way()
+				if(arc.size() == 2 && (i == way.size()-1) && maze_isPossible(way)){
 					System.out.println("Sortie!");
-				}*/
-				/*if(way.get(i-1).get_arc(way.get(i)) == null && maze_isPossible(way)){
-					System.out.println("Sortie!");
-				}*/
+				}
 			}
-			if(maze_isPossible(way)){
-				System.out.println();System.out.println("Trouvé un plus court chemin de longueur "+index+".");
-				System.out.println("M. Pakkuman a récolté "+number_sweetsTaken+" bonbon(s) et rencontré "+number_monstersPassed+" monstre(s).");
-			}else{
-				System.out.println("Il n'y a pas moyen de sortir vivant du labyrinthe.");
-			}
-			// parcours des nodes principales
+		}
+		if(maze_isPossible(way)){
+			System.out.println();System.out.println("Trouvé un plus court chemin de longueur "+index+".");
+			System.out.println("M. Pakkuman a récolté "+number_sweetsTaken+" bonbon(s) et rencontré "+number_monstersPassed+" monstre(s).");
+		}else{
+			System.out.println("Il n'y a pas moyen de sortir vivant du labyrinthe.");
+		}
+		// parcours des nodes principales
+		
+		Outro_SituationFinale(way,index);
 			
-				
-			PrintWriter writer = new PrintWriter ("FinalSituation.txt");
-			writer.println("Situation finale:");
-			matrix_Printer(writer);
-			if(find_exit){
-				writer.println("Trouvé un plus court chemin de longueur "+index+".");
-			}else{
-				writer.println("Il n'y a pas moyen de sortir.");
-			}
-			
-			writer.println("M. Pakkuman a pris "+number_sweets+" Bonbons !");
-			writer.println("Déplacements de M.Pakkuman: "+journey);
-			writer.close();
+		/*PrintWriter writer = new PrintWriter ("FinalSituation.txt");
+		writer.println("Situation finale:");
+		matrix_Printer(writer);
+		if(maze_isPossible(way)){
+			writer.println("Trouvé un plus court chemin de longueur "+index+".");
+		}else{
+			writer.println("Il n'y a pas moyen de sortir.");
+		}
+		
+		writer.println("M. Pakkuman a pris "+number_sweets+" Bonbons !");
+		writer.println("Déplacements de M.Pakkuman: "+journey);
+		writer.close();*/
 		/*}catch(NullPointerException e){
 			System.err.println("Caught NullPointerException in Maze Final_Situation: " + e.getMessage());*/
-		}catch(FileNotFoundException e){
-			System.err.println("Caught FileNotFoundException in Final_Situation: " + e.getMessage());
-		}
 	}
 
 	// ------------ Method that analyzes the value received and returns its char value-------- //
