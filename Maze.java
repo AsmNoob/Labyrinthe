@@ -379,21 +379,6 @@ public class Maze{
 		// parcours des nodes principales
 		
 		Outro_SituationFinale(way,index);
-			
-		/*PrintWriter writer = new PrintWriter ("FinalSituation.txt");
-		writer.println("Situation finale:");
-		matrix_Printer(writer);
-		if(maze_isPossible(way)){
-			writer.println("Trouvé un plus court chemin de longueur "+index+".");
-		}else{
-			writer.println("Il n'y a pas moyen de sortir.");
-		}
-		
-		writer.println("M. Pakkuman a pris "+number_sweets+" Bonbons !");
-		writer.println("Déplacements de M.Pakkuman: "+journey);
-		writer.close();*/
-		/*}catch(NullPointerException e){
-			System.err.println("Caught NullPointerException in Maze Final_Situation: " + e.getMessage());*/
 	}
 
 	// ------------ Method that analyzes the value received and returns its char value-------- //
