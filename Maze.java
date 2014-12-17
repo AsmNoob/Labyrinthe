@@ -39,8 +39,8 @@ public class Maze{
 
 	//Constructeurs
 	public Maze(String file_name){
-		Parsing(file_name);
-		Initial_Situation();
+		parsing(file_name);
+		initial_situation();
 
 	}
 
@@ -54,17 +54,17 @@ public class Maze{
 				int indexColumn = 0;
 				for(int i = 0; i< line.length();i++){ // parcours line lue
 					if(i%4 == 0){ // intersection et murs
-						matrix[indexLine][indexColumn] = Analyse_Case(line.charAt(i),indexLine,indexColumn); // Check
+						matrix[indexLine][indexColumn] = analyse_case(line.charAt(i),indexLine,indexColumn); // Check
 						indexColumn++;
 					}else if (i%4 == 2) { // espaces, monstres, bonbons et pakkuman
-						matrix[indexLine][indexColumn] = Analyse_Case(line.charAt(i),indexLine,indexColumn);
+						matrix[indexLine][indexColumn] = analyse_case(line.charAt(i),indexLine,indexColumn);
 						indexColumn++;
 					}
 				}
 				indexLine++;
 			}
 		}catch(IOException e){
-			System.err.println("Caught IOException in Maze Parsing: " + e.getMessage());
+			System.err.println("Caught IOException in Maze parsing: " + e.getMessage());
 		}	
 	}
 
@@ -89,13 +89,13 @@ public class Maze{
 				
 			}
 		}catch(IOException e){
-			System.err.println("Caught IOException in Maze Parsing: " + e.getMessage());
+			System.err.println("Caught IOException in Maze parsing: " + e.getMessage());
 		}
 	}
 
 
 	//-------Parsage du fichier--------//
-	public void Parsing(String file_name){
+	public void parsing(String file_name){
 		try {
 			InputStream ips = new FileInputStream(file_name);
 			InputStreamReader ipsr = new InputStreamReader(ips);
@@ -150,14 +150,14 @@ public class Maze{
 			parsage_elements(splitted_line,line,br,false);
 
 		}catch(FileNotFoundException e){
-			System.err.println("Caught FileNotFoundException in Maze Parsing: " + e.getMessage());
+			System.err.println("Caught FileNotFoundException in Maze parsing: " + e.getMessage());
 		}catch(IOException e){
-			System.err.println("Caught IOException in Maze Parsing: " + e.getMessage());
+			System.err.println("Caught IOException in Maze parsing: " + e.getMessage());
 		}
 	}
 
 	//Fonction qui remplace les caractères par des entiers selon les values choisies
-	public int Analyse_Case(char value, int line, int column){
+	public int analyse_case(char value, int line, int column){
 		int res = 0;
 		if(value == '-' || value == '|' || value == '+'){
 			res = WALL;
@@ -177,25 +177,25 @@ public class Maze{
 		return complete_way;
 	}
 
-	public int[] getCoordPukkaman(){
+	public int[] get_coordPukkaman(){
 		return pukkaman_position;
 	}
 
-	public ArrayList<ArrayList<Integer>> getCoordMonsters(){ // ArrayList[n][2] 
+	public ArrayList<ArrayList<Integer>> get_coordMonsters(){ // ArrayList[n][2] 
 		return monsters_list;
 	}
 
-	public ArrayList<ArrayList<Integer>> getCoordSweets(){
+	public ArrayList<ArrayList<Integer>> get_coordSweets(){
 		return sweets_list;
 	}
 
-	public int[][] getMaze(){
+	public int[][] get_maze(){
 		return matrix;
 	}
 
 	//------ MazeSituations ------//
 
-	public void Initial_Situation(){
+	public void initial_situation(){
 		// renvoie la situation initiale du Labyrinthe
 		try{
 			PrintWriter writer = new PrintWriter ("InitialSituation.txt");
@@ -203,9 +203,9 @@ public class Maze{
 			matrix_Printer(writer);
 			writer.close();
 		}catch(FileNotFoundException e){
-			System.err.println("Caught FileNotFoundException in Maze Initial_Situation writing: " + e.getMessage());
+			System.err.println("Caught FileNotFoundException in Maze initial_situation writing: " + e.getMessage());
 		}catch(NullPointerException e){
-			System.err.println("Caught NullPointerException in Maze Initial_Situation writing: " + e.getMessage());
+			System.err.println("Caught NullPointerException in Maze initial_situation writing: " + e.getMessage());
 		}
 		
 	}
@@ -213,11 +213,8 @@ public class Maze{
 	public void matrix_Printer(PrintWriter writer){
 		for(int i = 0; i < matrix.length;i++){
 			for(int j = 0; j < matrix[0].length;j++){
-				//System.out.print(Output_Analyse(matrix[i][j],i,j));
-				writer.print(Output_Analyse(matrix[i][j],i,j)); // Verifier
+				writer.print(output_analyse(matrix[i][j],i,j)); // Verifier
 			}
-			//System.out.print(" " + i);
-			//System.out.println();
 			writer.println();
 		}
 	}
@@ -234,7 +231,7 @@ public class Maze{
 		return way.get(way.size()-1).isExit();
 	}
 
-	public void Intro_SituationFinale(){
+	public void intro_situationFinale(){
 		System.out.println();
 		System.out.println("Le labyrinthe a une dimension de "+lines+" fois "+columns+".");
 		System.out.println("Il contient "+number_monsters+" monstres et "+number_sweets+" bonbons.");
@@ -275,7 +272,7 @@ public class Maze{
 		}
 	}
 
-	public int[] Printing_journey(Graph graph, ArrayList<Node> way, int i,int index,int[] pred){
+	public int[] printing_journey(Graph graph, ArrayList<Node> way, int i,int index,int[] pred){
 		int[] coord;
 		coord = graph.pos_decryptage(way.get(i-1).get_posCrypt()); //coordonée décrypté. vérifié et correcte
 		coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
@@ -293,12 +290,12 @@ public class Maze{
 		return coord.clone();
 	}
 
-	public int[] Printing_way(Graph graph, ArrayList<Node> way, ArrayList<Integer> arc, int i, int j,int index, int[] pred ){
+	public int[] printing_way(Graph graph, ArrayList<Node> way, ArrayList<Integer> arc, int i, int j,int index, int[] pred ){
 		int[] coord;
 		coord = graph.pos_decryptage(arc.get(j)); //coordonée décrypté. vérifié et correcte
 		// if (arc.get(j) == graph.get_exitPos()) {find_exit= true;}
 		coord[0]=(coord[0]-1)/2;coord[1]=(coord[1]-1)/2;
-		if(way.get(way.size()-1).isExit()){
+		if(maze_isPossible(way)){
 			System.out.print( index+". ("+coord[0]+","+coord[1]+") ");
 		}
 		journey+="("+coord[0]+","+coord[1]+") ";
@@ -320,7 +317,7 @@ public class Maze{
 		return coord.clone();
 	}
 
-	public void Outro_SituationFinale(ArrayList<Node> way,int index){
+	public void outro_situationFinale(ArrayList<Node> way,int index){
 		try{
 			PrintWriter writer = new PrintWriter ("FinalSituation.txt");
 			writer.println("Situation finale:");
@@ -335,14 +332,14 @@ public class Maze{
 			writer.println("Déplacements de M.Pakkuman: "+journey);
 			writer.close();
 		}catch(FileNotFoundException e){
-			System.err.println("Caught FileNotFoundException in Final_Situation: " + e.getMessage());
+			System.err.println("Caught FileNotFoundException in final_situation: " + e.getMessage());
 		}
 	}
 
 
-	public void Final_Situation(ArrayList<Node> way, Graph graph,int length){
+	public void final_situation(ArrayList<Node> way, Graph graph,int length){
 		
-		Intro_SituationFinale();
+		intro_situationFinale();
 		// Chemin parcouru
 
 		int[] pred = new int[2];
@@ -355,14 +352,15 @@ public class Maze{
 		}
 		for(int i = 1; i < way.size();i++){
 			index++;
-			pred = Printing_journey(graph,way,i,index,pred);
+			// renvoie les coordonnées actuelles qui deviendront les coord précédents au prochain tour.
+			pred = printing_journey(graph,way,i,index,pred);
 
 			if(way.get(i-1).get_arc(way.get(i)) != null){
 				ArrayList<Integer> arc = way.get(i-1).get_arc(way.get(i)).get_globalWay();
 				if (arc.get(0) != way.get(i-1).get_posCrypt()) { Collections.reverse(arc);}
 				for (int j = 1; j <arc.size()-1 ;j++ ) {
 					index++;
-					pred = Printing_way(graph,way, arc,i,j,index,pred);
+					pred = printing_way(graph,way, arc,i,j,index,pred);
 				}
 				// Dans le cas où le dernier déplacement est un noeud se trouvant dans way()
 				if(arc.size() == 2 && (i == way.size()-1) && maze_isPossible(way)){
@@ -377,13 +375,13 @@ public class Maze{
 			System.out.println("Il n'y a pas moyen de sortir vivant du labyrinthe.");
 		}
 		
-		Outro_SituationFinale(way,index);
+		outro_situationFinale(way,index);
 	}
 
 	// ------------ Method that analyzes the value received and returns its char value-------- //
 	//------------ Used for Outputing the maze -------------//
 
-	public String Output_Analyse(int value,int line,int column){
+	public String output_analyse(int value,int line,int column){
 		String res = "PROBLEM"; // Pour résoudre le cas où res n'est pas initialisé
 
 		if(value == PUKKAMAN){

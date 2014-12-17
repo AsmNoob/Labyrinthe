@@ -40,9 +40,9 @@ public class Panel extends JPanel {
 	    		graph.fillOval(posX, posY, block_size/**3/5*/,block_size/**3/5*/);
 	    	}
 	    	//graph.drawImage(pakkuman, posX, posY,block_size , block_size, this);
-		    for(int i = 0; i < maze_.getMaze().length;i++){
-		    	for(int j = 0; j < maze_.getMaze()[0].length;j++){
-		    		String value = maze_.Output_Analyse(maze_.getMaze()[i][j],i,j);
+		    for(int i = 0; i < maze_.get_maze().length;i++){
+		    	for(int j = 0; j < maze_.get_maze()[0].length;j++){
+		    		String value = maze_.output_analyse(maze_.get_maze()[i][j],i,j);
 		    		ArrayList<Integer> coord = new ArrayList<Integer>(2);
 		    		coord.add((i-1)/2);coord.add((j-1)/2);
 					if(value == "---"){

@@ -8,8 +8,9 @@
 \usepackage[francais]{babel}
 %\usepackage{fullpage}
 
-\title{{\normalsize{INFO-F-203 -- Algorithmique 2}}\\Manipulation de graphes\\ Pakkuman}
+\title{{\normalsize{INFO-F-203 -- Algorithmique 2}}\\Manipulation de graphs\\ Pakkuman}
 \author{Gérard \textsc{Tio Nogueras} \and Alexis \textsc{Defontaine}}
+\date{18/12/2014}
 
 \begin{document}
 \maketitle
@@ -19,7 +20,7 @@ Ce projet d'algorithmique de deuxième année porte sur les graphs et sur la rec
 Le problème est posé aux étudiants comme ceci: il faut écrire un programme qui reçoit la structure d'un labyrinthe ainsi que la position des éléments importants se trouvant dans celui-ci. 
 Après avoir créé une structure représentant ce labyrinthe, il nous est demandé de trouver le plus court chemin entre l'élément \emph{Pakkuman} et la sortie, en sachant qu'il existe des monstres qui nous bloquent le passage et des bonbons qui nous permettent de passer par les cases monstres.
 \section{Parsage, optimisation de la création de graphe, algorithme du plus court chemin et affichage des différentes situations}
-On a divisé le projet en 5 étapes: le parsage du fichier, la création du graph, son affichage initial/final, son optimisation et finalement l'algorithme du plus court chemin.
+On a divisé le projet en 5 étapes: le parsage du fichier, la création du graph et son optimisation, l'algorithme du plus court chemin et finalement son affichage initial/final.
 \subsection{Parsage}
 Cette section consiste en l'analyse du fichier contenant toute l'information nécéssaire pour lancer le projet. Cette annalyse va se diviser en 2 grosses parties: Le parsing de la structure du labyrinthe et du parsing des éléments contenus dans le labyrinthe. Avant de lancer ces deux parties on initialise une matrice qui va contenir les cases du labyrinthe  ainsi que ses murs d'où sa taille qui vaut matrice[2*lines+1][2*columns+1], \emph{lines} et \emph{columns} étant parsés sur la première ligne du fichier. 
  
@@ -33,11 +34,11 @@ Ensuite on attaque les coordonnées:
 
 \begin{itemize}
 \item 
-Coordonnées Pakkuman: On commencer par split la ligne par l'espace qui se trouve après les \emph{:}, ce qui nous laisse avec \emph{(x,y)} ensuite on remplace les parenthèses par rien ( équivaut à les supprime) et on split ce qu'il reste par \emph{,} et on obtient les coordonnées désirées.
+\textbf{Coordonnées Pakkuman}: On commencer par split la ligne par l'espace qui se trouve après les \emph{:} , ce qui nous laisse avec \emph{(x,y)} ensuite on remplace les parenthèses par rien ( équivaut à les supprime) et on split ce qu'il reste par \emph{,} et on obtient les coordonnées désirées.
 \item
-Coordonnées Monstres:
-\item
-Coordonnées Bonbons:
+\textbf{Coordonnées Monstres et bonbons}: C'est exactement la même idée que pour la coordonnée de Pakkuman si ce n'est qu'on va supprimer toutes les parenthèses et ensuite effectuer la même méthode pour le nombre de bonbons et monstres (parsé plus haut dans la méthode).
+Et on va directement remplir la coordonnée de la matrice par la valeur parsée lui correspondant.
+
 \end{itemize}
 
 \subsection{Optimisation et création du graph}
@@ -126,6 +127,31 @@ On se retrouve avec un dijkstra faisant appel à une méthode similaire qui rest
 
 Dans l’énoncé du projet il est affiché un chemin impossible s’arrêtant sur un monstre, il est malheureusement impossible de reproduire cela dans tout les cas pour notre version car un chemin qui va jusqu’à un monstre sans bonbon est un chemin dit impossible et possède donc une distance maximal qui n’est pas traitée. Ce détail permet de ne prendre en compte que les chemins faisables, plusieurs méthodes ont été développé pour récupérer un nœud de emph{fin} permettant l’affichage d’un chemin vers un monstre ou vers le parcours le plus long faisable. Ces étapes ne sont pas utilisées si le chemin existe, elles ne sont la que pour obtenir un affichage quand bien même le labyrinthe est impossible. 
 \subsection{Affichage des différentes situations}
-\label{situation}
+Cette section va concerner la création de 2 fichiers différents qui vont contenir la situation initiale et finale du labyrinthe ainsi qu'un affichage en terminal de la situation finale.
+
+\subsubsection{Situation initiale}
+Initial\textunderscore Situation() est très simple et consiste en une lecture de la matrice créée avec le parsage et de l'utilisation de la fonction Output\textunderscore Analyse() qui va convertir les entiers contenus dans la matrices en caractères ou strings reproduisant le labyrinthe en son état initial dans le fichier \emph{InitialSituation.txt}.
+
+\subsubsection{Situation finale}
+Final\textunderscore Situation() peut être considéré comme divisé en deux parties mélangées car utilisent les mêmes données mais les affichent soit en terminal soit dans un fichier. Le but de cette fonction sera d'afficher le chemin suivi par Pakkuman et de s'occuper de l'affichage des cas impossibles également.
+
+\paragraph{Affichage en terminal:}
+On commence avec la fonction Intro\textunderscore SituationFinale(), qui va afficher l'information sur les éléments contenus dans le labyrinthe et l'information de base parsée au début(taille labyrinthe, nombre de monstres, nombre de bonbons et position des différents éléments).
+Ensuite on attaque l'affichage des déplacements de Pakkuman, celle-ci consiste en deux boucles for imbriquées, l'une qui parcourt les noeuds principaux par lesquels passe Pakkuman, et la deuxième qui parcourt les cases contenues dans les arc de ces noeuds principaux pour retrouver le chemin complet.
+
+\subparagraph{Parcours noeuds principaux:}
+C'est la fonction Printing\textunderscore Journey() qui s'occupe de cette partie, elle commence par déchiffrer la position du noeud, ensuite elle affiche les coordonnées, les enregistre dans complete\textunderscore way (utilisé pour l'interface graphique) et les enregistre également dans une string qu'on utilisera plus tard lors de l'écriture sur le fichier(pour éviter de refaire toutes les boucles). Un dernier affichage est ajouté pour savoir la direction vers laquelle pakkuman s'est dirigé et quand est-ce qu'il prend un bonbon ou qu'il passe par un monstre, ce dernier affichage sera effectué avec la fonction print\textunderscore way().
+
+\subparagraph{Pourcours arcs:}
+C'est la fonction Printing\textunderscore way() qui va s'occuper de cette partie, elle fait principalement la même fonction que Printing\textunderscore Journey mais au lieu de parcourir des sommets, elle parcourt des éléments d'arc.
+Cette fonction va donc nous donner les chemins intermédiaires entre les noeuds principaux sauvegardés pendant l'optimisation du graph.
+
+\paragraph{Ecriture fichier:}
+C'est la fonction Outro\textunderscore SituationFinale() qui va écrire la situation finale dans le fichier \emph{FinalSituation.txt}. La fonction va tout d'abord écrire la matrice dans son état final c'est à dire avec le chemin parcouru par Pakkuman en utilisant la même méthode matrix\textunderscore Printer() utilisé dans Initial\textunderscore Situation(). Ensuite selon si il existe une sortie ou pas, la fonction va afficher la longueur du chemin ou un message indiquant qu'il n'a pas réussi à sortir. Et pour finir indique le chemin pris par Pakkuman sous forme d'une suite de coordonnées.
+
+\section{Conclusion}
+Ce projet est une première en son genre dans notre parcours d'étudiants en informatique, car pour la première fois on a du prendre en compte des aspects comme la vitesse d'éxecution (la complexité), la mémoire et d'autres aspects pour optimiser au maximum notre code. On a donc discuté pour chaque algorithme important de sa complexité et de la manière de l'implémenter mais également de la structure qu'on utiliserait pour réduire la mémoire au minimum. On s'est principalement focalisé sur la vitesse car au final avec les technologies actuelles la mémoire est importante mais souvent en suffisance alors que la vitesse d'exécution peut très vite augmenter si l'on ne fait pas attention.
+
+C'est aussi un projet qui donnait énormément de libertés dans nos choix et donc a nécessité une documentation théorique important pour y répondre au mieux.
 
 \end{document}
