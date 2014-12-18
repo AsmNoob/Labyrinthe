@@ -20,6 +20,7 @@ Ce projet d'algorithmique de deuxième année porte sur les graphs et sur la rec
 Il est demandé aux étudiants de concevoir un programme capable de traduire un fichier texte en une structure représentant le labyrinthe et ensuite de trouver le plus court chemin entre l'élément \emph{Pakkuman} et la sortie, en prenant en compte des cases bloquante dites "monstre" opposées aux cases "bonbons".
 \section{Parsage, création du graph et son optimisation, algorithme du plus court chemin et affichage des différentes situations}
 Le projet a été divisé en 5 étapes: le parsage du fichier, la création du graph et son optimisation, l'algorithme du plus court chemin et finalement son affichage initial/final.
+
 \subsection{Parsage}
 Cette section consiste en l'analyse du fichier contenant toute l'information nécessaire pour lancer le projet. Cette analyse va se diviser en 2 grosses parties: Le parsing de la structure du labyrinthe et du parsing des éléments contenus dans le labyrinthe. Avant de lancer ces deux parties on initialise une matrice qui va contenir les cases du labyrinthe  ainsi que ses murs d'où sa taille qui vaut matrice[2*lines+1][2*columns+1], \emph{lines} et \emph{columns} étant parsés sur la première ligne du fichier. 
  
@@ -42,25 +43,25 @@ On va directement remplir les coordonnée de la matrice par la valeur parsée lu
 
 \subsection{Optimisation et création du graph}
 \subsubsection{Graph}
-Cette section constitue l’analyse du labyrinthe représenter sous forme de matrice et la mise en place de nœuds et arrêtes formant le dit graphe.
-Le principe développé ici est celui du \emph{backtraking}  servant de base pour un parcours complet de la matrice. Les nœuds représentent ici les monstres et bonbons, le pakkuman, la sortie et les intersections présentes dans le labyrinthe. Ces nœuds sont enregistrés dans un dictionnaire dont les clés représentent leur position dans la matrice.
+Cette section constitue l’analyse du labyrinthe représenté sous forme de matrice et la mise en place des nœuds et arrêtes formant le dit graphe.
+Le principe développé ici est celui du \emph{backtraking}  servant de base au parcours complet de la matrice. Les nœuds représentent ici les monstres et bonbons, le pakkuman, la sortie et les intersections présentes dans le labyrinthe. Ces nœuds sont enregistrés dans un dictionnaire dont les clés représentent leur position dans la matrice.
 
-Chaque nœud est un objet qui comme arc contient ses propres méthodes et attributs. Les arcs sont enregistrés dans une liste appartenant aux deux nœuds concernés. 
-Afin de ne traiter qu’une seule donnée au lieu de deux correspondant aux coordonnées de la matrice nous avons créé une position dite \emph{cryptée} permettant de ne gérer et stocké qu’une donnée pour chaque position tésté.
+Noeud et arc sont des objets qui contiennent leurs propres méthodes et attributs. Les arcs sont enregistrés dans une liste appartenant aux deux nœuds concernés. 
+Afin de ne traiter qu’une seule donnée au lieu de deux correspondant aux coordonnées de la matrice nous avons créé une position dite \emph{cryptée} permettant de ne gérer et stocker qu’une donnée pour chaque position téstée.
 \subsubsection{Création du graph}
-Une multitude de méthodes interviennent pour la création du graphe. Hormis certain détails nécessaire à la compréhension  du code, seul create\textunderscore graph() et optimisation\textunderscore graph(), constituant le cœur même de la class, seront détaillés.
+Une multitude de méthodes interviennent pour la création du graph. Hormis certain détails nécessaires à la compréhension  du code, seul create\textunderscore graph() et optimisation\textunderscore graph(), constituant le cœur même de la class, seront détaillés.
 \paragraph{Etape initiale:}
-Comme cité plus tôt, nous appliquons un \emph{backtracking} sur la matrice contenant l’ensemble du labyrinthe. Nous effectuerons create\textunderscore graph() uniquement si la position actuellement reçu en paramètre n’est pas un nœud ayant déjà été traité. Cette condition est importante, elle évite que le traitement d’un nœud se fasse plus d’une fois, dans le cas par exemple d’un chemin effectuant un retour sur lui même.
-Une fois cette condition passée, une première méthode sera appelée data\textunderscore ofPosition(). Cette fonction va récolter les informations propres à la position actuellement traité en rapport avec les quatre direction (Nord, Sud, Est, Ouest) vers lequel on pourrait se diriger. Il est important ici de préciser que la matrice contient aussi les murs présents dans le labyrinthe,  les positions testées ici se font par saut de deux cases évitant ainsi les lignes et colonnes dédiées uniquement à la présence ou non de mur.
-On récupère donc une liste contenant 1 ou 0 pour chaque direction possible ou non, le dernier élément nous permet de savoir si plusieurs directions sont possibles indiquant immédiatement si c’est un nœud. 
+Comme cité plus tôt, nous appliquons un \emph{backtracking} sur la matrice contenant l’ensemble du labyrinthe. Nous effectuerons create\textunderscore graph() uniquement si la position actuelle reçue en paramètre n’est pas un nœud ayant déjà été traité. Cette condition est importante, elle évite que le traitement d’un nœud se fasse plus d’une fois, dans le cas par exemple d’un chemin effectuant un retour sur lui même.
+Une fois cette condition passée, une première méthode sera appelée data\textunderscore ofPosition(). Cette fonction va récolter les informations propres à la position actuellement traitée en rapport avec les quatre direction (Nord, Sud, Est, Ouest) vers lequel on pourrait se diriger. Il est important ici de préciser que la matrice contient aussi les murs présents dans le labyrinthe,  les positions testées ici se font par saut de deux cases évitant ainsi les lignes et colonnes dédiées uniquement à la présence ou non de murs.
+On récupère donc une liste contenant 1 ou 0 pour chaque direction possible, le dernier élément nous permet de savoir si plusieurs directions sont possibles indiquant immédiatement si c’est un nœud. 
 Cette première étape est commune à toute position testée.
 
 \paragraph{Nouveau noeud:}
-On sait donc savoir si la position possède plusieurs directions possibles via la liste qu’on vient de récupérer. Un deuxième teste sera effectué au cas ou la position n’est pas multidirectionnel afin de récupérer l’élément présent dans la matrice, un monstre ou un bonbon par exemple.
+On sait donc savoir si la position possède plusieurs directions possibles via la liste que l'on vient de récupérer. Un deuxième test sera effectué au cas où la position ne soit pas multidirectionnelle afin de récupérer l’élément présent dans la matrice, un monstre ou un bonbon par exemple.
 
 \begin{itemize}
 \item 
-Si cette condition est remplie par l’un ou l’autre teste, on fait appel au constructeur de \emph{Node} et on clôture l’arc courant pour le connecter au nouveau nœud créé. Ce dernier élément ne se fait que si on ne situe pas dans le premier appel à create\textunderscore graph() qui n’a nullement besoin de clôturé un arc inexistant.
+Si cette condition est remplie par l’un ou l’autre test, on fait appel au constructeur de \emph{Node} et on clôture l’arc courant pour le connecter au nouveau nœud créé. Ce dernier élément ne se fait que si on ne situe pas dans le premier appel à create\textunderscore graph() qui n’a nullement besoin de clôturer un arc inexistant.
 \item
 Sinon on doit simplement ajouter la position actuelle à l’arc courant.
 \end{itemize}
@@ -75,78 +76,79 @@ L’optimisation du graphe est une étape importante permettant de ne compter qu
 Nous avons donc opté pour une optimisation se faisant dans le même cycle d’appel que la création du nœud concerné. 
 
 \paragraph{Nœud unidirectionnel :}
-Lorsqu’on se situe dans le cas d’un nœud en bout de chemin, il ne possède qu’une seule direction. L’unique cas qui permet au nœud de resté dans le graphe, à l’exception du pakkuman et de la sortie, est un bonbon qui n’aurait pas comme lien direct un monstre. Si un monstre était sa seule connexion, cela signifierait qu’on aurait sacrifié un bonbon pour en récupérer un autre, c’est inutile. Tout les autres cas d’impasse sont donc à supprimer.
+Lorsqu’on se situe dans le cas d’un nœud en bout de chemin, il ne possède qu’une seule direction. L’unique cas qui permet au nœud de rester dans le graphe, à l’exception du pakkuman et de la sortie, est un bonbon qui n’aurait pas comme lien direct un monstre. Si un monstre était sa seule connexion, cela signifierait qu’on aurait sacrifié un bonbon pour en récupérer un autre, c’est inutile. Tout les autres cas d’impasse sont donc à supprimer.
 
 \paragraph{Nœud bidirectionnel :}
 Ce deuxième cas est plus complexe, il permet de fusionner deux nœuds qui seraient connecté par un nœud libre (possédant comme attribut ni un monstre, ni un bonbon, ni le pakkuman, ni la sortie). 
-On va alors récupérer les deux arcs sous forme de liste et les traités pour qu’ils puissent s’ajouter l’un à l’autre. Ce traitement vise à garder la structure de l’arc permettant d’arriver d’un nœud à l’autre en itérant dans l’ordre chaque élément présent dans celui-ci.
-Il suffit ensuite de clôturer l’arc et de mettre à jour les nœuds ayant été modifié.
+On va alors récupérer les deux arcs sous forme de liste et les traitér pour qu’ils puissent s’ajouter l’un à l’autre. Ce traitement vise à garder la structure de l’arc permettant d’arriver d’un nœud à l’autre en itérant dans l’ordre chaque élément présent dans celui-ci.
+Il suffit ensuite de clôturer l’arc et de mettre à jour les nœuds ayant été modifiés.
 
-Une information sur le nombre de nœuds supprimé lors de l’optimisation est affichée dans le terminal afin de voir l’importance de celui ci.
+Une information sur le nombre de nœuds supprimés lors de l’optimisation est affichée dans le terminal afin de voir l’importance de celui ci.
 
 \subsection{Algorithme du plus court chemin}
-Cette section porte sur l’algorithme mit en place pour trouver le plus court chemin dans le graphe créer à la section précédente. Nous nous sommes basés sur l’algorithme connu sous le nom de dijkstra qui très facilement trouvera le chemin le plus court vers la sortie, le souci ici est le paramètre bonbon. De nombreuse manière de faire ont été pensé de l’enregistrement de chaque élément parcouru pour chaque nœud testé jusqu’à un parcours effectué uniquement pour les bonbons avant l’appel à dijkstra ou après… La solution ici est la meilleure qu’on est trouvée. Nous l’avons testé sur une 50 de labyrinthe différent, tous ont été concluant.
-Ici aussi de nombreuse méthodes ont été développé seul dijkstra() et dijkstra\textunderscore sweet() verrons le fonctionnement détaillé ici. 
+Cette section porte sur l’algorithme mis en place pour trouver le plus court chemin dans le graphe créé à la section précédente. Nous nous sommes basés sur l’algorithme connu sous le nom de dijkstra qui très facilement trouvera le chemin le plus court vers la sortie, le souci ici est le paramètre bonbon. De nombreuse manière de faire ont été pensées de l’enregistrement de chaque élément parcouru pour chaque nœud testé jusqu’à un parcours effectué uniquement pour les bonbons avant l’appel à dijkstra ou après… La solution ici est la meilleure qu’on est trouvée. Nous l’avons testé sur une 50aine de labyrinthes différents, tous ont été concluants.
+Ici aussi de nombreuse méthodes ont été développées seul dijkstra() et dijkstra\textunderscore sweet() verront leur fonctionnement détaillé ici. 
 
 \subsubsection{Dijkstra}
 Notre algorithme suivant le principe de dijkstra a été ajusté pour correspondre à nos besoin. On y retrouve une boucle while ne s’arrêtant que lorsque le nœud choisit correspond à la sortie ou que le nœud actuel est le même que le précédent. 
 Plusieurs listes sont essentielles à la réalisation de cette recherche:
-Distance : contient les distances minimales séparant le nœud de départ avec chaque nœud présent dans le graph en fonction du chemin qu’on a parcouru jusqu’ici.
-Predecessor : chaque nœud à une liaison avec le nœud qui le précède.
-Visited : contient chaque nœud ayant été testé au fur et à mesure du parcours.
-Nb\textunderscore sweet : contient pour chaque nœud le nombre de bonbon actuellement encore utilisable jusqu’à ce nœud.
+\subparagraph{Distance} : contient les distances minimales séparant le nœud de départ avec chaque nœud présent dans le graph en fonction du chemin qu’on a parcouru jusqu’ici.
+\subparagraph{Predecessor} : chaque nœud à une liaison avec le nœud qui le précède.
+\subparagraph{Visited} : contient chaque nœud ayant été testé au fur et à mesure du parcours.
+\subparagraph{Nb\textunderscore sweet} : contient pour chaque nœud le nombre de bonbons actuellement encore utilisables jusqu’à ce nœud.
+\newpage
 Nous entrons ensuite dans deux parties différentes : 
 \begin{itemize}
 \item 
-L’actualisation des distances possible en rapport avec les connexions directes avec le nœud actuel.
+L’actualisation des distances possibles en rapport avec les connexions directes avec le nœud actuel.
 \item
 La sélection de la distance la plus courte présente dans la liste de sauvegarde.
 \end{itemize}
 
 \paragraph{Connexions directes :}
-Nous allons parcourir l’ensemble des nœuds connectés à celui qu’on a actuellement choisit (O(4) au pire des cas). Pour chaque nœud nous testerons si la distance qu’on a actuellement dans distance est la bonne si ce n’est pas le cas et que le nœud est un monstre on vérifiera dans Nb\textunderscore sweet si le chemin contient un bonbon sinon, on devra faire appel à dijkstra\textunderscore sweet() qui trouvera un bonbon plus haut dans le chemin. Cette distance trouvée pour le bonbon sera ajoutée à la distance d’origine et si elle est toujours plus petite que ce qui se trouve dans distance, alors Predecessor, Nb\textunderscore sweet et Distance seront mis à jour.
+Nous allons parcourir l’ensemble des nœuds connectés à celui qu’on a actuellement choisit (O(4) au pire des cas). Pour chaque nœud nous testerons si la distance qu’on a actuellement dans Distance est la bonne si ce n’est pas le cas et que le nœud est un monstre on vérifiera dans Nb\textunderscore sweet si le chemin contient un bonbon sinon, on devra faire appel à dijkstra\textunderscore sweet() qui trouvera un bonbon plus haut dans le chemin. Cette distance trouvée pour le bonbon sera ajoutée à la distance d’origine et si elle est toujours plus petite que ce qui se trouve dans Distance, alors Predecessor, Nb\textunderscore sweet et Distance seront mis à jour.
 
 \paragraph{Sélection:}
-Un simple appel a find\textunderscore lightWay() nous permettra de récupéré le nœud suivant qui possède la valeur la plus petite dans Distance. On parle bien ici de la plus petite distance actuellement dans Distance, non pas de la distance la plus courte avec le nœud suivant.
-Cette technique permet d’avoir pour tous les nœuds du graphe le chemin le plus court pour accéder à celui ci, testant ainsi toute les possibilité. Si celui ci est un bon ou un monstre nous devrons modifier la dans Nb\textunderscore sweet.
+Un simple appel à find\textunderscore lightWay() nous permettra de récupéré le nœud suivant qui possède la valeur la plus petite dans Distance. On parle bien ici de la plus petite distance actuellement dans Distance, non pas de la distance la plus courte avec le nœud suivant.
+Cette technique permet d’avoir pour tous les nœuds du graphe le chemin le plus court pour accéder à celui ci, testant ainsi toute les possibilité. Si celui-ci est un bonbon ou un monstre nous devrons modifier la valeur dans Nb\textunderscore sweet.
 
 \subsubsection{Dijkstra sweet}
-Cet algorithme est très proche de celui précédemment détaillé. Il possède les mêmes parties et ne s’arrête que lorsqu’on trouve un bonbon qui n’a pas encore été utilisé dans le parcours actuel. A la fin de chaque recherche, dijkstra\textunderscore sweet() stockera dans Index\textunderscore sweet l’indice du bonbon trouvé, Data\textunderscore sweet stockera pour chaque nœuds testés la liste predecessor et distance déjà rencontré plus haut mais propre l’appel de dijkstra\textunderscore sweet() pour le nœud choisi.
+Cet algorithme est très proche de celui précédemment détaillé. Il possède les mêmes parties et ne s’arrête que lorsqu’on trouve un bonbon qui n’a pas encore été utilisé dans le parcours actuel. A la fin de chaque recherche, dijkstra\textunderscore sweet() stockera dans Index\textunderscore sweet l’indice du bonbon trouvé, Data\textunderscore sweet stockera pour chaque nœuds testés la liste Predecessor et Distance déjà rencontré plus haut mais propres à l’appel de dijkstra\textunderscore sweet() pour le nœud choisi.
 Le grand changement se fait principalement avant l’appel à dijkstra\textunderscore sweet().
 \paragraph{Préparation à Dijkstra sweet :}
-L’astuce ici est de réalisé une sélection intelligente des nœuds qu’on va testé pour aller chercher des connexions avec d’éventuelles bonbons.
-Pour ca nous allons faire appel à state\textunderscore actuWay() qui va se charger de parcourir le chemin que nous avons pour l’instant choisit et qui se trouve dans predecessor qui est cette fois ci global à la class. Nous allons parcourir et sélectionné uniquement les nœuds multidirectionnels et copié dans visited\textunderscore real les nœuds qu’on parcourt réellement pour l’instant. Une fois cela fais nous allons faire autant d’appel à dijkstra\textunderscore sweet() qu’il y a de nœuds multidirectionnels.
+L’astuce ici est de réalisé une sélection intelligente des nœuds que l’on va tester pour aller chercher des connexions avec d’éventuels bonbons.
+Pour cela nous allons faire appel à state\textunderscore actuWay() qui va se charger de parcourir le chemin que nous avons pour l’instant choisit et qui se trouve dans Predecessor qui est cette fois ci global à la classe. Nous allons parcourir et sélectionner uniquement les nœuds multidirectionnels et copier dans visited\textunderscore real les nœuds qu’on parcourt réellement pour l’instant. Une fois cela fait, nous allons faire autant d’appels à dijkstra\textunderscore sweet() qu’il y a de nœuds multidirectionnels.
 
 \paragraph{Sélection du bonbon :}
-Une fois les appels finis nous allons parcourir data\textunderscore sweet contenant toutes les informations dont nous avons besoin pour savoir quel bonbon est le plus proche du chemin initial. On renvoi ensuite cette distance multiplié par deux pour correspondre à un aller retour, celle ci sera ajouté à la distance qu’il existe entre le nœud actuel et le monstre avec lequel il est connecté dans dijkstra().
-Si un bonbon a été trouvé nous faisons aussi appel à updateData\textunderscore newSweet() qui mettra à jour way\textunderscore supp contenant pour chaque chemin une liste semblable à predecessor contenant donc les nœuds supplémentaire permettant de trouver un bonbon. On ajoutera aussi à matrix\textunderscore sweet une information permettant de savoir quel bonbon a été utilisé pour le parcours actuelle. Ces dernières liste se transmettrons de nœuds en nœuds au fur et a mesure qu’on parcours les connectivités de celle ci dans la première étape de dijkstra().
+Une fois les appels finis nous allons parcourir data\textunderscore sweet contenant toutes les informations dont nous avons besoin pour savoir quel bonbon est le plus proche du chemin initial. On renvoie ensuite cette distance multipliée par deux pour correspondre à un aller-retour, celle-ci sera ajoutée à la distance qu’il existe entre le nœud actuel et le monstre avec lequel il est connecté dans dijkstra().
+Si un bonbon a été trouvé nous faisons aussi appel à updateData\textunderscore newSweet() qui mettra à jour way\textunderscore supp contenant pour chaque chemin une liste semblable à Predecessor contenant donc les nœuds supplémentaires permettant de trouver un bonbon. On ajoutera aussi à matrix\textunderscore sweet une information permettant de savoir quel bonbon a été utilisé pour le parcours actuel. Ces dernières listes se transmettront de nœuds en nœuds au fur et à mesure que l’on parcours les connectivités de celle-ci dans la première étape de dijkstra().
 
 \subsubsection{Conclusion algorithme plus court chemin}
-On se retrouve avec un dijkstra faisant appel à une méthode similaire qui reste en N.O(logN) , on doit déplorer le fait que dijkstra\textunderscore sweet() sera appelé plusieurs fois à chaque monstre trouvé pouvant ainsi alourdir le traitement. Tout ceci a été pensé pour réduire au maximum les appels inutiles, ou les parcours supplémentaires qui n’auraient plus de sens d’être recherché. N’oublions pas qu’on travail avec un graphe qui a été aussi optimisé contenant un minimum de nœuds sans intérêt. Beaucoup de conteneur sont présent dans cette classe afin de réduire un maximum le temps d’accès au données et de stocké les nœuds déjà visités. 
+On se retrouve avec un dijkstra faisant appel à une méthode similaire qui reste en N.O(logN) , on doit déplorer le fait que dijkstra\textunderscore sweet() sera appelé plusieurs fois à chaque monstre trouvé pouvant ainsi alourdir le traitement. Tout ceci a été pensé pour réduire au maximum les appels inutiles, ou les parcours supplémentaires qui n’auraient plus de sens d’être recherché. N’oublions pas qu’on travail avec un graphe qui a été aussi optimisé contenant un minimum de nœuds sans intérêt. Beaucoup de conteneur sont présent dans cette classe afin de réduire un maximum le temps d’accès au données et de stocker les nœuds déjà visités. 
 
-Dans l’énoncé du projet il est affiché un chemin impossible s’arrêtant sur un monstre, il est malheureusement impossible de reproduire cela dans tout les cas pour notre version car un chemin qui va jusqu’à un monstre sans bonbon est un chemin dit impossible et possède donc une distance maximal qui n’est pas traitée. Ce détail permet de ne prendre en compte que les chemins faisables, plusieurs méthodes ont été développé pour récupérer un nœud de emph{fin} permettant l’affichage d’un chemin vers un monstre ou vers le parcours le plus long faisable. Ces étapes ne sont pas utilisées si le chemin existe, elles ne sont la que pour obtenir un affichage quand bien même le labyrinthe est impossible. 
+Dans l’énoncé du projet il est affiché un chemin impossible s’arrêtant sur un monstre, il est malheureusement impossible de reproduire cela dans tout les cas pour notre version car un chemin qui va jusqu’à un monstre sans bonbon est un chemin dit impossible et possède donc une distance maximal qui n’est pas traitée. Ce détail permet de ne prendre en compte que les chemins faisables, plusieurs méthodes ont été développées pour récupérer un nœud de emph{fin} permettant l’affichage d’un chemin vers un monstre ou vers le parcours le plus long faisable. Ces étapes ne sont pas utilisées si le chemin existe, elles ne sont la que pour obtenir un affichage quand bien même le labyrinthe est impossible. 
 \subsection{Affichage des différentes situations}
 Cette section va concerner la création de 2 fichiers différents qui vont contenir la situation initiale et finale du labyrinthe ainsi qu'un affichage en terminal de la situation finale.
 
 \subsubsection{Situation initiale}
-Initial\textunderscore Situation() est très simple et consiste en une lecture de la matrice créée avec le parsage et de l'utilisation de la fonction Output\textunderscore Analyse() qui va convertir les entiers contenus dans la matrices en caractères ou strings reproduisant le labyrinthe en son état initial dans le fichier \emph{InitialSituation.txt}.
+initial\textunderscore situation() est très simple et consiste en une lecture de la matrice créée avec le parsage et de l'utilisation de la fonction output\textunderscore analyse() qui va convertir les entiers contenus dans la matrices en caractères ou strings reproduisant le labyrinthe en son état initial dans le fichier \emph{InitialSituation.txt}.
 
 \subsubsection{Situation finale}
-Final\textunderscore Situation() peut être considéré comme divisé en deux parties mélangées car utilisent les mêmes données mais les affichent soit en terminal soit dans un fichier. Le but de cette fonction sera d'afficher le chemin suivi par Pakkuman et de s'occuper de l'affichage des cas impossibles également.
+final\textunderscore situation() peut être considéré comme divisé en deux parties mélangées car utilisent les mêmes données mais les affichent soit en terminal soit dans un fichier. Le but de cette fonction sera d'afficher le chemin suivi par Pakkuman et de s'occuper de l'affichage des cas impossibles également.
 
 \paragraph{Affichage en terminal:}
-On commence avec la fonction Intro\textunderscore SituationFinale(), qui va afficher l'information sur les éléments contenus dans le labyrinthe et l'information de base parsée au début(taille labyrinthe, nombre de monstres, nombre de bonbons et position des différents éléments).
+On commence avec la méthode intro\textunderscore situationFinale(), qui va afficher l'information sur les éléments contenus dans le labyrinthe et l'information de base parsée au début(taille labyrinthe, nombre de monstres, nombre de bonbons et position des différents éléments).
 Ensuite on attaque l'affichage des déplacements de Pakkuman, celle-ci consiste en deux boucles for imbriquées, l'une qui parcourt les noeuds principaux par lesquels passe Pakkuman, et la deuxième qui parcourt les cases contenues dans les arc de ces noeuds principaux pour retrouver le chemin complet.
 
 \subparagraph{Parcours noeuds principaux:}
-C'est la fonction Printing\textunderscore Journey() qui s'occupe de cette partie, elle commence par déchiffrer la position du noeud, ensuite elle affiche les coordonnées, les enregistre dans complete\textunderscore way (utilisé pour l'interface graphique) et les enregistre également dans une string qu'on utilisera plus tard lors de l'écriture sur le fichier(pour éviter de refaire toutes les boucles). Un dernier affichage est ajouté pour savoir la direction vers laquelle pakkuman s'est dirigé et quand est-ce qu'il prend un bonbon ou qu'il passe par un monstre, ce dernier affichage sera effectué avec la fonction print\textunderscore way().
+C'est la méthode printing\textunderscore journey() qui s'occupe de cette partie, elle commence par déchiffrer la position du noeud, ensuite elle affiche les coordonnées, les enregistre dans complete\textunderscore way (utilisé pour l'interface graphique) et les enregistre également dans une string qu'on utilisera plus tard lors de l'écriture sur le fichier(pour éviter de refaire toutes les boucles). Un dernier affichage est ajouté pour savoir la direction vers laquelle pakkuman s'est dirigé et quand est-ce qu'il prend un bonbon ou qu'il passe par un monstre, ce dernier affichage sera effectué avec la fonction print\textunderscore way().
 
 \subparagraph{Pourcours arcs:}
-C'est la fonction Printing\textunderscore way() qui va s'occuper de cette partie, elle fait principalement la même fonction que Printing\textunderscore Journey mais au lieu de parcourir des sommets, elle parcourt des éléments d'arc.
+C'est la méthde printing\textunderscore way() qui va s'occuper de cette partie, elle fait principalement la même fonction que printing\textunderscore journey() mais au lieu de parcourir des sommets, elle parcourt des éléments d'arc.
 Cette fonction va donc nous donner les chemins intermédiaires entre les noeuds principaux sauvegardés pendant l'optimisation du graph.
 
 \paragraph{Ecriture fichier:}
-C'est la fonction Outro\textunderscore SituationFinale() qui va écrire la situation finale dans le fichier \emph{FinalSituation.txt}. La fonction va tout d'abord écrire la matrice dans son état final c'est à dire avec le chemin parcouru par Pakkuman en utilisant la même méthode matrix\textunderscore Printer() utilisé dans Initial\textunderscore Situation(). Ensuite selon si il existe une sortie ou pas, la fonction va afficher la longueur du chemin ou un message indiquant qu'il n'a pas réussi à sortir. Et pour finir indique le chemin pris par Pakkuman sous forme d'une suite de coordonnées.
+C'est la méthode outro\textunderscore situationFinale() qui va écrire la situation finale dans le fichier \emph{FinalSituation.txt}. La fonction va tout d'abord écrire la matrice dans son état final c'est à dire avec le chemin parcouru par Pakkuman en utilisant la même méthode matrix\textunderscore printer() utilisé dans initial\textunderscore situation(). Ensuite selon si il existe une sortie ou pas, la fonction va afficher la longueur du chemin ou un message indiquant qu'il n'a pas réussi à sortir. Et pour finir indique le chemin pris par Pakkuman sous forme d'une suite de coordonnées.
 
 \section{Conclusion}
 Ce projet est une première en son genre dans notre parcours d'étudiants en informatique, pour la première fois nous avons du prendre en compte des aspects comme la vitesse d'exécution (la complexité), la mémoire et d'autres aspects pour optimiser au maximum notre code. Chaque conception d'algorithme a du être discuté et optimisé dans la mesure du possible, tant au niveau de sa complexité et que de son implémentation, enfin les structure de données on du être pensées afin d'utilisé celle qui conviendrait le mieux à nos attente. Nous nous sommes principalement focalisé sur la vitesse car au final avec les technologies actuelles la mémoire est importante mais souvent en suffisance alors que la vitesse d'exécution peut vite se dégrader lorsqu'on traite de grande quantité de donnée.
