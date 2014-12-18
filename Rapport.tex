@@ -17,12 +17,12 @@
 
 \section{Introduction}
 Ce projet d'algorithmique de deuxième année porte sur les graphs et sur la recherche du plus court chemin.
-Le problème est posé aux étudiants comme ceci: il faut écrire un programme qui reçoit la structure d'un labyrinthe ainsi que la position des éléments importants se trouvant dans celui-ci. 
-Après avoir créé une structure représentant ce labyrinthe, il nous est demandé de trouver le plus court chemin entre l'élément \emph{Pakkuman} et la sortie, en sachant qu'il existe des monstres qui nous bloquent le passage et des bonbons qui nous permettent de passer par les cases monstres.
+Il est demandé aux étudiants de concevoir un programme capable de traduire un fichier texte en une structure représentant le labyrinthe composé d'éléments importants se trouvant dans celui-ci. 
+Ensuite, un parcourt devra être effectué afin de trouver le plus court chemin entre l'élément \emph{Pakkuman} et la sortie, en prenant en compte des cases bloquante dites "monstre" opposé aux cases "bonbons".
 \section{Parsage, optimisation de la création de graphe, algorithme du plus court chemin et affichage des différentes situations}
-On a divisé le projet en 5 étapes: le parsage du fichier, la création du graph et son optimisation, l'algorithme du plus court chemin et finalement son affichage initial/final.
+Le projet a été divisé en 5 étapes: le parsage du fichier, la création du graph et son optimisation, l'algorithme du plus court chemin et finalement son affichage initial/final.
 \subsection{Parsage}
-Cette section consiste en l'analyse du fichier contenant toute l'information nécéssaire pour lancer le projet. Cette annalyse va se diviser en 2 grosses parties: Le parsing de la structure du labyrinthe et du parsing des éléments contenus dans le labyrinthe. Avant de lancer ces deux parties on initialise une matrice qui va contenir les cases du labyrinthe  ainsi que ses murs d'où sa taille qui vaut matrice[2*lines+1][2*columns+1], \emph{lines} et \emph{columns} étant parsés sur la première ligne du fichier. 
+Cette section consiste en l'analyse du fichier contenant toute l'information nécessaire pour lancer le projet. Cette analyse va se diviser en 2 grosses parties: Le parsing de la structure du labyrinthe et du parsing des éléments contenus dans le labyrinthe. Avant de lancer ces deux parties on initialise une matrice qui va contenir les cases du labyrinthe  ainsi que ses murs d'où sa taille qui vaut matrice[2*lines+1][2*columns+1], \emph{lines} et \emph{columns} étant parsés sur la première ligne du fichier. 
  
 \subsubsection{Structure du labyrinthe}
 La fonction qui va s'occuper de remplir la matrice initialisée au début est maze\textunderscore parser(), cette fonction va lire caractère par caractère pour chaque ligne et chaque caractère va être analysé avec la fonction Analyse\textunderscore Case qui va renvoyer un entier qu'on va introduire dans notre matrice.
@@ -150,8 +150,7 @@ Cette fonction va donc nous donner les chemins intermédiaires entre les noeuds 
 C'est la fonction Outro\textunderscore SituationFinale() qui va écrire la situation finale dans le fichier \emph{FinalSituation.txt}. La fonction va tout d'abord écrire la matrice dans son état final c'est à dire avec le chemin parcouru par Pakkuman en utilisant la même méthode matrix\textunderscore Printer() utilisé dans Initial\textunderscore Situation(). Ensuite selon si il existe une sortie ou pas, la fonction va afficher la longueur du chemin ou un message indiquant qu'il n'a pas réussi à sortir. Et pour finir indique le chemin pris par Pakkuman sous forme d'une suite de coordonnées.
 
 \section{Conclusion}
-Ce projet est une première en son genre dans notre parcours d'étudiants en informatique, car pour la première fois on a du prendre en compte des aspects comme la vitesse d'éxecution (la complexité), la mémoire et d'autres aspects pour optimiser au maximum notre code. On a donc discuté pour chaque algorithme important de sa complexité et de la manière de l'implémenter mais également de la structure qu'on utiliserait pour réduire la mémoire au minimum. On s'est principalement focalisé sur la vitesse car au final avec les technologies actuelles la mémoire est importante mais souvent en suffisance alors que la vitesse d'exécution peut très vite augmenter si l'on ne fait pas attention.
-
-C'est aussi un projet qui donnait énormément de libertés dans nos choix et donc a nécessité une documentation théorique important pour y répondre au mieux.
+Ce projet est une première en son genre dans notre parcours d'étudiants en informatique, pour la première fois nous avons du prendre en compte des aspects comme la vitesse d'exécution (la complexité), la mémoire et d'autres aspects pour optimiser au maximum notre code. Chaque conception d'algorithme a du être discuté et optimisé dans la mesure du possible, tant au niveau de sa complexité et que de son implémentation, enfin les structure de données on du être pensées afin d'utilisé celle qui conviendrait le mieux à nos attente. Nous nous sommes principalement focalisé sur la vitesse car au final avec les technologies actuelles la mémoire est importante mais souvent en suffisance alors que la vitesse d'exécution peut vite se dégrader lorsqu'on traite de grande quantité de donnée.
+C'est aussi un projet qui donnait énormément de libertés, il a donc nécessité une documentation théorique importante pour résoudre au mieux le problème initiale.
 
 \end{document}
