@@ -15,7 +15,7 @@ public class Main{
 			// System.out.println();
 			// System.out.println("Controle_GraphStart");
 			// System.out.println();
-			Graph graph = new Graph(maze.getMaze(),maze.getCoordPukkaman());
+			Graph graph = new Graph(maze.get_maze(),maze.get_coordPukkaman());
 	    	long step2 = System.currentTimeMillis();
 			// System.out.println();
 			// System.out.println("Controle_GraphEnd");
@@ -29,7 +29,7 @@ public class Main{
 			// System.out.println();
 			// System.out.println("Controle_SituationFinaleStart");
 			// System.out.println();
-			maze.Final_Situation(dijkstra.get_finalWay(),graph,dijkstra.get_totalWeight());
+			maze.final_situation(dijkstra.get_finalWay(),graph,dijkstra.get_totalWeight());
 			long step4 = System.currentTimeMillis();
 			// System.out.println();
 			// System.out.println("Controle_SituationFinaleEnd");

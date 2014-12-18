@@ -10,13 +10,13 @@ public class Window extends JFrame{
   	public Window(Maze maze){
   	// Fenêtre de base
   		try{
-  			block_size = 27 - ((maze.getMaze().length > maze.getMaze()[0].length) ? ((maze.getMaze().length-1)/2)/3*2 : ((maze.getMaze()[0].length-1)/2)/3*2);
+  			block_size = 27 - ((maze.get_maze().length > maze.get_maze()[0].length) ? ((maze.get_maze().length-1)/2)/3*2 : ((maze.get_maze()[0].length-1)/2)/3*2);
 	  		if(block_size < 5){
 	  			block_size = 5;
 	  		}
 	  		panel = new Panel(maze,block_size);
 	    	this.setTitle("MazeSolver");
-	    	this.setSize((maze.getMaze()[0].length-1)*block_size+50,(maze.getMaze().length-1)*block_size+75);
+	    	this.setSize((maze.get_maze()[0].length-1)*block_size+50,(maze.get_maze().length-1)*block_size+75);
 		    this.setLocationRelativeTo(null); //centered
 		    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		    this.setResizable(false);
@@ -49,7 +49,7 @@ public class Window extends JFrame{
 	    	ArrayList<Integer> coord = new ArrayList<Integer>(2); //ArrayList<ArrayList<Integer>>
 	    	coord.add(maze.get_completeWay().get(i).get(0));coord.add(maze.get_completeWay().get(i).get(1));
 	    	//System.out.println("coord[0]: "+coord.get(0)+" coord[1]: "+coord.get(1));
-	    	if(maze.getCoordMonsters().contains(coord) || maze.getCoordSweets().contains(coord)){ 
+	    	if(maze.get_coordMonsters().contains(coord) || maze.get_coordSweets().contains(coord)){ 
 	    		panel.get_BlackList().add(coord);
 	    	}
 
